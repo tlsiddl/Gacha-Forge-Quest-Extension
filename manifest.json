@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.2.9",
-    "description": "AI 수당 중복·미확정 입금·타인 물품 검증 강화",
+    "version": "0.3.0",
+    "description": "거래별 고유 ID, 지급 상태 이력 및 기존 거래 갱신",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
