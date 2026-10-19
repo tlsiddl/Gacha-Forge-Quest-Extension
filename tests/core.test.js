@@ -3,7 +3,7 @@ const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
 const consts=['GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const names=['gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -475,5 +475,25 @@ t('현재 날짜: 최신 챕터 기준, 직접 입력은 이후 챕터에서 덮
 t('잘린 응답에서도 timeline 복구',()=>{
   const p=F.gfqParseEvents('{"timeline":{"currentDate":"2033-04-08","dateEvidence":"교부일: 2033-04-08"},"events":[{"name":"a"},{"name":"b');
   assert.strictEqual(p.root.timeline.currentDate,'2033-04-08');assert.strictEqual(p.events.length,1);
+});
+t('날짜 표시 줄: 그 아래 대사는 다음 날짜 표시 전까지 모두 그 날짜',()=>{
+  assert.strictEqual(F.gfqDateHeading('2033-04-09'),'2033-04-09');
+  assert.strictEqual(F.gfqDateHeading('[2033년 4월 10일 (목)] 오전'),'2033-04-10');
+  assert.strictEqual(F.gfqDateHeading('면허증에는 교부일: 2033-04-08이라고 적혀 있었다'),null,'a date inside a sentence is not a heading');
+  const w={gfStorySamples:[
+    {id:'h1',chapter:'3',index:'1',text:'2033-04-09'},
+    {id:'a',chapter:'3',index:'1',text:'공방장: 세후 총 1,400,000원을 등록 계좌로 정산해 드립니다.'},
+    {id:'b',chapter:'3',index:'2',text:'건틀릿은 내일 이 시간에 수령하시게 됩니다.\n2033-04-10\n다음 날, 채서래는 건틀릿을 건네받았다.'},
+    {id:'c',chapter:'4',index:'1',text:'채서래의 계좌에 1,400,000원이 입금됐다.'}]};
+  const map=F.gfqDateMap(w);
+  assert.strictEqual(F.gfqDateAt(map,'세후 총 1,400,000원을 등록 계좌로'),'2033-04-09');
+  assert.strictEqual(F.gfqDateAt(map,'건틀릿은 내일 이 시간에 수령하시게 됩니다'),'2033-04-09','before the heading inside the same scene');
+  assert.strictEqual(F.gfqDateAt(map,'채서래는 건틀릿을 건네받았다'),'2033-04-10','after the heading');
+  assert.strictEqual(F.gfqDateAt(map,'계좌에 1,400,000원이 입금됐다'),'2033-04-10','carries into the next chapter');
+  assert.deepStrictEqual(F.gfqHeadingDates(map),{'3':{date:'2033-04-10',basis:'원문',evidence:'날짜 표시 2033-04-10',source:'챕터 3'}});
+  const p=F.gfqStampDates(map,{category:'item',evidence:'건틀릿은 내일 이 시간에 수령하시게 됩니다',source:'챕터 3 · 장면 2'});
+  assert.strictEqual(F.gfqResolveTiming({},F.gfqTiming(p)),'2033-04-10','내일 resolves from the date of its own line');
+  const q=F.gfqStampDates(map,{category:'quest',evidence:'세후 총 1,400,000원을 등록 계좌로',sourceEvidence:['세후 총 1,400,000원을 등록 계좌로','채서래는 건틀릿을 건네받았다']});
+  assert.deepStrictEqual([q.date,q.endDate],['2033-04-09','2033-04-10']);
 });
 console.log('\n'+pass+'개 통과');
