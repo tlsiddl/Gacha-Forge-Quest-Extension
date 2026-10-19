@@ -1,4 +1,4 @@
-/* 퀘스트 v0.4.5 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.4.6 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -80,6 +80,7 @@
 #${ID}-toasts .gfq-toast-money,#${ID}-toasts .gfq-toast-rep{border-left-color:#7fd69b}#${ID}-toasts .gfq-toast-money b,#${ID}-toasts .gfq-toast-rep b{color:#7fd69b}
 #${ID}-toasts .gfq-toast-offer{cursor:default;border-color:#c9a55a;box-shadow:0 0 0 1px #f2c86b55,0 12px 32px #000c}
 #${ID}-toasts .gfq-offer-row{display:flex;gap:8px;margin-top:6px}#${ID}-toasts .gfq-offer-row button{font:600 12px system-ui,"Noto Sans KR",sans-serif;padding:6px 14px;border-radius:2px;border:1px solid #f2c86b;background:#f2c86b;color:#1b2232;cursor:pointer}#${ID}-toasts .gfq-offer-row button[data-o=later]{background:transparent;color:#f2c86b}
+#${ID}-toasts .gfq-toast-date{border-left-color:#c7a6ff}#${ID}-toasts .gfq-toast-date b{color:#c7a6ff}#${ID}-toasts .gfq-toast-date span{font-size:15px;font-weight:700;letter-spacing:.04em}
 #${ID}-toasts .gfq-toast-review{border-left-color:#f0a35e}#${ID}-toasts .gfq-toast-review b{color:#f0a35e}
 @keyframes gfq-toast-in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){#${ID}-toasts .gfq-toast{animation:none}}
@@ -438,10 +439,16 @@
   }
   function gfqCurrentDate(w){
     const auto=Object.entries(w?.gfDates||{}).map(([ch,v])=>({ch:Number(ch)||0,...v})).sort((a,b)=>a.ch-b.ch).pop()||null;
-    const man=w?.gfDateManual||null;
-    if(man&&(!auto||Number(man.chapter||0)>=auto.ch))return {date:man.date,basis:'직접 입력',source:man.chapter?'챕터 '+man.chapter+' 이후':'',chapter:Number(man.chapter||0)};
+    // v0.4.6: a date line the reader has reached, or a manual entry, is 'now'. Dates analysed ahead
+    // of the reader (a chapter generated but not yet read) only apply to later chapters.
+    const man=w?.gfDateManual?{...w.gfDateManual,basis:'직접 입력',ms:Number(w.gfDateManual.ms||0)}:null;
+    const read=w?.gfReadingDate?{...w.gfReadingDate,basis:'읽은 장면',ms:Number(w.gfReadingDate.ms||0)}:null;
+    const live=[man,read].filter(Boolean).sort((a,b)=>a.ms-b.ms).pop()||null;
+    if(live&&(!auto||Number(live.chapter||0)>=auto.ch))return {date:live.date,basis:live.basis,source:live.chapter?'챕터 '+live.chapter+(live.basis==='직접 입력'?' 이후':''):'',chapter:Number(live.chapter||0)};
     return auto?{date:auto.date,basis:auto.basis,source:'챕터 '+auto.ch,chapter:auto.ch,evidence:auto.evidence}:null;
   }
+  const gfqWeekday=ymd=>{const [y,m,d]=ymd.split('-').map(Number);return '일월화수목금토'[new Date(Date.UTC(y,m-1,d)).getUTCDay()];};
+  function gfqDayDiff(a,b){const t=x=>{const [y,m,d]=x.split('-').map(Number);return Date.UTC(y,m-1,d);};return Math.round((t(b)-t(a))/864e5);}
   // '내일 이 시간' said in chapter 3 → the date it points to, when chapter 3's date is known.
   function gfqResolveTiming(w,t){
     if(!t||!t.text)return null;
@@ -1402,7 +1409,7 @@
     gfqToastBox();
     const el=document.createElement('button');el.type='button';el.className='gfq-toast gfq-toast-'+kind;
     el.innerHTML='<b>'+esc(title)+'</b><span>'+esc(text)+'</span>';
-    el.addEventListener('click',()=>{el.remove();gfqToastHide();currentTab=['review','info'].includes(kind)?'history':['money','item','benefit','credential'].includes(kind)?(kind==='money'||kind==='credential'?'assets':'items'):'quests';if(!panel)openPanel();else render();});
+    el.addEventListener('click',()=>{el.remove();gfqToastHide();currentTab=kind==='date'?'assets':['review','info'].includes(kind)?'history':['money','item','benefit','credential'].includes(kind)?(kind==='money'||kind==='credential'?'assets':'items'):'quests';if(!panel)openPanel();else render();});
     toastBox.append(el);gfqToastTrim();
     setTimeout(()=>{el.remove();gfqToastHide();},kind==='review'?12000:7000);
   }
@@ -1485,6 +1492,11 @@
     const cnt=(root.querySelector('.vn-count')?.textContent||'').match(/(\d+)\s*\/\s*(\d+)/);
     return {text:vn.textContent||'',chapter:(cap.match(/(\d+)\s*챕터/u)||[])[1]||'',line:cnt?+cnt[1]:0,total:cnt?+cnt[2]:0};
   }
+  function gfqVNDate(root){
+    const vn=root?.querySelector('.vn');if(!vn)return null;
+    for(const el of vn.querySelectorAll('*')){if(el.children.length)continue;const t=(el.textContent||'').trim();if(t.length&&t.length<=40){const d=gfqDateHeading(t);if(d)return d;}}
+    return null;
+  }
   const gfqChapterOfSource=s=>(String(s||'').match(/챕터\s*(\d+)/u)||[])[1]||'';
   function gfqEvidenceList(p){
     const l=[...new Set((Array.isArray(p.sourceEvidence)&&p.sourceEvidence.length?p.sourceEvidence:[p.evidence]).filter(Boolean))];
@@ -1560,15 +1572,28 @@
     gfqToast('검토 목록으로 이동',(p.questTitle||p.name)+' · 기록 탭에서 언제든 반영할 수 있습니다','review');
   }
   let sceneKey='',sceneRecheck=0;
-  function gfqSceneTick(){
-    const w=current();
-    if(!w||!data.autoApply||data.sceneTimed===false||!(w.aiProposals||[]).some(p=>p.deferred))return;
+  function gfqDateTick(w,vn){
+    const d=gfqVNDate(gameRoot);if(!d)return;
+    const prev=gfqCurrentDate(w)?.date||null;
+    if(w.gfReadingDate?.date===d)return;
+    w.gfReadingDate={date:d,chapter:vn.chapter,ms:Date.now(),at:now()};
+    const gap=prev?gfqDayDiff(prev,d):null;
+    record(w,'세계관 날짜 변경: '+(prev?prev+' → ':'')+d+' (챕터 '+vn.chapter+' 날짜 줄)');
+    save();if(panel&&currentTab==='assets')render();
+    gfqToast('날짜 변경',d+' ('+gfqWeekday(d)+')'+(gap===1?' · 하루가 지났습니다':gap>1?' · '+gap+'일이 지났습니다':''),'date');
+  }
+  let lineKey='';
+  function gfqSceneTick(settled=false){
+    const w=current();if(!w)return;
     const vn=gfqVNState(gameRoot);if(!vn)return;
-    const key=vn.chapter+'|'+vn.line+'|'+vn.text.length;if(key===sceneKey)return;
-    const lineChanged=sceneKey.split('|').slice(0,2).join('|')!==vn.chapter+'|'+vn.line;
-    sceneKey=key;
     // Typewriter text may still be appearing: look once more shortly after a new line starts.
-    if(lineChanged){if(sceneRecheck)clearTimeout(sceneRecheck);sceneRecheck=setTimeout(()=>{sceneRecheck=0;sceneKey='';gfqSceneTick();},1200);}
+    const lk=vn.chapter+'|'+vn.line;
+    if(lk!==lineKey){lineKey=lk;if(sceneRecheck)clearTimeout(sceneRecheck);sceneRecheck=setTimeout(()=>{sceneRecheck=0;sceneKey='';gfqSceneTick(true);},1200);}
+    // v0.4.6: the in-world date follows the date lines the reader reaches (read only once the line has settled).
+    if(settled)gfqDateTick(w,vn);
+    if(!data.autoApply||data.sceneTimed===false||!(w.aiProposals||[]).some(p=>p.deferred))return;
+    const key=vn.chapter+'|'+vn.line+'|'+vn.text.length;if(key===sceneKey)return;
+    sceneKey=key;
     const hits=gfqSceneHits(w.aiProposals,vn);if(!hits.length)return;
     const snap=JSON.stringify({quests:w.quests,fields:w.fields,items:w.items,gfLedger:w.gfLedger||[],aiProposals:w.aiProposals||[],aiAcceptedKeys:w.aiAcceptedKeys||[],history:w.history});
     // Money, items and benefits before quests so rewards can link.
@@ -1842,7 +1867,7 @@
   }
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
   function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(data.worlds[w]?.gfDisplayName||w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
-  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.4.5</span></footer></div>`;}
+  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.4.6</span></footer></div>`;}
   function content(w){switch(currentTab){case 'quests':return `<div class="gfq-row"><select id="gfq-filter">${['전체','일일','주간','의뢰','업적'].map(t=>`<option ${activeFilter===t?'selected':''}>${t}</option>`).join('')}</select>${btn('＋ 퀘스트','add-quest','class="primary"')}</div>${w.quests.filter(q=>activeFilter==='전체'||q.type===activeFilter).map(q=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(q.title)}</b><small>${esc(q.type)}</small></div><div class="gfq-muted">${esc(q.detail)}</div>${Array.isArray(q.steps)&&q.steps.length?`<div class="gfq-muted">세부 목표</div><div class="gfq-row">${q.steps.map((t,i)=>btn((q.stepDone?.[i]?'✓ ':'○ ')+esc(t),'toggle-step',`data-id="${esc(q.id)}" data-step="${i}" aria-pressed="${q.stepDone?.[i]?'true':'false'}"`)).join("")}</div>`:""}${gfqQuestDatesHtml(q)}${gfqQuestProgressHtml(q)}${btn('＋1','increment',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn(q.claimed?'완료됨':'완료','complete',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn('삭제','delete-quest',`data-id="${esc(q.id)}"`)}</div><div class="gfq-muted">보상(기록용): ${esc(gfqQuestRewardLabel(q))}</div>${(q.rewardDetails||[]).map((r,i)=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?btn('원장에 기록: '+esc(r.name),'reward-to-ledger',`data-id="${esc(q.id)}" data-idx="${i}"`):'').join('')}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">▤</div><strong>진행 중인 퀘스트가 없습니다</strong><span class="gfq-muted">새 퀘스트를 등록하면 여기에 표시됩니다.</span></div>'}`;
   case 'assets':return `${gfqCalendarHtml(w)}${gfqLedgerHtml(w)}${btn('＋ 필드 추가','add-field','class="primary"')}<p class="gfq-muted">소지금, 은행, 평판, 직업 등 월드별 자유 필드</p>${w.fields.map(f=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(f.name)}</b><span>${esc(f.value)} ${esc(f.unit)}</span>${btn('수정','edit-field',`data-id="${esc(f.id)}"`)}${btn('삭제','delete-field',`data-id="${esc(f.id)}"`)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◈</div><strong>등록된 자산이 없습니다</strong><span class="gfq-muted">소지금, 직업, 평판 등 원하는 항목을 추가해 주세요.</span></div>'}`;
   case 'items':return `${btn('＋ 소지품','add-item','class="primary"')}${w.items.filter(i=>i.state==='pending').length?'<h3>수령 예정</h3><p class="gfq-muted">아직 받지 않은 물품입니다. 소지품 목록과 스토리 문맥에는 보유품으로 포함되지 않습니다.</p>':''}${w.items.filter(i=>i.state==='pending').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><small>수령 예정</small></div>${i.timing?`<div class="gfq-muted">수령 시점: ${esc(gfqTimingText(i.timing))}${gfqResolveTiming(w,i.timing)?' → '+esc(gfqResolveTiming(w,i.timing)):''}</div>`:''}${i.value?`<div class="gfq-muted">가치: ${esc(gfqAmount(i.value,'원'))}</div>`:''}<div class="gfq-row">${btn('수령 확인','receive-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.kind==='voucher')?'<h3>혜택·이용권</h3><p class="gfq-muted">퀘스트 보상이나 계약으로 받은 할인·감면 혜택입니다. 사용하면 횟수가 줄어들고 변경 기록에 남습니다.</p>':''}${w.items.filter(i=>i.kind==='voucher').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>${i.qty>0?'남은 횟수 '+i.qty:'사용 완료'}</span></div>${i.detail?`<div class="gfq-muted">${esc(i.detail)}</div>`:''}<div class="gfq-row">${btn('사용','use-voucher',`data-id="${esc(i.id)}" ${i.qty>0?'':'disabled'}`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.state==='pending'||i.kind==='voucher')?'<h3>보유 소지품</h3>':''}${w.items.filter(i=>i.state!=='pending'&&i.kind!=='voucher').map(i=>`<div class="gfq-card gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>× ${i.qty}</span>${btn('수정','edit-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>소지품 목록이 비어 있습니다</strong><span class="gfq-muted">스토리에서 얻은 아이템을 기록할 수 있습니다.</span></div>'}`;
@@ -1864,7 +1889,7 @@
     let date=null;
     if(act==='date-next'){if(!c)return;date=gfqAddDays(c.date,1);}
     else{const ans=ask('세계관 현재 날짜를 입력해 주세요. (예: 2033-04-08)',c?.date||'');if(ans===null)return;date=gfqDatesIn(ans)[0]||null;if(!date)return alert('YYYY-MM-DD 형식으로 입력해 주세요.');}
-    return update(w=>{w.gfDateManual={date,chapter:latest,at:now()};record(w,'세계관 날짜 '+(act==='date-next'?'하루 경과':'직접 입력')+': '+date);});
+    return update(w=>{w.gfDateManual={date,chapter:latest,at:now(),ms:Date.now()};record(w,'세계관 날짜 '+(act==='date-next'?'하루 경과':'직접 입력')+': '+date);});
   }
   if(act==='undo-auto'){if(!w.gfUndo)return;if(!confirm('마지막 자동 반영('+w.gfUndo.count+'개) 직전 상태로 퀘스트·자산·소지품·거래 원장·검토 목록을 되돌리시겠습니까? 그 이후 직접 수정한 내용도 함께 되돌아갑니다.'))return;try{const s=JSON.parse(w.gfUndo.snap);Object.assign(w,s);delete w.gfUndo;record(w,'마지막 자동 반영을 되돌렸습니다.');save();render();}catch(e){alert('되돌리지 못했습니다: '+e.message);}return;}
   if(act==='money-rescan'){w.gfMissingMoney=gfqMissingMoney(w);save();render();return alert('누락 의심 금액 '+w.gfMissingMoney.length+'개를 찾았습니다.');}

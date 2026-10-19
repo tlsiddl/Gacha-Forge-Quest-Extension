@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.4.5",
-    "description": "날짜 표시 줄 기준 사건 날짜 확정",
+    "version": "0.4.6",
+    "description": "날짜 줄 도달 시 날짜 변경·팝업",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
