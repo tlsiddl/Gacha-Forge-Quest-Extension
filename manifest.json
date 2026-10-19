@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.4.3",
-    "description": "회고 금액 처리·자동 분석 반복 방지",
+    "version": "0.4.4",
+    "description": "세계관 날짜 기록·상대 시점 날짜 풀이",
     "runtime": "client",
     "enabled": false,
     "capabilities": [

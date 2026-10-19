@@ -2,8 +2,8 @@ const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
-const consts=['gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const consts=['GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
+const names=['gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -446,5 +446,34 @@ t('자동 분석 간격: 새 챕터는 바로, 같은 챕터의 짧은 추가 �
   assert.strictEqual(F.gfqAutoGate({gfAutoLastAt:t0-120000,gfAutoLastChapter:3},[b('3',900)],t0,'scene').wait,0);
   assert.ok(F.gfqAutoGate({gfAutoFailAt:t0-60000},[b('5',900)],t0,'scene').wait>=240000,'back off after a failure');
   assert.strictEqual(F.gfqAutoGate({gfAutoLastAt:t0-1000},[b('3',10)],t0,'chapter').wait,0,'chapter mode is not throttled');
+});
+const LIC='차갑고 매끄러운 은빛 플라스틱 면허증 표면에는 [성명: 채서래 / 분류: 물리계 / 등급: C급(수시 재심사 우대) / 교부일: 2033-04-08]이라는 글자가 홀로그램 인장과 함께 또렷하게 각인되어 있었다.';
+t('날짜 읽기: 원문 표기 형식과 잘못된 날짜',()=>{
+  assert.deepStrictEqual(F.gfqDatesIn(LIC),['2033-04-08']);
+  assert.deepStrictEqual(F.gfqDatesIn('2033년 4월 9일 오전, 그리고 2033.04.10'),['2033-04-09','2033-04-10']);
+  assert.deepStrictEqual(F.gfqDatesIn('2033-02-30'),[]);
+  assert.strictEqual(F.gfqAddDays('2033-04-30',1),'2033-05-01');
+});
+t('세계관 날짜: 원문 날짜는 근거에 적혀 있을 때만, 날 바뀜은 추정',()=>{
+  assert.deepStrictEqual(F.gfqTimelineFrom({currentDate:'2033-04-08',dateEvidence:'교부일: 2033-04-08'},[LIC],null),{date:'2033-04-08',basis:'원문',evidence:'교부일: 2033-04-08'});
+  assert.strictEqual(F.gfqTimelineFrom({currentDate:'2033-04-09',dateEvidence:'교부일: 2033-04-08'},[LIC],null),null,'date not written in its evidence');
+  const next='다음 날 아침, 채서래는 공방으로 향했다.';
+  assert.deepStrictEqual(F.gfqTimelineFrom({currentDate:'',daysPassed:1,daysEvidence:'다음 날 아침'},[next],'2033-04-08'),{date:'2033-04-09',basis:'추정',evidence:'다음 날 아침'});
+  assert.strictEqual(F.gfqTimelineFrom({daysPassed:1,daysEvidence:'공방으로 향했다'},[next],'2033-04-08'),null,'no day-change words');
+  assert.strictEqual(F.gfqTimelineFrom({daysPassed:1,daysEvidence:'다음 날 아침'},[next],null),null,'nothing to count from');
+});
+t('현재 날짜: 최신 챕터 기준, 직접 입력은 이후 챕터에서 덮어씀, 상대 시점 풀이',()=>{
+  const w={gfDates:{'2':{date:'2033-04-07',basis:'원문'},'3':{date:'2033-04-08',basis:'원문',evidence:'교부일'}}};
+  assert.deepStrictEqual([F.gfqCurrentDate(w).date,F.gfqCurrentDate(w).basis,F.gfqCurrentDate(w).source],['2033-04-08','원문','챕터 3']);
+  w.gfDateManual={date:'2033-04-09',chapter:3};assert.strictEqual(F.gfqCurrentDate(w).date,'2033-04-09');
+  w.gfDates['4']={date:'2033-04-12',basis:'원문'};assert.strictEqual(F.gfqCurrentDate(w).date,'2033-04-12','a newer chapter wins over an older manual entry');
+  assert.strictEqual(F.gfqResolveTiming(w,{text:'내일 이 시간',anchor:'챕터 3 · 장면 1'}),'2033-04-09');
+  assert.strictEqual(F.gfqResolveTiming(w,{text:'3일 후',anchor:'챕터 3 · 장면 1'}),'2033-04-11');
+  assert.strictEqual(F.gfqResolveTiming(w,{text:'임무 완료 시',anchor:'챕터 3 · 장면 1'}),null);
+  assert.strictEqual(F.gfqResolveTiming(w,{text:'내일',anchor:'챕터 9 · 장면 1'}),null,'unknown chapter date');
+});
+t('잘린 응답에서도 timeline 복구',()=>{
+  const p=F.gfqParseEvents('{"timeline":{"currentDate":"2033-04-08","dateEvidence":"교부일: 2033-04-08"},"events":[{"name":"a"},{"name":"b');
+  assert.strictEqual(p.root.timeline.currentDate,'2033-04-08');assert.strictEqual(p.events.length,1);
 });
 console.log('\n'+pass+'개 통과');
