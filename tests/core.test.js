@@ -58,4 +58,12 @@ t('v0.3.4 통합 사례 회귀: 구성 수당 제거, 총액 유지',()=>{
   const ev=[{category:'asset',name:'긴급 설비 방어 보수',amount:1400000,unit:'원',source:'챕터 3 · 장면 4'},{category:'asset',name:'기본 수당',amount:950000,unit:'원',source:'챕터 3 · 장면 4'},{category:'asset',name:'위험 수당',amount:450000,unit:'원',source:'챕터 3 · 장면 4'}];
   const r=F.gfqIntegrateQuests(ev);assert.strictEqual(r.length,1);assert.strictEqual(r[0].name,'긴급 설비 방어 보수 총액');
 });
+t('퀘스트 보상: 정산 완료 표현만으로 수령 확인 금지',()=>{
+  const a=F.gfqSafeProposal({category:'quest',status:'completed',financialStatus:'received',evidence:'현장 긴급 대응 수당 정산을 완료한다',questRewards:[{name:'현장 긴급 대응 수당',kind:'money',certainty:'received',evidence:''}]});
+  assert.strictEqual(a.financialStatus,'receivable');assert.strictEqual(a.questRewards[0].certainty,'confirmed');
+  const b=F.gfqSafeProposal({category:'quest',status:'active',financialStatus:'received',evidence:'방어 보수 정산을 마무리한다',questRewards:[{name:'보수',kind:'money',certainty:'received'}]});
+  assert.strictEqual(b.financialStatus,'pending');assert.strictEqual(b.questRewards[0].certainty,'pending');
+  const c=F.gfqSafeProposal({category:'quest',status:'completed',financialStatus:'received',evidence:'수당이 계좌에 입금됐다',questRewards:[{name:'수당',kind:'money',certainty:'received'}]});
+  assert.strictEqual(c.financialStatus,'received');assert.strictEqual(c.questRewards[0].certainty,'received');
+});
 console.log('\n'+pass+'개 통과');

@@ -376,6 +376,21 @@
         result.financialStatus='receivable';result.auditNote='계좌 입금 근거가 없어 미수·정산 기록으로 보류했습니다.';
       }
     }
+    // v0.3.5: the same deposit rule applies to quests and their reward candidates.
+    if(result.category==='quest'){
+      const deposit=/(입금(?:됐|되었|받았|완료| 확인)|계좌.{0,24}(입금|입금됐|들어왔)|송금(?:받|완료)|잔액.{0,20}(증가|늘어)|실제.{0,12}(수령|지급받))/u;
+      const done=result.status==='completed';
+      if(result.financialStatus==='received'&&!deposit.test(q))result.financialStatus=done?'receivable':'pending';
+      if(Array.isArray(result.questRewards)){
+        let downgraded=false;
+        result.questRewards=result.questRewards.map(r=>{
+          if(!r||typeof r!=='object'||r.certainty!=='received'||r.kind!=='money')return r;
+          if(deposit.test(String(r.evidence||''))||deposit.test(q))return r;
+          downgraded=true;return {...r,certainty:done?'confirmed':'pending'};
+        });
+        if(downgraded)result.auditNote='보상 정산 표현만 있고 계좌 입금 근거가 없어 수령 확인에서 '+(done?'확정(미입금)':'지급 예정')+'으로 낮췄습니다.';
+      }
+    }
     if(result.category==='item'&&(/(내일|예정|제작 중|제작 건|수령하시게|상당)/.test(q)||String(result.unit)==='원')){
       result.status='active';result.financialStatus='pending';
       result.auditNote='미수령·제작 중 물품 또는 시가 정보로 보입니다.';
@@ -467,7 +482,7 @@
       '<p class="gfq-muted">설정에서 선택한 AI 연결로 분석합니다. 원문을 확인한 후보만 승인할 수 있으며, 분석만으로 자산은 변경되지 않습니다.</p>'+gfqDiagnosticsHtml(w)+
       '<button data-action="invoke-quest-bridge">AI 분석 실행</button> <button data-action="prepare-ai-prompt">분석 지침 복사</button> <button data-action="import-ai-result">AI 분석 JSON 가져오기</button>'+
       (rows.length?'<div class="gfq-row"><button data-action="select-all-ai">전체 선택</button><button data-action="unselect-all-ai">선택 해제</button><button data-action="approve-selected-ai">선택 승인</button><button data-action="delete-selected-ai">선택 삭제</button><button data-action="delete-all-ai" class="gfq-danger">전체 삭제</button></div>':'')+
-      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(x.category)+' · '+esc(x.name)+'</b><small>'+esc(x.status)+' · '+esc(x.financialStatus||'구분 전')+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(x.amount??'미확인')+' '+esc(x.unit||'')+' · 출처: '+esc(x.source||'미확인')+'</div>'+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(x).objective)+'</div><div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(x).rewardList.map(r=>r.name+' ('+r.certainty+')').join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
+      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(x.category)+' · '+esc(x.name)+'</b><small>'+esc(x.status)+' · '+esc(x.financialStatus||'구분 전')+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(x.amount??'미확인')+' '+esc(x.unit||'')+' · 출처: '+esc(x.source||'미확인')+'</div>'+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x)).objective)+'</div><div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x)).rewardList.map(r=>r.name+' ('+r.certainty+')').join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
   }
   function gfqDiagnosticsHtml(w){
     const a=w.gfLastAnalysis,ev=w.gfEvicted&&Object.entries(w.gfEvicted);
@@ -764,7 +779,7 @@
     if(!bulk&&!confirm('원문과 상태를 확인하셨습니까? '+x.category+' · '+x.name+'을(를) 기록에 반영하시겠습니까?'))return false;
     if(gfqMoney(x)&&!gfqLedgerRecord(w,x,bulk))return false;
     if(x.category==='quest'){
-      const quest=gfqQuestPresentation(x);
+      const quest=gfqQuestPresentation(gfqSafeProposal(x));
       const q={id:uid(),title:quest.title,type:'의뢰',detail:quest.objective,target:1,progress:x.status==='completed'?1:0,reward:quest.rewardList.map(r=>r.name).join(' · '),rewardDetails:quest.rewardList,claimed:x.status==='completed',sourceEvidence:x.evidence,source:x.source,steps:quest.steps,rewardTransactionId:x.rewardTransactionId||''};
       w.quests.push(q);if(q.claimed)gfqAwardQuestReputation(w,q);
     }
