@@ -1,4 +1,4 @@
-/* 퀘스트 v0.3.15 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.4.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -70,6 +70,17 @@
 #gfq-01-panel .gfq-main p{line-height:1.55}
 #gfq-01-panel .gfq-danger{color:#f38f8f}
 @media(max-width:700px){#gfq-01-panel{inset:3px;width:calc(100vw - 6px);height:calc(100dvh - 6px)}#gfq-01-panel .gfq-frame{grid-template-columns:1fr;grid-template-rows:62px auto minmax(0,1fr) 37px}#gfq-01-panel .gfq-head{padding:0 14px}#gfq-01-panel .gfq-head h2{font-size:17px}#gfq-01-panel .gfq-side{border-right:0;border-bottom:1px solid #41546d;padding:4px 8px}#gfq-01-panel .gfq-side-head,#gfq-01-panel .gfq-side-foot{display:none}#gfq-01-panel .gfq-tabs{flex-direction:row;overflow-x:auto;gap:0}#gfq-01-panel .gfq-tabs button{min-height:39px;padding:7px 11px;white-space:nowrap;font-size:12px;gap:5px;border-left:0;border-bottom:2px solid transparent}#gfq-01-panel .gfq-tabs button.primary{border-bottom-color:#92c7ff}#gfq-01-panel .gfq-tabs button .gfq-nav-icon{font-size:14px;min-width:15px}#gfq-01-panel .gfq-main{padding:14px}#gfq-01-panel .gfq-context{margin-bottom:12px}#gfq-01-panel .gfq-context b{font-size:17px}#gfq-01-panel .gfq-card{padding:12px}}
+`;
+  style.textContent+=`
+#${ID}-toasts{position:fixed;inset:16px 16px auto auto;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;gap:8px;z-index:2147483002;max-width:min(380px,calc(100vw - 32px))}
+#${ID}-toasts:not(:popover-open){display:none}
+#${ID}-toasts .gfq-toast{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;text-align:left;padding:10px 14px;border:1px solid #4d6f99;border-left:4px solid #a5d7ff;border-radius:2px;background:linear-gradient(110deg,#13233a,#1a2c46);color:#eaf2ff;font:13px/1.45 system-ui,"Noto Sans KR",sans-serif;box-shadow:0 10px 28px #000b;cursor:pointer;animation:gfq-toast-in .25s ease-out}
+#${ID}-toasts .gfq-toast b{font-size:11px;letter-spacing:.12em;color:#a5d7ff}
+#${ID}-toasts .gfq-toast-quest,#${ID}-toasts .gfq-toast-step{border-left-color:#f2c86b}#${ID}-toasts .gfq-toast-quest b,#${ID}-toasts .gfq-toast-step b{color:#f2c86b}
+#${ID}-toasts .gfq-toast-money,#${ID}-toasts .gfq-toast-rep{border-left-color:#7fd69b}#${ID}-toasts .gfq-toast-money b,#${ID}-toasts .gfq-toast-rep b{color:#7fd69b}
+#${ID}-toasts .gfq-toast-review{border-left-color:#f0a35e}#${ID}-toasts .gfq-toast-review b{color:#f0a35e}
+@keyframes gfq-toast-in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#${ID}-toasts .gfq-toast{animation:none}}
 `;
   document.head.append(style);
   function allowed(){return !!document.querySelector('[data-agent-id="gacha-forge"], [data-package-id="gacha-forge"], [class*="gacha-forge"], [id*="gacha-forge"], [class*="gf-shell"], [class*="gf-app"]') || /gacha.forge/i.test(document.title) || /gacha-forge/i.test(location.pathname+location.hash);}
@@ -182,6 +193,7 @@
     if(chapterFingerprints.get(key)===fingerprint)return;
     chapterFingerprints.set(key,fingerprint);
     world.gfScannedAt=now();save();if(panel&&data.world===key&&currentTab==='history')render();
+    gfqAutoSchedule(key);
   }
 
   // Conservative story intake: already delivered game data only. No new generation or server writes.
@@ -219,7 +231,8 @@
       // v0.3.5: record scenes dropped by the 180-scene cap so missing payments can be diagnosed.
       const over=w.gfStorySamples.length-180;
       if(over>0){w.gfEvicted||={};for(const e of w.gfStorySamples.slice(0,over)){const c=String(e.chapter);w.gfEvicted[c]=(w.gfEvicted[c]||0)+1;}}
-      w.gfStorySamples=w.gfStorySamples.slice(-180);save();if(panel&&currentTab==='history'&&data.world===key)render();}
+      w.gfStorySamples=w.gfStorySamples.slice(-180);save();if(panel&&currentTab==='history'&&data.world===key)render();
+      gfqAutoSchedule(key);}
   }
   function storyCandidates(w){
     const sources=[
@@ -355,7 +368,9 @@
       '<label for="gfq-ai-connection">분석 모델</label><select id="gfq-ai-connection"><option value="">분석 연결을 선택해 주세요</option>'+choices+'</select>'+
       '<p class="gfq-muted">'+(aiConnectionError?esc(aiConnectionError):'선택한 연결로 스토리를 분석할 수 있습니다.')+'</p>'+
       '<button data-action="refresh-ai-connections">연결 목록 새로고침</button>'+
-      '<label for="gfq-ai-mode">실행 방식</label><select id="gfq-ai-mode"><option value="manual" '+(data.aiMode!=='auto'?'selected':'')+'>수동 분석 (권장)</option><option value="auto" '+(data.aiMode==='auto'?'selected':'')+'>자동 분석 (호출 연동 후 사용 가능)</option></select>'+
+      '<label for="gfq-ai-mode">분석 실행 방식</label><select id="gfq-ai-mode">'+[['manual','수동 분석 (기록 탭의 버튼으로 실행)'],['chapter','챕터가 끝나면 자동 분석'],['scene','새 장면마다 자동 분석 (AI 호출이 많아집니다)']].map(([v,l])=>'<option value="'+v+'" '+((['chapter','scene'].includes(data.aiMode)?data.aiMode:'manual')===v?'selected':'')+'>'+l+'</option>').join('')+'</select>'+
+      '<label><input type="checkbox" id="gfq-auto-apply" style="width:auto" '+(data.autoApply?'checked':'')+'> 분석 결과 자동 반영</label>'+
+      '<p class="gfq-muted">자동 반영을 켜면 원문 근거·금액·연결 검증을 통과한 항목은 바로 퀘스트·자산·소지품에 반영되고, 불확실한 항목만 검토 목록에 남습니다. 반영 직전 상태를 저장하므로 기록 탭에서 마지막 자동 반영을 되돌릴 수 있습니다. 자동 분석은 게임 통신을 관찰해 실행하며, 마지막 응답 6초 뒤 한 번만 동작합니다.</p>'+
       '</div>';
   }
 
@@ -488,10 +503,10 @@
     const num=v=>{const n=Number(v);return Number.isFinite(n)?n:Number.MAX_SAFE_INTEGER;};
     const rows=[
       ...(w.gfChapterIndex||[]).map((c,i)=>({source:'챕터 '+c.chapter+' · 줄거리'+(c.cleared?' (게임 기록: 클리어)':''),text:String(c.premise||''),ch:num(c.chapter),ix:-1,order:i})),
-      ...(w.gfStorySamples||[]).map((x,i)=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:String(x.text||''),ch:num(x.chapter),ix:num(x.index),order:i}))
+      ...(w.gfStorySamples||[]).map((x,i)=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:String(x.text||''),ch:num(x.chapter),ix:num(x.index),order:i,id:x.id}))
     ].filter(x=>x.text.trim());
     rows.sort((a,b)=>a.ch-b.ch||a.ix-b.ix||a.order-b.order);
-    return rows.map(x=>({source:x.source,text:x.text,ch:x.ch}));
+    return rows.map(x=>({source:x.source,text:x.text,ch:x.ch,...(x.id?{id:x.id}:{})}));
   }
   // v0.3.9: one batch per chapter, because the game generates the story a chapter at a time.
   // A chapter too long for one call is split into consecutive parts; later parts and chapters
@@ -500,7 +515,7 @@
     const batches=[];let batch=null,chars=0;
     const chapterOf=r=>String(r.source||'').match(/^챕터\s*([^·]+?)\s*·/)?.[1]||'?';
     for(const r of records){
-      const item={source:r.source,text:String(r.text).slice(0,3500)},ch=chapterOf(r);
+      const item={source:r.source,text:String(r.text).slice(0,3500),...(r.id?{id:r.id}:{})},ch=chapterOf(r);
       if(!batch||batch.chapter!==ch||(batch.length&&chars+item.text.length>limit)){
         batch=[];batch.chapter=ch;batch.part=batches.filter(b=>b.chapter===ch).length+1;batches.push(batch);chars=0;
       }
@@ -658,6 +673,7 @@
     const parts=[];
     if(a)parts.push('<div class="gfq-muted">최근 분석 ('+esc(a.at)+'): '+esc(gfqAnalysisSummary(a)).replace(/\n/g,'<br>')+'</div>');
     if(ev&&ev.length)parts.push('<div class="gfq-muted">보관 한도(장면 180개)를 넘어 삭제된 오래된 장면: '+ev.map(([c,n])=>'챕터 '+esc(c)+' '+n+'개').join(', ')+'. 이 장면에 있던 거래는 분석 대상에 포함되지 않습니다.</div>');
+    if(w.gfUndo)parts.push('<div class="gfq-row">'+btn('마지막 자동 반영 되돌리기 ('+w.gfUndo.count+'개 · '+esc(w.gfUndo.at)+')','undo-auto')+'</div>');
     return (parts.length?'<div class="gfq-card">'+parts.join('')+'</div>':'')+gfqMissingMoneyHtml(w);
   }
   function gfqQuestGroup(x,ctx=GFQ_GENERIC){
@@ -1100,14 +1116,15 @@
     if(c.error)return '퀘스트 통합: 실패해 개별 후보로 유지했습니다 ('+c.error+')';
     return '퀘스트 통합: 후보 '+c.absorbed+'개를 정리했습니다 (묶음 '+c.mergedGroups+'개, 기존 퀘스트 갱신 '+c.updates+'개, 보상 연결 '+(c.rewardLinks||0)+'개)';
   }
+  // v0.4.0: the analysis core is shared by the manual button and the automatic triggers.
+  let gfqBusy=false;
   async function invokeQuestBridge(){
     const w=current();if(!w)return;
-    const currentWorldKey=data.world,connectionId=String(data.aiConnectionId||'').trim();
+    if(gfqBusy)return alert('분석이 이미 진행 중입니다. 끝난 뒤 다시 시도해 주세요.');
+    const connectionId=String(data.aiConnectionId||'').trim();
     if(!connectionId)return alert('설정에서 분석용 AI 연결을 먼저 선택해 주세요.');
     const allRecords=gfqStoryRecords(w);
     if(!allRecords.length)return alert('분석할 스토리 기록이 없습니다.');
-    // Bounded chronological batches prevent old payments from being excluded by a recent-only slice.
-    // v0.3.5: prefer to start a new batch at a chapter boundary once the current batch is mostly full.
     const allBatches=gfqChapterBatches(allRecords),hashes=gfqChapterHashes(allBatches);
     // v0.3.11: analysis range. 'new' re-analyses only chapters that are new or changed since their last successful analysis.
     const mode=data.aiRange||'new';let chosen=allBatches;
@@ -1122,10 +1139,19 @@
       if(!want.size)return alert('입력한 범위에 해당하는 저장된 챕터가 없습니다.');
       chosen=allBatches.filter(b=>want.has(b.chapter));
     }
-    const batches=chosen;
-    const chapterCount=new Set(batches.map(b=>b.chapter)).size,recordCount=batches.reduce((n,b)=>n+b.length,0);
-    if(!confirm((mode==='new'?'새로 추가·변경된 ':'')+'챕터 '+chapterCount+'개('+[...new Set(batches.map(b=>b.chapter))].join(', ')+')의 스토리 '+recordCount+'개를 '+batches.length+'회 나눠 분석하시겠습니까? 챕터마다 AI를 호출합니다.'))return;
-    const records=allRecords;
+    const chapterCount=new Set(chosen.map(b=>b.chapter)).size,recordCount=chosen.reduce((n,b)=>n+b.length,0);
+    if(!confirm((mode==='new'?'새로 추가·변경된 ':'')+'챕터 '+chapterCount+'개('+[...new Set(chosen.map(b=>b.chapter))].join(', ')+')의 스토리 '+recordCount+'개를 '+chosen.length+'회 나눠 분석하시겠습니까? 챕터마다 AI를 호출합니다.'+(data.autoApply?'\n\n자동 반영이 켜져 있어, 검증을 통과한 결과는 바로 반영됩니다.':'')))return;
+    const r=await gfqRunAnalysis(data.world,chosen,hashes,{auto:false});
+    if(r.error)return alert('AI 분석에 실패했습니다: '+r.error);
+    alert('AI 분석이 완료되었습니다. '+r.found+'개의 새 후보를 찾았습니다.'+(r.applied?'\n자동 반영 '+r.applied+'개 · 검토 필요 '+r.left+'개':'')+'\n\n'+gfqAnalysisSummary(r.world.gfLastAnalysis));
+  }
+  async function gfqRunAnalysis(worldKey,batches,hashes,opts={}){
+    const w=data.worlds[worldKey];
+    if(!w)return {error:'월드를 찾지 못했습니다.'};
+    if(gfqBusy)return {error:'분석이 이미 진행 중입니다.'};
+    const connectionId=String(data.aiConnectionId||'').trim();
+    if(!connectionId)return {error:'AI 연결이 선택되지 않았습니다.'};
+    gfqBusy=true;
     const requestRun='gfq-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);
     const host=typeof marinara==='object'&&marinara?marinara:globalThis.marinara||{};
     const controller=new AbortController();
@@ -1155,23 +1181,137 @@
           else failures.push(label+': '+String(e?.message||e));
         }
       }
-      if(data.world!==currentWorldKey||current()!==w)throw Error('분석 중 월드가 변경되어 결과를 적용하지 않았습니다.');
+      if(data.worlds[worldKey]!==w)throw Error('분석 중 월드 데이터가 바뀌어 결과를 적용하지 않았습니다.');
       if(!processed)throw Error('모든 회차의 분석에 실패했습니다.\n'+failures.slice(0,6).join('\n'));
       const merged=gfqIntegrateQuests(eventsToAdd,gfqRuleCtx(w));
       stats.components=gfqMarkComponents(merged);
       let pool=[...(w.aiProposals||[]),...merged],consolidation=null;
       try{consolidation=await gfqConsolidateQuests(w,pool,host,connectionId,requestRun+'-q',controller.signal);pool=consolidation.list;}
       catch(e){consolidation={error:controller.signal.aborted?'제한 시간 초과':String(e?.message||e)};}
-      if(data.world!==currentWorldKey||current()!==w)throw Error('분석 중 월드가 변경되어 결과를 적용하지 않았습니다.');
+      if(data.worlds[worldKey]!==w)throw Error('분석 중 월드 데이터가 바뀌어 결과를 적용하지 않았습니다.');
+      const before=new Set((w.aiProposals||[]).map(p=>p.id));
       w.aiProposals=pool;
       w.gfMissingMoney=gfqMissingMoney(w);
-      w.gfAnalyzed||={};for(const ch of new Set(batches.map(b=>b.chapter)))if(!chapterFailed.has(ch))w.gfAnalyzed[ch]=hashes[ch];
-      w.gfLastAnalysis={at:now(),missing:w.gfMissingMoney.length,chapters:[...new Set(batches.map(b=>b.chapter))].filter(ch=>!chapterFailed.has(ch)),batches:batches.length,processed,partial:partialBatches,failures:failures.slice(0,12),added:merged.length,consolidation:gfqConsolidationSummary(consolidation),...stats};
-      save();render();
-      alert('AI 분석이 완료되었습니다. '+merged.length+'개의 새 후보를 찾았습니다.\n\n'+gfqAnalysisSummary(w.gfLastAnalysis));
+      const done=[...new Set(batches.map(b=>b.chapter))].filter(ch=>!chapterFailed.has(ch));
+      w.gfAnalyzed||={};for(const ch of done)if(hashes[ch])w.gfAnalyzed[ch]=hashes[ch];
+      // v0.4.0: remember which scenes were analysed so scene-mode only sends new ones.
+      const seen=new Set(w.gfSeenScenes||[]);for(const b of batches)if(!chapterFailed.has(b.chapter))for(const t of b)if(t.id)seen.add(t.id);
+      w.gfSeenScenes=[...seen].slice(-2000);
+      w.gfLastAnalysis={at:now(),auto:!!opts.auto,missing:w.gfMissingMoney.length,chapters:done,batches:batches.length,processed,partial:partialBatches,failures:failures.slice(0,12),added:merged.length,consolidation:gfqConsolidationSummary(consolidation),...stats};
+      let applied=0,left=w.aiProposals.length,events=[];
+      if(data.autoApply){const r=gfqAutoApply(w,pool.filter(p=>!before.has(p.id)).map(p=>p.id));applied=r.applied;left=r.left;events=r.events;w.gfLastAnalysis.autoApplied=applied;}
+      save();if(panel)render();
+      gfqNotifyChanges(events,{found:merged.length,applied,left,auto:!!opts.auto,missing:w.gfMissingMoney.length});
+      return {world:w,found:merged.length,applied,left};
     }catch(e){
-      alert('AI 분석에 실패했습니다: '+String(e?.message||e));
-    }finally{clearTimeout(timer);}
+      return {error:String(e?.message||e)};
+    }finally{clearTimeout(timer);gfqBusy=false;}
+  }
+  // v0.4.0: automatic application. Only candidates that passed every check are applied; anything the
+  // checks flagged stays in the review list. The state right before is kept for a one-step undo.
+  const GFQ_REVIEW_NOTES=/(원문 근거에 없어|연결 제안을 거부|별도 항목으로 확인|누락 의심 금액에서)/u;
+  function gfqAutoEligible(p){
+    if(!p||p.status==='uncertain'||p.financialStatus==='uncertain')return false;
+    return !GFQ_REVIEW_NOTES.test(String(p.auditNote||''));
+  }
+  function gfqAutoApply(w,ids){
+    const pending=()=>(w.aiProposals||[]).length;
+    if(w!==current())return {applied:0,left:pending(),events:[]};
+    const want=new Set(ids),list=(w.aiProposals||[]).filter(p=>want.has(p.id)&&gfqAutoEligible(p));
+    if(!list.length)return {applied:0,left:pending(),events:[]};
+    const snap=JSON.stringify({quests:w.quests,fields:w.fields,items:w.items,gfLedger:w.gfLedger||[],aiProposals:w.aiProposals||[],aiAcceptedKeys:w.aiAcceptedKeys||[],history:w.history});
+    const before=new Map((w.quests||[]).map(q=>[q.id,{claimed:!!q.claimed,done:(q.steps||[]).map((_,i)=>q.stepDone?.[i]===true),rep:!!q.reputationAwarded}]));
+    // Money, items and benefits first so quest rewards can link to them; quests last.
+    const ordered=[...list.filter(p=>p.category!=='quest'),...list.filter(p=>p.category==='quest')];
+    const events=[];let applied=0;
+    for(const p of ordered){
+      const count=(w.quests||[]).length;
+      if(!approveAiProposal(p.id,true))continue;
+      applied++;events.push(...gfqEventsFor(w,p,before,count));
+    }
+    if(applied){w.gfUndo={at:now(),count:applied,snap};record(w,'자동 반영: '+applied+'개 항목 (기록 탭에서 되돌릴 수 있습니다)');}
+    return {applied,left:pending(),events};
+  }
+  function gfqEventsFor(w,p,before,questCount){
+    const ev=[];
+    if(p.category==='quest'){
+      const q=p.updateOf?(w.quests||[]).find(v=>v.id===p.updateOf):((w.quests||[]).length>questCount?w.quests[w.quests.length-1]:null);
+      if(!q)return ev;
+      const b=before.get(q.id);
+      if(!b)ev.push({kind:'quest',title:q.claimed?'퀘스트 완료':'새 퀘스트',text:q.title});
+      else{
+        (q.steps||[]).forEach((t,i)=>{if(q.stepDone?.[i]===true&&!b.done[i])ev.push({kind:'step',title:'목표 달성',text:q.title+' · '+t});});
+        if(q.claimed&&!b.claimed)ev.push({kind:'quest',title:'퀘스트 완료',text:q.title});
+      }
+      if(q.reputationAwarded&&!(b&&b.rep)){const r=(q.rewardDetails||[]).find(v=>v.kind==='reputation');if(r)ev.push({kind:'rep',title:'명성 상승',text:'+'+(r.amount||1)+'점 · '+q.title});}
+    }else if(gfqMoney(p)){
+      if(p.role!=='component')ev.push({kind:'money',title:gfqLabel('money',p.financialStatus),text:p.name+' '+gfqAmount(p.amount,p.unit)});
+      for(const it of (p.purchasedItems||[]))ev.push({kind:'item',title:it.received?'구매':'구매 · 수령 예정',text:it.name+' ×'+it.qty});
+      for(const it of (p.soldItems||[]))ev.push({kind:'item',title:'판매',text:it.name+' ×'+it.qty});
+    }else if(p.category==='item')ev.push({kind:'item',title:p.financialStatus==='pending'||p.status==='active'?'수령 예정':'획득',text:p.name});
+    else if(p.category==='benefit'&&p.benefitMode==='voucher')ev.push({kind:'benefit',title:'이용권 획득',text:p.name});
+    else if(p.category==='credential')ev.push({kind:'credential',title:'자격 취득',text:p.name});
+    return ev;
+  }
+  // v0.4.0: quest notifications. A top-layer popover so they also show in fullscreen.
+  let toastBox=null;
+  function gfqToastHide(){if(toastBox&&!toastBox.children.length){try{toastBox.hidePopover?.();}catch{}}}
+  function gfqToast(title,text,kind='info'){
+    if(!document.body)return;
+    if(!toastBox){toastBox=document.createElement('div');toastBox.id=ID+'-toasts';toastBox.setAttribute('popover','manual');document.body.append(toastBox);}
+    const el=document.createElement('button');el.type='button';el.className='gfq-toast gfq-toast-'+kind;
+    el.innerHTML='<b>'+esc(title)+'</b><span>'+esc(text)+'</span>';
+    el.addEventListener('click',()=>{el.remove();gfqToastHide();currentTab=['review','info'].includes(kind)?'history':['money','item','benefit','credential'].includes(kind)?(kind==='money'||kind==='credential'?'assets':'items'):'quests';if(!panel)openPanel();else render();});
+    toastBox.append(el);
+    while(toastBox.children.length>5)toastBox.firstChild.remove();
+    try{if(toastBox.showPopover&&!toastBox.matches(':popover-open'))toastBox.showPopover();}catch{}
+    setTimeout(()=>{el.remove();gfqToastHide();},kind==='review'?12000:7000);
+  }
+  function gfqNotifyChanges(events,info){
+    const shown=events.slice(0,4);
+    for(const e of shown)gfqToast(e.title,e.text,e.kind);
+    if(events.length>shown.length)gfqToast('그 밖의 변경','외 '+(events.length-shown.length)+'건이 반영되었습니다','info');
+    if(!info.auto)return;
+    if(!data.autoApply&&info.found)gfqToast('새 분석 후보',info.found+'건 · 기록 탭에서 검토해 주세요','review');
+    else if(data.autoApply&&info.left)gfqToast('검토 필요',info.left+'건은 자동 반영하지 않았습니다 · 기록 탭에서 확인해 주세요','review');
+    if(info.missing)gfqToast('누락 의심 금액',info.missing+'개 · 기록 탭에서 확인해 주세요','review');
+  }
+  // v0.4.0: automatic triggers driven by observed game traffic. One pending one-shot timer at most.
+  let autoTimer=0,autoAgain=false;
+  function gfqAutoSchedule(key){
+    if(!['chapter','scene'].includes(data.aiMode)||!String(data.aiConnectionId||'').trim()||key!==data.world)return;
+    if(autoTimer)clearTimeout(autoTimer);
+    autoTimer=setTimeout(()=>{autoTimer=0;gfqAutoRun(key);},6000);
+  }
+  async function gfqAutoRun(key){
+    if(gfqBusy){autoAgain=true;return;}
+    const w=data.worlds[key];if(!w||key!==data.world)return;
+    const {list,hashes}=gfqAutoBatches(w,data.aiMode);
+    if(!list.length)return;
+    gfqToast('자동 분석','챕터 '+[...new Set(list.map(b=>b.chapter))].join(', ')+' 분석을 시작합니다','info');
+    const r=await gfqRunAnalysis(key,list,hashes,{auto:true});
+    if(r.error)gfqToast('자동 분석 실패',r.error.slice(0,140),'review');
+    if(autoAgain){autoAgain=false;gfqAutoSchedule(key);}
+  }
+  function gfqAutoBatches(w,mode){
+    const all=gfqChapterBatches(gfqStoryRecords(w)),hashes=gfqChapterHashes(all);
+    const chapters=[...new Set(all.map(b=>b.chapter))],num=c=>Number(c);
+    if(mode==='chapter'){
+      // A chapter is finished once a later chapter has started or the game marks it cleared/complete.
+      const finished=c=>chapters.some(o=>Number.isFinite(num(o))&&Number.isFinite(num(c))&&num(o)>num(c))||
+        (w.gfChapterIndex||[]).some(v=>String(v.chapter)===c&&v.cleared)||(w.gfContinuityIndex||[]).some(v=>String(v.chapter)===c&&v.complete);
+      return {list:all.filter(b=>finished(b.chapter)&&(w.gfAnalyzed||{})[b.chapter]!==hashes[b.chapter]),hashes};
+    }
+    if(mode==='scene'){
+      const seen=new Set(w.gfSeenScenes||[]),out=[];
+      for(const b of all){
+        const fresh=b.filter(t=>t.id?!seen.has(t.id):(w.gfAnalyzed||{})[b.chapter]===undefined);
+        if(!fresh.some(t=>t.id))continue;
+        Object.assign(fresh,{chapter:b.chapter,part:b.part,label:b.label});out.push(fresh);
+      }
+      return {list:out,hashes:{}}; // scene runs never mark a whole chapter as analysed
+    }
+    return {list:[],hashes};
   }
   function gfqKnownKeys(w){
     return new Set([...(w.aiProposals||[]).map(x=>x.category+'|'+x.evidence),...(w.aiAcceptedKeys||[])]);
@@ -1427,7 +1567,7 @@
   }
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
   function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(data.worlds[w]?.gfDisplayName||w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
-  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.3.15</span></footer></div>`;}
+  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.4.0</span></footer></div>`;}
   function content(w){switch(currentTab){case 'quests':return `<div class="gfq-row"><select id="gfq-filter">${['전체','일일','주간','의뢰','업적'].map(t=>`<option ${activeFilter===t?'selected':''}>${t}</option>`).join('')}</select>${btn('＋ 퀘스트','add-quest','class="primary"')}</div>${w.quests.filter(q=>activeFilter==='전체'||q.type===activeFilter).map(q=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(q.title)}</b><small>${esc(q.type)}</small></div><div class="gfq-muted">${esc(q.detail)}</div>${Array.isArray(q.steps)&&q.steps.length?`<div class="gfq-muted">세부 목표</div><div class="gfq-row">${q.steps.map((t,i)=>btn((q.stepDone?.[i]?'✓ ':'○ ')+esc(t),'toggle-step',`data-id="${esc(q.id)}" data-step="${i}" aria-pressed="${q.stepDone?.[i]?'true':'false'}"`)).join("")}</div>`:""}${gfqQuestProgressHtml(q)}${btn('＋1','increment',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn(q.claimed?'완료됨':'완료','complete',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn('삭제','delete-quest',`data-id="${esc(q.id)}"`)}</div><div class="gfq-muted">보상(기록용): ${esc(gfqQuestRewardLabel(q))}</div>${(q.rewardDetails||[]).map((r,i)=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?btn('원장에 기록: '+esc(r.name),'reward-to-ledger',`data-id="${esc(q.id)}" data-idx="${i}"`):'').join('')}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">▤</div><strong>진행 중인 퀘스트가 없습니다</strong><span class="gfq-muted">새 퀘스트를 등록하면 여기에 표시됩니다.</span></div>'}`;
   case 'assets':return `${gfqLedgerHtml(w)}${btn('＋ 필드 추가','add-field','class="primary"')}<p class="gfq-muted">소지금, 은행, 평판, 직업 등 월드별 자유 필드</p>${w.fields.map(f=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(f.name)}</b><span>${esc(f.value)} ${esc(f.unit)}</span>${btn('수정','edit-field',`data-id="${esc(f.id)}"`)}${btn('삭제','delete-field',`data-id="${esc(f.id)}"`)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◈</div><strong>등록된 자산이 없습니다</strong><span class="gfq-muted">소지금, 직업, 평판 등 원하는 항목을 추가해 주세요.</span></div>'}`;
   case 'items':return `${btn('＋ 소지품','add-item','class="primary"')}${w.items.filter(i=>i.state==='pending').length?'<h3>수령 예정</h3><p class="gfq-muted">아직 받지 않은 물품입니다. 소지품 목록과 스토리 문맥에는 보유품으로 포함되지 않습니다.</p>':''}${w.items.filter(i=>i.state==='pending').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><small>수령 예정</small></div>${i.timing?`<div class="gfq-muted">수령 시점: ${esc(gfqTimingText(i.timing))}</div>`:''}${i.value?`<div class="gfq-muted">가치: ${esc(gfqAmount(i.value,'원'))}</div>`:''}<div class="gfq-row">${btn('수령 확인','receive-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.kind==='voucher')?'<h3>혜택·이용권</h3><p class="gfq-muted">퀘스트 보상이나 계약으로 받은 할인·감면 혜택입니다. 사용하면 횟수가 줄어들고 변경 기록에 남습니다.</p>':''}${w.items.filter(i=>i.kind==='voucher').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>${i.qty>0?'남은 횟수 '+i.qty:'사용 완료'}</span></div>${i.detail?`<div class="gfq-muted">${esc(i.detail)}</div>`:''}<div class="gfq-row">${btn('사용','use-voucher',`data-id="${esc(i.id)}" ${i.qty>0?'':'disabled'}`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.state==='pending'||i.kind==='voucher')?'<h3>보유 소지품</h3>':''}${w.items.filter(i=>i.state!=='pending'&&i.kind!=='voucher').map(i=>`<div class="gfq-card gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>× ${i.qty}</span>${btn('수정','edit-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>소지품 목록이 비어 있습니다</strong><span class="gfq-muted">스토리에서 얻은 아이템을 기록할 수 있습니다.</span></div>'}`;
@@ -1438,12 +1578,13 @@
   const record=(w,text)=>{w.history.unshift({at:now(),text});w.history=w.history.slice(0,500);};
   function exportData(){const file=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');const url=URL.createObjectURL(file);a.href=url;a.download='quest-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=async()=>{const f=inp.files?.[0];if(!f||f.size>2e6)return alert('2MB 이하의 JSON 파일만 지원합니다.');try{const d=JSON.parse(await f.text());if(d.v!==1||typeof d.worlds!=='object'||!d.worlds||Array.isArray(d.worlds))throw Error('백업 형식이 올바르지 않습니다.');for(const w of Object.values(d.worlds)){if(!Array.isArray(w.quests)||!Array.isArray(w.fields)||!Array.isArray(w.items)||!Array.isArray(w.history))throw Error('월드 데이터가 올바르지 않습니다.');}if(!confirm('현재 퀘스트 데이터를 백업 파일로 교체하시겠습니까?'))return;const previous=data;data=d;if(!save()){data=previous;return;}render();}catch(e){alert('가져오지 못했습니다: '+e.message);}};inp.click();}
-  document.addEventListener('change',e=>{if(!panel||!panel.contains(e.target))return;if(e.target.id==='gfq-world'){data.world=e.target.value;save();render();}if(e.target.id==='gfq-filter'){activeFilter=e.target.value;render();}if(e.target.id==='gfq-ai-connection'){data.aiConnectionId=e.target.value;save();render();}if(e.target.id==='gfq-ai-mode'){data.aiMode=e.target.value;save();render();}if(e.target.id==='gfq-ai-range'){data.aiRange=e.target.value;save();}if(e.target.id==='gfq-hero'){const w=current();if(w){gfqRuleCtx(w);w.protagonist=String(e.target.value||'').trim().slice(0,40);record(w,'주인공 이름 설정: '+(w.protagonist||'(비움)'));save();render();}}if(e.target.id==='gfq-legacy'){const w=current();if(w){gfqRuleCtx(w);w.gfRulePack=e.target.checked?GFQ_LEGACY_PACK:'';record(w,'기존 월드 전용 보정 규칙 '+(e.target.checked?'사용':'해제'));save();render();}}});
+  document.addEventListener('change',e=>{if(!panel||!panel.contains(e.target))return;if(e.target.id==='gfq-world'){data.world=e.target.value;save();render();}if(e.target.id==='gfq-filter'){activeFilter=e.target.value;render();}if(e.target.id==='gfq-ai-connection'){data.aiConnectionId=e.target.value;save();render();}if(e.target.id==='gfq-ai-mode'){data.aiMode=e.target.value;save();render();}if(e.target.id==='gfq-auto-apply'){data.autoApply=e.target.checked;save();render();}if(e.target.id==='gfq-ai-range'){data.aiRange=e.target.value;save();}if(e.target.id==='gfq-hero'){const w=current();if(w){gfqRuleCtx(w);w.protagonist=String(e.target.value||'').trim().slice(0,40);record(w,'주인공 이름 설정: '+(w.protagonist||'(비움)'));save();render();}}if(e.target.id==='gfq-legacy'){const w=current();if(w){gfqRuleCtx(w);w.gfRulePack=e.target.checked?GFQ_LEGACY_PACK:'';record(w,'기존 월드 전용 보정 규칙 '+(e.target.checked?'사용':'해제'));save();render();}}});
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='close')return openPanel();if(act==='resync-world')return syncWorld();if(act==='new-world'){const name=ask('새 월드 이름');if(name===null)return;const key=name.trim();if(!key||key.length>100)return alert('1~100자로 입력해 주세요.');if(data.worlds[key])return alert('이미 존재하는 월드입니다.');data.worlds[key]=blank();data.world=key;save();return render();}if(!w)return;
   if(act==='review-candidate'||act==='dismiss-candidate'){const c=storyCandidates(w).find(x=>x.id===id);if(!c)return;const key=c.type+'|'+c.quote;if(act==='review-candidate'){if(!confirm('다음 문장을 검토 기록으로 채택하시겠습니까? 실제 퀘스트 및 자산 상태는 변경되지 않습니다.\\n\\n'+c.quote))return;w.gfReviewed||=[];w.gfReviewed.push(key);record(w,'스토리 검토: ['+c.type+'] '+c.source+' · '+c.quote);}else{w.gfDismissed||=[];w.gfDismissed.push(key);}save();render();return;}
   if(act==='rename-display'){const label=ask('표시할 월드 이름을 입력해 주세요.',w.gfDisplayName||data.world);if(!label?.trim())return;w.gfDisplayName=label.trim().slice(0,100);save();render();return;}
   if(act==='add-quest'){const title=ask('퀘스트 이름');if(!title?.trim())return;const type=ask('종류: 일일 / 주간 / 의뢰 / 업적','의뢰');if(!['일일','주간','의뢰','업적'].includes(type))return alert('올바른 퀘스트 종류가 아닙니다.');const detail=ask('조건 및 설명','');if(detail===null)return;const count=Number(ask('목표 횟수 (1 이상)','1'));if(!Number.isSafeInteger(count)||count<1)return alert('목표 횟수를 확인해 주세요.');const reward=ask('보상 메모 (게임 재화로 자동 지급되지 않습니다)','');if(reward===null)return;return update(w=>{w.quests.push({id:uid(),title:title.trim(),type,detail,target:count,progress:0,reward,claimed:false});record(w,'퀘스트 등록: '+title);});}
+  if(act==='undo-auto'){if(!w.gfUndo)return;if(!confirm('마지막 자동 반영('+w.gfUndo.count+'개) 직전 상태로 퀘스트·자산·소지품·거래 원장·검토 목록을 되돌리시겠습니까? 그 이후 직접 수정한 내용도 함께 되돌아갑니다.'))return;try{const s=JSON.parse(w.gfUndo.snap);Object.assign(w,s);delete w.gfUndo;record(w,'마지막 자동 반영을 되돌렸습니다.');save();render();}catch(e){alert('되돌리지 못했습니다: '+e.message);}return;}
   if(act==='money-rescan'){w.gfMissingMoney=gfqMissingMoney(w);save();render();return alert('누락 의심 금액 '+w.gfMissingMoney.length+'개를 찾았습니다.');}
   if(act==='money-dismiss'){const m=(w.gfMissingMoney||[])[Number(el.dataset.idx)];if(!m)return;w.gfMoneyDismissed||=[];w.gfMoneyDismissed.push(m.amount);w.gfMissingMoney=w.gfMissingMoney.filter(v=>v!==m);save();render();return;}
   if(act==='money-to-candidate'){
@@ -1492,11 +1633,12 @@
   // Re-promote dialog to the browser top layer after entering or exiting fullscreen.
   let fsRefresh=null;
   function refreshFullscreenDialog(){
+    try{if(toastBox&&toastBox.matches(':popover-open')){toastBox.hidePopover();toastBox.showPopover();}}catch{}
     if(!panel||!panel.isConnected)return;
     if(fsRefresh)clearTimeout(fsRefresh);
     fsRefresh=setTimeout(()=>{fsRefresh=null;if(!panel||!panel.isConnected)return;try{if(panel.open)panel.close();panel.showModal();}catch(e){console.warn('[퀘스트] 전체화면 팝업 복원 실패',e);}},75);
   }
   document.addEventListener('fullscreenchange',refreshFullscreenDialog);
   document.addEventListener('webkitfullscreenchange',refreshFullscreenDialog);
-  window.addEventListener('pagehide',()=>{document.removeEventListener('fullscreenchange',refreshFullscreenDialog);document.removeEventListener('webkitfullscreenchange',refreshFullscreenDialog);if(fsRefresh)clearTimeout(fsRefresh);if(worldSyncTimer)clearInterval(worldSyncTimer);mo.disconnect();if(gameObserver)gameObserver.disconnect();if(gameDebounce)clearTimeout(gameDebounce);clearInterval(sync);});
+  window.addEventListener('pagehide',()=>{if(autoTimer)clearTimeout(autoTimer);document.removeEventListener('fullscreenchange',refreshFullscreenDialog);document.removeEventListener('webkitfullscreenchange',refreshFullscreenDialog);if(fsRefresh)clearTimeout(fsRefresh);if(worldSyncTimer)clearInterval(worldSyncTimer);mo.disconnect();if(gameObserver)gameObserver.disconnect();if(gameDebounce)clearTimeout(gameDebounce);clearInterval(sync);});
 })();
