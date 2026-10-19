@@ -530,7 +530,8 @@
   function gfqLedgerRecord(w,x,bulk=false){
     w.gfLedger||=[];
     const key=String(x.transactionId||'').trim();
-    const matches=key?w.gfLedger.filter(t=>t.sourceKey===key&&t.unit===String(x.unit||'')):[];
+    const matches=key?w.gfLedger.filter(t=>t.sourceKey===key&&t.unit===String(x.unit||'')&&
+      (t.amount===x.amount||t.amount===null||x.amount===null)&&t.name===String(x.name||'')):[];
     // Never auto-merge collisions or independently authored events.
     let prior=matches.length===1?matches[0]:null;
     if(!bulk&&w.gfLedger.length){
