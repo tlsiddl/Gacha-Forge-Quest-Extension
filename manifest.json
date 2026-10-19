@@ -1,0 +1,15 @@
+{
+  "kind": "marinara.personal-extension",
+  "version": 1,
+  "config": {
+    "name": "가챠 포지 퀘스트 확장",
+    "version": "0.1.0",
+    "description": "가챠 포지 월드별 퀘스트·자산·소지품·사용자 필드 기록 (수동 관리 베타)",
+    "runtime": "client",
+    "enabled": false,
+    "capabilities": [
+      "full_page_access"
+    ],
+    "jsPath": "extension.js"
+  }
+}
