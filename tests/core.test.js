@@ -3,7 +3,7 @@ const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
 const consts=['GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const names=['gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -222,5 +222,13 @@ t('수령 예정 물품: 등록 후 연결된 수령 장면으로 보유 전환'
   assert.strictEqual(w.items.length,1);assert.strictEqual(w.items[0].state,undefined);
   const mention={id:'g3',category:'item',name:'앰플',status:'confirmed',financialStatus:'ownership',amount:null,unit:'',evidence:'앰플이 있었다'};
   assert.strictEqual(F.gfqApplyItem(w,mention),false);
+});
+t('챕터 단위 분석: 챕터마다 한 회차, 긴 챕터는 나눠서 순서 유지',()=>{
+  const recs=[{source:'챕터 1 · 줄거리',text:'p1'},{source:'챕터 1 · 장면 1',text:'a'},{source:'챕터 2 · 장면 1',text:'b'},
+    ...Array.from({length:5},(_,i)=>({source:'챕터 3 · 장면 '+(i+1),text:'x'.repeat(3000)})),{source:'챕터 ? · 장면 ?',text:'z'}];
+  const b=F.gfqChapterBatches(recs,7000);
+  assert.deepStrictEqual(b.map(x=>x.label),['챕터 1','챕터 2','챕터 3 1/3부','챕터 3 2/3부','챕터 3 3/3부','챕터 미상']);
+  assert.deepStrictEqual(b.map(x=>x.length),[2,1,2,2,1,1]);
+  assert.strictEqual(b[0][0].text,'p1');
 });
 console.log('\n'+pass+'개 통과');
