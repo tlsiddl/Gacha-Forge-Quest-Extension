@@ -1,4 +1,4 @@
-/* 퀘스트 v0.6.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.6.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -26,7 +26,7 @@
 
   /* v0.6.0 case-file layout (paper, indigo, ticket and receipt shapes): scoped to the panel; toasts keep their own style */
   style.textContent += `
-#gfq-01-panel{--paper:#d7d4cd;--paper2:#e4e1db;--card:#f1efea;--ink:#202229;--sub:#67655f;--line:#b1aca2;--ind:#2d3192;--ind2:#3d42b8;--indd:#1d205e;--mark:#f0c02f;--red:#a9433a;--grn:#3b7556;
+#gfq-01-panel{--paper:#d7d4cd;--paper2:#e4e1db;--card:#f1efea;--ink:#202229;--sub:#67655f;--line:#b1aca2;--ind:#3b3f7a;--ind2:#4c5196;--indd:#262950;--mark:#f0c02f;--red:#a9433a;--grn:#3b7556;
 --sans:"Pretendard","Noto Sans KR",system-ui,sans-serif;--cond:"Bahnschrift SemiCondensed","Bahnschrift","Roboto Condensed","Arial Narrow","Pretendard","Noto Sans KR",sans-serif;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;
 position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 32px));height:min(820px,calc(100dvh - 32px));max-height:none;padding:0;overflow:hidden;border:0;border-radius:0;color:var(--ink);background:var(--paper);box-shadow:0 30px 90px #000b;font:14px/1.55 var(--sans)}
 #gfq-01-panel::backdrop{background:#0d0f1ccc;backdrop-filter:blur(3px)}
@@ -35,12 +35,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-frame{height:100%;display:grid;grid-template-columns:212px minmax(0,1fr)}
 #gfq-01-panel .gfq-side{position:relative;display:flex;flex-direction:column;min-height:0;padding:22px 0 18px;background:
  linear-gradient(158deg,var(--ind) 0 40%,transparent 40.2%),
- repeating-radial-gradient(circle at 34% 88%,transparent 0 34px,#2d319216 35px 36px,transparent 37px 60px),
+ repeating-radial-gradient(circle at 34% 88%,transparent 0 34px,#3b3f7a16 35px 36px,transparent 37px 60px),
  linear-gradient(#0000000d 1px,transparent 1px) 0 0/100% 26px,var(--paper2);border-right:1px solid var(--line)}
 #gfq-01-panel .gfq-brand{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;padding:0 20px 26px;color:#fff}
 #gfq-01-panel .gfq-brand-mark{grid-row:span 2;width:30px;height:30px;border:2px solid #fff;transform:rotate(45deg) scale(.8);box-shadow:inset 0 0 0 4px var(--ind),inset 0 0 0 7px #fff}
 #gfq-01-panel .gfq-brand h2{margin:0;font:700 26px/1 var(--cond);letter-spacing:.04em}
-#gfq-01-panel .gfq-brand small{font-size:11px;color:#c5c8f0;letter-spacing:.06em}
+#gfq-01-panel .gfq-brand small{font-size:11px;color:#c9cbe0;letter-spacing:.06em}
 #gfq-01-panel .gfq-tabs{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:0 0 0 14px;margin:0}
 #gfq-01-panel .gfq-tabs button{display:flex;align-items:center;gap:0;padding:0;border:0;background:none;color:var(--ind);cursor:pointer;text-align:left}
 #gfq-01-panel .gfq-tab-ic{position:relative;z-index:1;display:grid;place-items:center;flex:none;width:44px;height:44px;background:var(--card);border:1.5px solid var(--ind);box-shadow:2px 2px 0 #0000001f}
@@ -89,7 +89,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-photo{position:relative;width:138px;height:164px;padding:8px 8px 26px;background:#fff;box-shadow:0 3px 10px #00000030;transform:rotate(-3deg)}
 #gfq-01-panel .gfq-photo::after{content:"";position:absolute;top:-10px;left:50%;width:64px;height:20px;margin-left:-32px;background:#d8cfb6c0;transform:rotate(4deg)}
 #gfq-01-panel .gfq-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:contrast(1.05)}
-#gfq-01-panel .gfq-photo span{display:grid;place-items:center;width:100%;height:100%;font:700 64px var(--serif);color:var(--ind);background:radial-gradient(#2d319238 1.2px,transparent 1.6px) 0 0/7px 7px,#e9e8f2}
+#gfq-01-panel .gfq-photo span{display:grid;place-items:center;width:100%;height:100%;font:700 64px var(--serif);color:var(--ind);background:radial-gradient(#3b3f7a38 1.2px,transparent 1.6px) 0 0/7px 7px,#e9e8f2}
 #gfq-01-panel .gfq-tk-photo small{font-size:11px;color:var(--sub);text-align:center}
 #gfq-01-panel .gfq-tk-main{padding:18px 26px 18px 30px;min-width:0}
 #gfq-01-panel .gfq-tk-top{display:flex;justify-content:space-between;gap:10px;font:700 12px var(--cond);letter-spacing:.06em;color:var(--sub);padding-bottom:6px;border-bottom:1.5px solid var(--ink)}
@@ -103,7 +103,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-rings{display:flex;flex-wrap:wrap;gap:3px;max-width:330px}
 #gfq-01-panel .gfq-rings i{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--ink)}
 #gfq-01-panel .gfq-rings i.on{background:var(--ind);border-color:var(--ind);box-shadow:inset 0 0 0 2.5px var(--card)}
-#gfq-01-panel .gfq-stamp{display:inline-flex;flex-direction:column;padding:3px 10px;border:2px solid var(--ind);color:var(--ind);font:700 13px/1.25 var(--cond);transform:rotate(-1.5deg);background:#2d31920a}
+#gfq-01-panel .gfq-stamp{display:inline-flex;flex-direction:column;padding:3px 10px;border:2px solid var(--ind);color:var(--ind);font:700 13px/1.25 var(--cond);transform:rotate(-1.5deg);background:#3b3f7a0a}
 #gfq-01-panel .gfq-stamp small{font-size:11px;color:var(--ind)!important;opacity:.8}
 #gfq-01-panel .gfq-link{padding:0;border:0;background:none;color:var(--ind);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 #gfq-01-panel .gfq-link:hover:not(:disabled){background:none;color:var(--ind2)}
@@ -122,7 +122,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-seg{display:flex;padding:3px;gap:3px;background:var(--card);border:1.5px solid var(--ink);border-radius:999px}
 #gfq-01-panel .gfq-seg button{border:0;border-radius:999px;padding:4px 14px;background:none;font:700 13px var(--cond);letter-spacing:.04em}
 #gfq-01-panel .gfq-seg button small{color:var(--sub);margin-left:2px}
-#gfq-01-panel .gfq-seg button[aria-pressed=true]{background:var(--ind);color:#fff}#gfq-01-panel .gfq-seg button[aria-pressed=true] small{color:#c5c8f0}
+#gfq-01-panel .gfq-seg button[aria-pressed=true]{background:var(--ind);color:#fff}#gfq-01-panel .gfq-seg button[aria-pressed=true] small{color:#c9cbe0}
 #gfq-01-panel .gfq-items-body{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
 #gfq-01-panel .gfq-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
 #gfq-01-panel .gfq-slot{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px 10px;background:linear-gradient(#20222910 1px,transparent 1px) 0 0/100% 14px,var(--card);border:1px solid var(--line);font-weight:600}
@@ -142,7 +142,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-dossier{background:var(--card);border:1px solid var(--line);border-top:4px double var(--ind);box-shadow:4px 4px 0 #00000017;padding:0 0 16px}
 #gfq-01-panel .gfq-dossier.empty{padding:20px;text-align:center}
 #gfq-01-panel .gfq-dossier header{display:flex;align-items:center;gap:10px;padding:12px 0 12px 14px;border-bottom:1px solid var(--line)}
-#gfq-01-panel .gfq-pin{flex:none;width:14px;height:14px;border-radius:50%;background:var(--ind);box-shadow:0 0 0 3px #2d319233;transform:translateY(-1px)}
+#gfq-01-panel .gfq-pin{flex:none;width:14px;height:14px;border-radius:50%;background:var(--ind);box-shadow:0 0 0 3px #3b3f7a33;transform:translateY(-1px)}
 #gfq-01-panel .gfq-dossier h4{flex:1;margin:0;font:700 19px/1.25 var(--cond);color:var(--ind);letter-spacing:.03em;overflow-wrap:anywhere}
 #gfq-01-panel .gfq-no{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-left:1px solid var(--line);font-size:13px;line-height:1.1;color:var(--sub)}
 #gfq-01-panel .gfq-plate{position:relative;display:grid;place-items:center;height:150px;margin:14px;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px);border:1px solid var(--line);overflow:hidden}
@@ -185,7 +185,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-field b{overflow-wrap:anywhere;font-size:13px}#gfq-01-panel .gfq-field button{padding:3px 8px;font-size:12px}
 #gfq-01-panel .gfq-board-wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
 #gfq-01-panel .gfq-board{position:relative;min-height:320px;background:
- repeating-radial-gradient(circle at 62% 46%,transparent 0 58px,#2d31921f 59px 60px,transparent 61px 118px),
+ repeating-radial-gradient(circle at 62% 46%,transparent 0 58px,#3b3f7a1f 59px 60px,transparent 61px 118px),
  linear-gradient(#2022290f 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,#2022290f 1px,transparent 1px) 0 0/40px 40px,#e9e6df;border:1.5px solid var(--ink);box-shadow:5px 5px 0 #0000001a;overflow:hidden}
 #gfq-01-panel .gfq-board::before,#gfq-01-panel .gfq-board::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--ind);pointer-events:none}
 #gfq-01-panel .gfq-board::before{left:8px;top:8px;border-right:0;border-bottom:0}#gfq-01-panel .gfq-board::after{right:8px;bottom:8px;border-left:0;border-top:0}
@@ -200,14 +200,14 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-pin-text small{font-size:11px;color:var(--sub);white-space:nowrap}
 #gfq-01-panel .gfq-pin-text em{font-style:normal;margin-left:4px;padding:0 6px;background:var(--mark);color:var(--ink);border-radius:999px;font-weight:700}
 #gfq-01-panel .gfq-pinbox.on .gfq-pin-text{background:var(--ind);border-color:var(--ind)}#gfq-01-panel .gfq-pinbox.on .gfq-pin-text b,#gfq-01-panel .gfq-pinbox.on .gfq-pin-text small{color:#fff}
-#gfq-01-panel .gfq-halo{position:absolute;left:-38px;top:50%;width:120px;height:120px;margin-top:-60px;border-radius:50%;background:radial-gradient(#2d319240 1px,transparent 1.5px) 0 0/6px 6px,#3d42b833;border:1.5px solid #3d42b8aa;z-index:-1}
+#gfq-01-panel .gfq-halo{position:absolute;left:-38px;top:50%;width:120px;height:120px;margin-top:-60px;border-radius:50%;background:radial-gradient(#3b3f7a40 1px,transparent 1.5px) 0 0/6px 6px,#4c519633;border:1.5px solid #4c5196aa;z-index:-1}
 #gfq-01-panel .gfq-board-foot{margin-top:12px;gap:10px}
 @media(max-width:760px){#gfq-01-panel{inset:0;width:100vw;height:100dvh}
 #gfq-01-panel .gfq-frame{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
 #gfq-01-panel .gfq-side{flex-direction:row;align-items:center;padding:8px 8px 8px 12px;background:var(--ind);border:0;gap:8px}
 #gfq-01-panel .gfq-brand{padding:0;grid-template-columns:auto}#gfq-01-panel .gfq-brand h2,#gfq-01-panel .gfq-brand small{display:none}
 #gfq-01-panel .gfq-tabs{flex-direction:row;flex:1;gap:4px;padding:0;overflow-x:auto}
-#gfq-01-panel .gfq-tabs button{flex:1;flex-direction:column;gap:2px;min-width:52px;color:#c5c8f0}
+#gfq-01-panel .gfq-tabs button{flex:1;flex-direction:column;gap:2px;min-width:52px;color:#c9cbe0}
 #gfq-01-panel .gfq-tab-ic{width:30px;height:30px;background:none;border:0;box-shadow:none}#gfq-01-panel .gfq-tab-ic svg{width:20px;height:20px}
 #gfq-01-panel .gfq-tab-l{margin:0;padding:0;background:none;border:0;clip-path:none;font-size:12px;text-decoration:none}
 #gfq-01-panel .gfq-tabs button.primary .gfq-tab-ic{background:#fff;color:var(--ind);transform:none}#gfq-01-panel .gfq-tabs button.primary .gfq-tab-l{background:none;color:#fff}
@@ -224,6 +224,120 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-board{height:auto!important;min-height:0;display:flex;flex-direction:column;gap:10px;padding:18px 12px}
 #gfq-01-panel .gfq-route{display:none}#gfq-01-panel .gfq-pinbox{position:relative;left:auto!important;top:auto!important;transform:none;max-width:none}#gfq-01-panel .gfq-halo{left:-20px;width:84px;height:84px;margin-top:-42px}}
 @media(prefers-reduced-motion:reduce){#gfq-01-panel *{transition:none!important}}
+/* v0.6.1 */
+#gfq-01-panel .gfq-top h2{font:800 30px/1 var(--serif);letter-spacing:.06em;color:var(--ind)}
+#gfq-01-panel .gfq-ticket{grid-template-columns:272px minmax(0,1fr) 84px}
+#gfq-01-panel .gfq-tk-photo{justify-content:center;padding:30px 22px 26px}
+#gfq-01-panel .gfq-photo{width:222px;height:280px;padding:10px 10px 34px}
+#gfq-01-panel .gfq-photo span{font-size:96px}
+#gfq-01-panel .gfq-drop{position:relative;flex:1;max-width:360px;margin-left:auto}
+#gfq-01-panel .gfq-drop summary{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;background:var(--card);border:1.5px solid var(--ink);cursor:pointer;list-style:none;box-shadow:3px 3px 0 #0000001a}
+#gfq-01-panel .gfq-drop summary::-webkit-details-marker{display:none}
+#gfq-01-panel .gfq-drop-k{font:700 11px var(--cond);letter-spacing:.08em;color:#fff;background:var(--ind);padding:1px 7px}
+#gfq-01-panel .gfq-drop-v{flex:1;min-width:0;font:700 15px var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gfq-01-panel .gfq-drop summary svg{width:14px;height:14px;flex:none;transition:transform .15s}
+#gfq-01-panel .gfq-drop[open] summary svg{transform:rotate(180deg)}
+#gfq-01-panel .gfq-drop-menu{position:absolute;z-index:20;top:calc(100% + 6px);left:0;right:0;display:flex;flex-direction:column;padding:6px;background:var(--card);border:1.5px solid var(--ink);box-shadow:5px 5px 0 #00000026}
+#gfq-01-panel .gfq-drop-menu button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:0;border-left:3px solid transparent;background:none;padding:8px 10px;text-align:left}
+#gfq-01-panel .gfq-drop-menu button span{font:700 15px var(--serif)}
+#gfq-01-panel .gfq-drop-menu button small{font-size:11px;color:var(--sub);font-weight:500}
+#gfq-01-panel .gfq-drop-menu button:hover:not(:disabled){background:var(--paper2)}
+#gfq-01-panel .gfq-drop-menu button[aria-checked=true]{border-left-color:var(--ind);background:#3b3f7a12}
+#gfq-01-panel .gfq-drop-menu .gfq-drop-new{margin-top:4px;border-top:1px dashed var(--line);font-weight:700;color:var(--ind);flex-direction:row}
+#gfq-01-panel .gfq-ico{width:100%;height:100%;display:block}
+#gfq-01-panel .gfq-glyph{position:relative;display:block;width:46px;height:46px;color:var(--ind)}
+#gfq-01-panel .gfq-slot .gfq-glyph{width:50px;height:50px}
+#gfq-01-panel .gfq-slot.on .gfq-glyph{color:#fff}
+#gfq-01-panel .gfq-slot.pending .gfq-glyph{color:#8a7a52}#gfq-01-panel .gfq-slot.on.pending .gfq-glyph{color:#fff}
+#gfq-01-panel .gfq-badge{position:absolute;right:-12px;top:-8px;min-width:22px;height:22px;padding:0 6px;display:grid;place-items:center;border-radius:11px;font:700 12px/1 var(--cond);font-style:normal;background:var(--mark);color:var(--ink);border:1.5px solid var(--ink)}
+#gfq-01-panel .gfq-badge.num{background:var(--card)}
+#gfq-01-panel .gfq-plate .gfq-glyph{width:96px;height:96px}
+#gfq-01-panel .gfq-plate .gfq-badge{right:-20px;top:-10px;height:28px;min-width:28px;font-size:15px;border-radius:14px}
+#gfq-01-panel .gfq-quests{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start}
+#gfq-01-panel .gfq-qside{position:sticky;top:84px;display:flex;flex-direction:column;gap:10px}
+#gfq-01-panel .gfq-qside .gfq-seg{align-self:flex-start}
+#gfq-01-panel .gfq-qlist{display:flex;flex-direction:column;gap:6px;max-height:calc(100dvh - 300px);overflow-y:auto;padding:2px 4px 4px 2px}
+#gfq-01-panel .gfq-qitem{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--card);border:1px solid var(--line);text-align:left;box-shadow:2px 2px 0 #00000012}
+#gfq-01-panel .gfq-qitem:hover:not(:disabled){background:#fff}
+#gfq-01-panel .gfq-qemb{flex:none;display:grid;place-items:center;width:38px;height:38px;font:700 12px var(--cond);color:var(--ind);border:1.5px solid var(--ind);transform:rotate(45deg) scale(.78)}
+#gfq-01-panel .gfq-qemb{position:relative;border:0;transform:none;font-size:11px}#gfq-01-panel .gfq-qemb::before{content:"";position:absolute;inset:5px;border:1.5px solid currentColor;transform:rotate(45deg)}
+#gfq-01-panel .gfq-worldbar{display:flex;align-items:center}
+#gfq-01-panel .gfq-qtxt{display:flex;flex-direction:column;gap:6px;min-width:0}
+#gfq-01-panel .gfq-qtxt b{font:700 14px/1.35 var(--serif);overflow-wrap:anywhere}
+#gfq-01-panel .gfq-qitem.on{background:var(--ind);border-color:var(--ind);color:#fff;box-shadow:inset 4px 0 var(--mark),3px 3px 0 #00000026}
+#gfq-01-panel .gfq-qitem.on .gfq-qemb{color:#fff;border-color:#fff}
+#gfq-01-panel .gfq-qitem.done:not(.on){opacity:.72}
+#gfq-01-panel .gfq-pips{display:flex;gap:3px}
+#gfq-01-panel .gfq-pips i{width:14px;height:4px;background:#00000022}
+#gfq-01-panel .gfq-pips i.on{background:var(--ind)}
+#gfq-01-panel .gfq-qitem.on .gfq-pips i{background:#ffffff40}#gfq-01-panel .gfq-qitem.on .gfq-pips i.on{background:var(--mark)}
+#gfq-01-panel .gfq-qadd{align-self:flex-start;font-size:13px}
+#gfq-01-panel .gfq-qdetail{background:var(--card);border:1px solid var(--line);box-shadow:5px 5px 0 #0000001a;min-width:0}
+#gfq-01-panel .gfq-qdetail.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:260px;padding:30px;text-align:center}
+#gfq-01-panel .gfq-qdetail.empty strong{font:700 18px var(--serif);color:var(--ind)}
+#gfq-01-panel .gfq-qhead{display:flex;gap:20px;align-items:center;padding:22px 26px;background:linear-gradient(115deg,var(--indd),var(--ind));color:#fff;position:relative;overflow:hidden}
+#gfq-01-panel .gfq-qhead::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 20px,#ffffff14 21px 22px);pointer-events:none}
+#gfq-01-panel .gfq-qcrest{flex:none;display:grid;place-items:center;width:74px;height:92px;background:var(--card);color:var(--ind);clip-path:polygon(50% 0,100% 14%,100% 72%,50% 100%,0 72%,0 14%)}
+#gfq-01-panel .gfq-qcrest span{font:800 18px var(--serif);letter-spacing:.08em}
+#gfq-01-panel .gfq-qhead-t{min-width:0;display:flex;flex-direction:column;gap:6px;position:relative;z-index:1}
+#gfq-01-panel .gfq-qhead h3{margin:0;font:800 26px/1.25 var(--serif);color:#fff;letter-spacing:.02em;overflow-wrap:anywhere}
+#gfq-01-panel .gfq-qplace{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:0;border:0;background:none;color:#dfe0ef;font-weight:600;font-size:13px}
+#gfq-01-panel .gfq-qplace svg{width:15px;height:15px}
+#gfq-01-panel .gfq-qplace:hover:not(:disabled){background:none;color:#fff;text-decoration:underline}
+#gfq-01-panel .gfq-qmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:12px;color:#c9cbe0}
+#gfq-01-panel .gfq-qmeta i{width:4px;height:4px;background:#c9cbe080;transform:rotate(45deg)}
+#gfq-01-panel .gfq-qbody{padding:20px 26px 6px}
+#gfq-01-panel .gfq-objs{border:1px solid var(--line);background:#fbfaf7}
+#gfq-01-panel .gfq-objs-h{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--line);font:700 13px var(--cond);letter-spacing:.05em;color:var(--sub)}
+#gfq-01-panel .gfq-obj{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:0;border-bottom:1px solid #00000010;background:none;text-align:left;font-weight:600;font-size:14px}
+#gfq-01-panel .gfq-obj:last-child{border-bottom:0}
+#gfq-01-panel button.gfq-obj:hover:not(:disabled){background:#3b3f7a0d}
+#gfq-01-panel .gfq-obj-mark{flex:none;width:10px;height:10px;border:1.5px solid var(--ind);transform:rotate(45deg)}
+#gfq-01-panel .gfq-obj.on .gfq-obj-mark{background:var(--ind)}
+#gfq-01-panel .gfq-obj-t{flex:1;min-width:0;line-height:1.45}
+#gfq-01-panel .gfq-obj.on .gfq-obj-t{color:var(--sub);text-decoration:line-through;text-decoration-color:#0000004d}
+#gfq-01-panel .gfq-obj .gfq-num{font-size:14px;color:var(--sub);white-space:nowrap}
+#gfq-01-panel .gfq-obj.on .gfq-num{color:var(--ind);font-weight:700}
+#gfq-01-panel .gfq-qdesc{margin:18px 0 0;font:15px/1.8 var(--serif);color:#3a3a40}
+#gfq-01-panel .gfq-qrw{margin-top:20px;padding-top:16px;border-top:1.5px dashed var(--line)}
+#gfq-01-panel .gfq-qrw h4{margin:0 0 12px;font:700 15px var(--cond);letter-spacing:.08em;color:var(--sub);display:flex;align-items:center;gap:8px}
+#gfq-01-panel .gfq-qrw h4::before{content:"";width:8px;height:8px;background:var(--ind);transform:rotate(45deg)}
+#gfq-01-panel .gfq-rw{display:flex;flex-direction:column-reverse;gap:12px}
+#gfq-01-panel .gfq-rw-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+#gfq-01-panel .gfq-rw-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 10px;background:linear-gradient(160deg,#fff,#ebe9e3);border:1px solid var(--line);text-align:center}
+#gfq-01-panel .gfq-rw-tile .gfq-ico{width:40px;height:40px;color:var(--ind)}
+#gfq-01-panel .gfq-rw-name{font-size:12px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#gfq-01-panel .gfq-rw-rows{display:flex;flex-direction:column;gap:8px}
+#gfq-01-panel .gfq-rw-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fbfaf7;border:1px solid var(--line);border-left:4px solid var(--ind)}
+#gfq-01-panel .gfq-rw-ic{flex:none;width:34px;height:34px;color:var(--ind)}
+#gfq-01-panel .gfq-rw-rname{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;font-weight:600;line-height:1.35}
+#gfq-01-panel .gfq-rw-row b{font-size:22px;white-space:nowrap}#gfq-01-panel .gfq-rw-row b small{font-size:13px;margin-left:2px;color:var(--sub)}
+#gfq-01-panel .gfq-chip{display:inline-block;padding:1px 8px;font-size:11px;font-weight:700;background:#0000000f;color:var(--sub);white-space:nowrap}
+#gfq-01-panel .gfq-chip.t-ok{background:#dbe6dd;color:#2c5a40}#gfq-01-panel .gfq-chip.t-wait{background:#f3e5c2;color:#6e5212}#gfq-01-panel .gfq-chip.t-soft{background:#e2e2ea;color:#55576d}
+#gfq-01-panel .gfq-rw-tile.t-soft{opacity:.8}
+#gfq-01-panel .gfq-rw-row .gfq-link{font-size:12px}
+#gfq-01-panel .gfq-qfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding:14px 26px;border-top:1px solid var(--line);background:#00000006}
+#gfq-01-panel .gfq-qfoot button{min-width:96px;padding:9px 18px}
+#gfq-01-panel .gfq-qfoot .primary{min-width:150px}
+#gfq-01-panel .gfq-ghost{border-color:var(--line);color:var(--sub)}
+#gfq-01-panel .gfq-board{width:100%}
+#gfq-01-panel .gfq-pinbox{max-width:none;transform:none;align-items:flex-start}
+#gfq-01-panel .gfq-pin-text{flex:1}
+#gfq-01-panel .gfq-pin-text b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}
+#gfq-01-panel .gfq-pinbox img,#gfq-01-panel .gfq-pin-dot{width:48px;height:48px}
+#gfq-01-panel .gfq-halo{left:-36px;top:24px;margin-top:-60px}
+#gfq-01-panel .gfq-placecard{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);margin-top:22px;background:var(--card);border:1px solid var(--line);border-top:4px double var(--ind);box-shadow:5px 5px 0 #0000001a;scroll-margin-top:90px}
+#gfq-01-panel .gfq-placephoto{min-height:300px;background:var(--ink)}
+#gfq-01-panel .gfq-placephoto img{width:100%;height:100%;min-height:300px;max-height:460px;object-fit:cover;display:block}
+#gfq-01-panel .gfq-placephoto.none{display:grid;place-items:center;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px)}
+#gfq-01-panel .gfq-placeinfo{padding-bottom:16px;min-width:0}
+#gfq-01-panel .gfq-placeinfo header{display:flex;align-items:center;gap:10px;padding:14px 0 14px 16px;border-bottom:1px solid var(--line)}
+#gfq-01-panel .gfq-placeinfo h4{flex:1;margin:0;font:800 21px/1.3 var(--serif);color:var(--ind);overflow-wrap:anywhere}
+#gfq-01-panel .gfq-placeinfo h5{margin:14px 16px 6px;font:700 14px var(--cond);letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+#gfq-01-panel .gfq-placeinfo h5::before{content:"";width:12px;height:12px;border:1.5px solid var(--ink);box-shadow:inset 0 0 0 2px var(--card),inset 0 0 0 6px var(--ind)}
+#gfq-01-panel .gfq-placeinfo .gfq-facts{margin:0 16px}#gfq-01-panel .gfq-pad{padding:0 16px}
+#gfq-01-panel .gfq-placeinfo .gfq-here{margin:12px 16px 0}
+@media(max-width:760px){#gfq-01-panel .gfq-ticket{grid-template-columns:1fr}#gfq-01-panel .gfq-photo{width:150px;height:190px}#gfq-01-panel .gfq-quests,#gfq-01-panel .gfq-rw,#gfq-01-panel .gfq-placecard{grid-template-columns:1fr}#gfq-01-panel .gfq-qside{position:static}#gfq-01-panel .gfq-qlist{max-height:240px}#gfq-01-panel .gfq-qhead{padding:16px}#gfq-01-panel .gfq-qcrest{width:54px;height:68px}#gfq-01-panel .gfq-qhead h3{font-size:21px}#gfq-01-panel .gfq-qbody{padding:16px}#gfq-01-panel .gfq-qfoot{padding:12px 16px}#gfq-01-panel .gfq-pinbox{width:auto!important}#gfq-01-panel .gfq-drop{max-width:none}}
 `;
   style.textContent+=`
 #${ID}-toasts{position:fixed;inset:16px 16px auto auto;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;gap:8px;z-index:2147483002;max-width:min(380px,calc(100vw - 32px))}
@@ -2164,7 +2278,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const place=w.gfPlaceNow&&w.gfPlaces?.[w.gfPlaceNow.key];
     return '<section class="gfq-ticket" aria-label="주인공">'+
       '<div class="gfq-tk-photo"><div class="gfq-photo">'+(img?'<img src="'+esc(img)+'" alt="'+esc(name||'주인공')+' 아바타" loading="lazy">':'<span aria-hidden="true">'+esc(name?[...name][0]:'?')+'</span>')+'</div>'+
-        '<small>'+(img?'페르소나 아바타':w.gfHero?.personaId?'아바타를 불러오는 중이거나 없습니다':'게임 상태를 받으면 페르소나 아바타를 표시합니다')+'</small></div>'+
+        '</div>'+
       '<div class="gfq-tk-main">'+
         '<div class="gfq-tk-top"><span>'+esc(world)+'</span><span class="gfq-num">No. '+gfqSerial(data.world)+'</span></div>'+
         '<h3 class="gfq-tk-name">'+(name?esc(name):'<span class="gfq-sub">이름 미설정</span>')+'</h3>'+
@@ -2181,10 +2295,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }
   let itemFilter='전체',selectedItem='',selectedPlace='';
   function gfqItemGlyph(i){
-    if(i.state==='pending')return '<span class="gfq-glyph q">?</span>';
-    if(i.kind==='voucher')return '<span class="gfq-glyph v"><b class="gfq-num">'+(i.qty>0?i.qty:0)+'</b>회</span>';
-    return '<span class="gfq-glyph">'+esc([...String(i.name||'?').trim()][0]||'?')+'</span>';
+    const ic=gfqThing(i.name,i.kind==='voucher'?'voucher':'item');
+    if(i.state==='pending')return '<span class="gfq-glyph">'+ic+'<em class="gfq-badge q" aria-label="수령 예정">?</em></span>';
+    if(i.kind==='voucher')return '<span class="gfq-glyph">'+ic+'<em class="gfq-badge num">'+(i.qty>0?i.qty+'회':'끝')+'</em></span>';
+    return '<span class="gfq-glyph">'+ic+'</span>';
   }
+
   function gfqItemsHtml(w){
     const groups={'전체':()=>true,'보유':i=>i.state!=='pending'&&i.kind!=='voucher','수령 예정':i=>i.state==='pending','이용권':i=>i.kind==='voucher'};
     if(!groups[itemFilter])itemFilter='전체';
@@ -2231,22 +2347,24 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function gfqPlacesHtml(w){
     const list=gfqPlaceList(w),nowKey=w.gfPlaceNow?.key||'';
     if(!list.length)return '<div class="gfq-empty"><strong>아직 기록된 장소가 없습니다</strong><span class="gfq-sub">게임이 챕터 계획을 받을 때 장면마다 정해진 장소를 모읍니다. 이미 만든 장면의 배경 장소는 아래 버튼으로 가져올 수 있습니다.</span>'+btn('장소 불러오기','load-places','class="primary"')+'</div>';
-    const cols=3,rowH=150,rows=Math.ceil(list.length/cols),H=rows*rowH+40;
-    const pos=list.map((p,i)=>{const r=Math.floor(i/cols),c=r%2?cols-1-i%cols:i%cols;let h=0;for(const ch of p.key)h=(h*33+ch.charCodeAt(0))>>>0;return {x:7+c*30+(h%7)-3,y:40+r*rowH+((h>>4)%40)};});
+    // Pins sit in fixed-width columns (zigzag rows) so a long name can never squeeze into a sliver.
+    const cols=(panel?.clientWidth||1200)>=1000?4:3,cw=100/cols,rowH=132,rows=Math.ceil(list.length/cols),H=rows*rowH+30;
+    const pos=list.map((p,i)=>{const r=Math.floor(i/cols),c=r%2?cols-1-i%cols:i%cols;let h=0;for(const ch of p.key)h=(h*33+ch.charCodeAt(0))>>>0;return {x:c*cw+1.2,y:22+r*rowH+(h%28)};});
     const sel=list.find(p=>p.key===selectedPlace)||list.find(p=>p.key===nowKey)||list[0];
-    const route='<svg class="gfq-route" viewBox="0 0 100 '+H+'" preserveAspectRatio="none" aria-hidden="true"><polyline points="'+pos.map(q=>q.x+','+(q.y+18)).join(' ')+'"/></svg>';
-    const pins=list.map((p,i)=>'<button class="gfq-pinbox'+(p.key===sel.key?' on':'')+(p.key===nowKey?' here':'')+'" style="left:'+pos[i].x+'%;top:'+pos[i].y+'px" data-action="select-place" data-id="'+esc(p.key)+'">'+
+    const route='<svg class="gfq-route" viewBox="0 0 100 '+H+'" preserveAspectRatio="none" aria-hidden="true"><polyline points="'+pos.map(q=>(q.x+1.9)+','+(q.y+24)).join(' ')+'"/></svg>';
+    const pins=list.map((p,i)=>'<button class="gfq-pinbox'+(p.key===sel.key?' on':'')+(p.key===nowKey?' here':'')+'" style="left:'+pos[i].x.toFixed(2)+'%;top:'+pos[i].y+'px;width:calc('+cw.toFixed(2)+'% - 14px)" data-action="select-place" data-id="'+esc(p.key)+'">'+
       (p.key===nowKey?'<span class="gfq-halo" aria-hidden="true"></span>':'')+(gfqImgSrc(p.url)?'<img src="'+esc(p.url)+'" alt="" loading="lazy">':'<span class="gfq-pin-dot" aria-hidden="true"></span>')+
       '<span class="gfq-pin-text"><b>'+esc(p.name)+'</b><small>'+(p.chapters?.length?'챕터 '+esc(p.chapters.join(', ')):'배경만 확인')+' <em class="gfq-num">#'+(i+1)+'</em></small></span></button>').join('');
     const related=w.quests.filter(q=>(q.title+' '+(q.detail||'')+' '+[].concat(q.sourceEvidence||[]).join(' ')).includes(sel.name));
-    const detail='<article class="gfq-dossier place"><header><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">No.<br>'+String(list.indexOf(sel)+1).padStart(3,'0')+'</span></header>'+
-      (gfqImgSrc(sel.url)?'<div class="gfq-plate photo"><img src="'+esc(sel.url)+'" alt="'+esc(sel.name)+' 배경" loading="lazy"></div>':'')+
+    const detail='<article class="gfq-placecard">'+(gfqImgSrc(sel.url)?'<div class="gfq-placephoto"><img src="'+esc(sel.url)+'" alt="'+esc(sel.name)+' 배경" loading="lazy"></div>':'<div class="gfq-placephoto none"><span class="gfq-sub">배경 이미지가 아직 없습니다</span></div>')+
+      '<div class="gfq-placeinfo"><header><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">No.<br>'+String(list.indexOf(sel)+1).padStart(3,'0')+'</span></header>'+
       (sel.key===nowKey?'<p class="gfq-here">지금 읽고 있는 장면의 장소입니다.</p>':'')+
-      '<h5>등장한 장면</h5>'+((sel.scenes||[]).length?'<ul class="gfq-facts">'+sel.scenes.map(s=>'<li><b>챕터 '+esc(s.chapter)+' · '+esc(s.index)+'번째 장면</b> '+esc(s.title)+(s.goal?'<br><span class="gfq-sub">'+esc(s.goal)+'</span>':'')+'</li>').join('')+'</ul>':'<p class="gfq-sub">배경 이미지로만 확인한 장소입니다.</p>')+
-      (related.length?'<h5>관련 퀘스트</h5><ul class="gfq-facts">'+related.map(q=>'<li>'+esc(q.title)+(q.claimed?' · 완료':'')+'</li>').join('')+'</ul>':'')+'</article>';
-    return '<div class="gfq-board-wrap"><div class="gfq-board" style="height:'+H+'px">'+route+pins+'</div>'+detail+'</div>'+
-      '<div class="gfq-row gfq-board-foot">'+btn('장소 불러오기','load-places')+'<span class="gfq-sub">번호는 처음 등장한 순서입니다. 배경 이미지가 있는 장소는 사진이 붙습니다.</span></div>';
+      '<h5>등장한 장면</h5>'+((sel.scenes||[]).length?'<ul class="gfq-facts">'+sel.scenes.map(s=>'<li><b>챕터 '+esc(s.chapter)+' · '+esc(s.index)+'번째 장면</b> '+esc(s.title)+(s.goal?'<br><span class="gfq-sub">'+esc(s.goal)+'</span>':'')+'</li>').join('')+'</ul>':'<p class="gfq-sub gfq-pad">배경 이미지로만 확인한 장소입니다. 이 장소가 나오는 챕터 계획을 게임이 받으면 장면이 채워집니다.</p>')+
+      (related.length?'<h5>관련 퀘스트</h5><ul class="gfq-facts">'+related.map(q=>'<li><button class="gfq-link" data-action="open-quest" data-id="'+esc(q.id)+'">'+esc(q.title)+'</button>'+(q.claimed?' · 완료':'')+'</li>').join('')+'</ul>':'')+'</div></article>';
+    return '<div class="gfq-board" style="height:'+H+'px">'+route+pins+'</div>'+
+      '<div class="gfq-row gfq-board-foot">'+btn('장소 불러오기','load-places')+'<span class="gfq-sub">번호는 처음 등장한 순서입니다. 장소를 누르면 아래에 크게 보입니다.</span></div>'+detail;
   }
+
   function approveAiProposal(id,bulk=false){
     const w=current(),x=w?.aiProposals?.find(v=>v.id===id);if(!x)return false;
     const ctx=gfqRuleCtx(w);
@@ -2295,10 +2413,100 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     w.aiProposals=w.aiProposals.filter(v=>v.id!==id);if(!bulk){save();render();}return true;
   }
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
-  function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(data.worlds[w]?.gfDisplayName||w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
+  // v0.6.1: line icons for items and rewards, picked from the name (no images are fetched).
+  const GFQ_ICONS={
+    coin:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="5"/><path d="M12 9.5v5"/>',
+    star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/>',
+    badge:'<circle cx="12" cy="9" r="5"/><path d="M8.5 13l-2 7 5.5-2.5 5.5 2.5-2-7"/><path d="M10 9l1.4 1.4L14 7.8"/>',
+    shield:'<path d="M12 3l7 3v5.5c0 4.5-3 7.6-7 9.5-4-1.9-7-5-7-9.5V6z"/><path d="M12 8.5v6M9 11.5h6"/>',
+    ticket:'<path d="M3.5 7.5h17v3a1.8 1.8 0 0 0 0 3v3h-17v-3a1.8 1.8 0 0 0 0-3z"/><path d="M14.5 7.5v9" stroke-dasharray="1.6 1.6"/>',
+    glove:'<path d="M7 20v-6.5L5 10.5V7.8a1.3 1.3 0 0 1 2.6 0V10"/><path d="M7.6 10V5.3a1.3 1.3 0 0 1 2.6 0V10"/><path d="M10.2 9.5V4.6a1.3 1.3 0 0 1 2.6 0v5"/><path d="M12.8 9.6V5.6a1.3 1.3 0 0 1 2.6 0V13l1.6-2a1.4 1.4 0 0 1 2.2 1.7L16 17.5V20z"/><path d="M7 17h9"/>',
+    sword:'<path d="M14.5 4.5H19.5V9.5L10 19l-5-5z"/><path d="M7 12l5 5M4 20l2.5-2.5"/>',
+    shirt:'<path d="M8.5 4L4 6.5 5.8 10.5 7.5 9.8V20h9V9.8l1.7.7L20 6.5 15.5 4a3.5 3.5 0 0 1-7 0z"/>',
+    flask:'<path d="M9.5 3.5h5M10.5 3.5v5.2L5.6 17.3A2 2 0 0 0 7.4 20.5h9.2a2 2 0 0 0 1.8-3.2l-4.9-8.6V3.5"/><path d="M7.8 14h8.4"/>',
+    gem:'<path d="M7 4.5h10l3.5 5L12 20 3.5 9.5z"/><path d="M3.5 9.5h17M9.5 4.5 8 9.5l4 10.5 4-10.5-1.5-5"/>',
+    card:'<rect x="3.5" y="5.5" width="17" height="13"/><circle cx="8.5" cy="11" r="2"/><path d="M5.8 15.5c.5-1.4 1.5-2 2.7-2s2.2.6 2.7 2M13.5 9.5h4.5M13.5 12.5h4.5"/>',
+    key:'<circle cx="8" cy="12" r="3.8"/><path d="M11.8 12H20.5M17.5 12v3M15 12v2"/>',
+    phone:'<rect x="7" y="3" width="10" height="18" rx="1.5"/><path d="M10.5 18h3"/>',
+    cup:'<path d="M5 8.5h11v5.5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16M9 3.5v2.5M12 3.5v2.5"/>',
+    tool:'<path d="M14.5 4a4.5 4.5 0 0 0-4 6.3L4 16.8 7.2 20l6.5-6.5A4.5 4.5 0 0 0 20 9.5l-3 1-2.5-2.5 1-3z"/>',
+    box:'<path d="M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4z"/><path d="M3.5 7.5 12 11.5l8.5-4M12 11.5v9"/>'
+  };
+  function gfqIconKey(name,kind){
+    const n=String(name||'');
+    if(kind==='money')return 'coin';if(kind==='reputation')return 'star';if(kind==='credential')return 'badge';
+    if(/보험|치료|무상 ?보장|회복 지원|의료/u.test(n))return 'shield';
+    if(kind==='voucher'||kind==='benefit'||/이용권|쿠폰|감면|할인|면제|권$/u.test(n))return 'ticket';
+    if(/건틀릿|장갑|글러브|너클/u.test(n))return 'glove';
+    if(/검|칼|단검|창|활|총|무기|도끼|해머/u.test(n))return 'sword';
+    if(/갑옷|방어구|의류|옷|코트|슈트|수트|조끼|망토|세트|수선/u.test(n))return 'shirt';
+    if(/포션|물약|앰플|약|해독|회복제/u.test(n))return 'flask';
+    if(/소재|조각|파편|코어|마석|광석|결정|비늘|가죽|뼈|정수|수정/u.test(n))return 'gem';
+    if(/면허|자격|증$|증명|서류|문서|계약서|신분|카드|명함/u.test(n))return 'card';
+    if(/열쇠|키$|카드키|출입/u.test(n))return 'key';
+    if(/휴대폰|폰|단말|장치|기기|드론|통신|태블릿|노트북|무전/u.test(n))return 'phone';
+    if(/음식|도시락|빵|커피|식량|음료|식사|간식/u.test(n))return 'cup';
+    if(/공구|키트|도구|렌치|망치|부품/u.test(n))return 'tool';
+    return 'box';
+  }
+  const gfqThing=(name,kind,cls='')=>'<svg class="gfq-ico '+cls+'" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+GFQ_ICONS[gfqIconKey(name,kind)]+'</svg>';
+  function gfqRewardState(w,r){
+    const labels={received:'수령 확인',confirmed:'확정',pending:'지급 예정',suggested:'제안',uncertain:'미확인'};
+    const tx=r.txId&&(w.gfLedger||[]).find(t=>t.id===r.txId);
+    const item=r.kind==='item'&&r.chainKey&&w.items.find(i=>i.chainKey===r.chainKey||i.id===r.chainKey);
+    const voucher=r.kind==='benefit'&&r.chainKey&&w.items.find(i=>i.kind==='voucher'&&i.chainKey===r.chainKey);
+    if(tx)return {text:gfqLabel('money',tx.state),tone:tx.state==='received'?'ok':'wait'};
+    if(voucher)return {text:voucher.qty>0?'이용권 '+voucher.qty+'회':'사용 완료',tone:'ok'};
+    if(item)return {text:item.state==='pending'?'수령 예정':'보유',tone:item.state==='pending'?'wait':'ok'};
+    if(r.kind==='benefit'&&r.certainty==='received')return {text:'적용됨',tone:'ok'};
+    return {text:labels[r.certainty]||'미확인',tone:r.certainty==='received'?'ok':r.certainty==='suggested'||r.certainty==='uncertain'?'soft':'wait'};
+  }
+  let questFilter='진행 중',selectedQuest='';
+  const gfqQuestDone=q=>!!q.claimed;
+  function gfqQuestSteps(q){const n=Array.isArray(q.steps)?q.steps.length:0;return n?{done:q.steps.filter((_,i)=>q.stepDone?.[i]===true).length,total:n}:{done:Math.min(q.progress||0,q.target||1),total:q.target||1};}
+  function gfqQuestPlace(w,q){const text=q.title+' '+(q.detail||'')+' '+[].concat(q.sourceEvidence||[]).join(' ');return gfqPlaceList(w).filter(p=>text.includes(p.name)).sort((a,b)=>b.name.length-a.name.length)[0]||null;}
+  function gfqQuestsHtml(w){
+    const groups={'진행 중':q=>!gfqQuestDone(q),'완료':gfqQuestDone,'전체':()=>true};
+    if(!groups[questFilter])questFilter='진행 중';
+    const list=w.quests.filter(groups[questFilter]).slice().reverse();
+    const sel=list.find(q=>q.id===selectedQuest)||list[0]||null;
+    const pips=q=>{const s=gfqQuestSteps(q);return '<span class="gfq-pips" aria-label="세부 목표 '+s.done+'/'+s.total+'">'+Array.from({length:Math.min(s.total,12)},(_,i)=>'<i'+(i<s.done?' class="on"':'')+'></i>').join('')+'</span>';};
+    const side='<div class="gfq-qside"><div class="gfq-seg" role="group" aria-label="퀘스트 분류">'+Object.keys(groups).map(k=>'<button data-action="quest-filter" data-id="'+k+'" aria-pressed="'+(k===questFilter)+'">'+k+' <small class="gfq-num">'+w.quests.filter(groups[k]).length+'</small></button>').join('')+'</div>'+
+      '<div class="gfq-qlist">'+(list.map(q=>'<button class="gfq-qitem'+(sel&&sel.id===q.id?' on':'')+(gfqQuestDone(q)?' done':'')+'" data-action="select-quest" data-id="'+esc(q.id)+'" aria-pressed="'+(!!(sel&&sel.id===q.id))+'"><span class="gfq-qemb" aria-hidden="true">'+esc(String(q.type||'의뢰').slice(0,2))+'</span><span class="gfq-qtxt"><b>'+esc(q.title)+'</b>'+pips(q)+'</span></button>').join('')||'<p class="gfq-sub">'+(questFilter==='완료'?'완료한 퀘스트가 없습니다.':'진행 중인 퀘스트가 없습니다.')+'</p>')+'</div>'+
+      btn('＋ 퀘스트 직접 추가','add-quest','class="gfq-qadd"')+'</div>';
+    if(!sel)return '<div class="gfq-quests">'+side+'<div class="gfq-qdetail empty"><strong>표시할 퀘스트가 없습니다</strong><span class="gfq-sub">AI 분석이 스토리에서 의뢰를 찾으면 여기에 나타납니다.</span></div></div>';
+    const s=gfqQuestSteps(sel),place=gfqQuestPlace(w,sel),done=gfqQuestDone(sel);
+    const steps=Array.isArray(sel.steps)&&sel.steps.length?sel.steps.map((t,i)=>{const on=sel.stepDone?.[i]===true;return '<button class="gfq-obj'+(on?' on':'')+'" data-action="toggle-step" data-id="'+esc(sel.id)+'" data-step="'+i+'" aria-pressed="'+on+'"><span class="gfq-obj-mark" aria-hidden="true"></span><span class="gfq-obj-t">'+esc(t)+'</span><span class="gfq-num">'+(on?1:0)+' / 1</span></button>';}).join(''):
+      '<div class="gfq-obj"><span class="gfq-obj-mark" aria-hidden="true"></span><span class="gfq-obj-t">목표 진행</span><span class="gfq-num">'+esc(sel.progress)+' / '+esc(sel.target)+'</span></div>';
+    const rewards=(sel.rewardDetails||[]).map((r,i)=>({r,i}));
+    const big=rewards.filter(x=>['money','reputation'].includes(x.r.kind)),tiles=rewards.filter(x=>!['money','reputation'].includes(x.r.kind));
+    const amount=r=>r.amount!==null&&r.amount!==undefined&&r.amount!==''?(r.kind==='reputation'?'+':'')+Number(r.amount).toLocaleString('ko-KR')+(r.kind==='money'?'':String(r.unit||'')):'금액 미정';
+    const toLedger=({r,i})=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?'<button class="gfq-link" data-action="reward-to-ledger" data-id="'+esc(sel.id)+'" data-idx="'+i+'">거래 내역에 기록</button>':'';
+    const rw=(sel.rewardDetails||[]).length?
+      '<div class="gfq-rw">'+(tiles.length?'<div class="gfq-rw-tiles">'+tiles.map(({r})=>{const st=gfqRewardState(w,r);return '<div class="gfq-rw-tile t-'+st.tone+'" title="'+esc(r.name)+'">'+gfqThing(r.name,r.kind)+'<span class="gfq-rw-name">'+esc(r.name)+'</span><span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span></div>';}).join('')+'</div>':'')+
+        (big.length?'<div class="gfq-rw-rows">'+big.map(x=>{const st=gfqRewardState(w,x.r);return '<div class="gfq-rw-row"><span class="gfq-rw-ic">'+gfqThing(x.r.name,x.r.kind)+'</span><span class="gfq-rw-rname">'+esc(x.r.name)+'<span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span>'+toLedger(x)+'</span><b class="gfq-num">'+esc(amount(x.r))+(x.r.kind==='money'?'<small>'+esc(x.r.unit||'원')+'</small>':'')+'</b></div>';}).join('')+'</div>':'')+'</div>':
+      '<p class="gfq-sub">기록된 보상이 없습니다. '+esc(sel.reward||'')+'</p>';
+    const why=(sel.rewardDetails||[]).find(r=>r.kind==='reputation'&&r.assessed&&r.evidence);
+    const detail='<article class="gfq-qdetail"><header class="gfq-qhead"><div class="gfq-qcrest" aria-hidden="true"><span>'+esc(String(sel.type||'의뢰').slice(0,2))+'</span></div><div class="gfq-qhead-t"><h3>'+esc(sel.title)+'</h3>'+
+        (place?'<button class="gfq-qplace" data-action="select-place" data-id="'+esc(place.key)+'">'+gfqIcon('places')+esc(place.name)+'</button>':'')+
+        '<div class="gfq-qmeta">'+[done?'완료':'진행 중',sel.startDate?'시작 '+esc(sel.startDate):'',sel.doneDate?'완료 '+esc(sel.doneDate):'',sel.source?esc(sel.source):''].filter(Boolean).join('<i></i>')+'</div></div></header>'+
+      '<div class="gfq-qbody"><div class="gfq-objs"><div class="gfq-objs-h"><span>세부 목표</span><span class="gfq-num">'+s.done+' / '+s.total+'</span></div>'+steps+'</div>'+
+        (sel.detail?'<p class="gfq-qdesc">'+esc(sel.detail)+'</p>':'')+
+        '<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
+      '</div><footer class="gfq-qfoot">'+btn('삭제','delete-quest',`data-id="${esc(sel.id)}" class="gfq-ghost"`)+(Array.isArray(sel.steps)&&sel.steps.length?'':btn('＋1 진행','increment',`data-id="${esc(sel.id)}" ${done?'disabled':''}`))+btn(done?'완료됨':'완료 처리','complete',`data-id="${esc(sel.id)}" class="primary" ${done?'disabled':''}`)+'</footer></article>';
+    return '<div class="gfq-quests">'+side+detail+'</div>';
+  }
+  // Custom world picker: the native drop-down list cannot be styled.
+  function worldSelect(){
+    const keys=Object.keys(data.worlds),name=k=>data.worlds[k]?.gfDisplayName||k;
+    return '<details class="gfq-drop"><summary><span class="gfq-drop-k">월드</span><span class="gfq-drop-v">'+esc(data.world?name(data.world):'월드를 골라 주세요')+'</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></summary>'+
+      '<div class="gfq-drop-menu" role="menu">'+keys.map(k=>'<button role="menuitemradio" aria-checked="'+(k===data.world)+'" data-action="pick-world" data-id="'+esc(k)+'"><span>'+esc(name(k))+'</span>'+(data.worlds[k]?.gfRunId?'<small>게임 월드 연결됨</small>':'<small>직접 만든 월드</small>')+'</button>').join('')+
+      '<button class="gfq-drop-new" data-action="new-world">＋ 새 월드 만들기</button></div></details>';
+  }
   function render(){if(!panel)return;let w=current();if(currentTab==='assets'||currentTab==='items')currentTab='profile';const tabs=[['quests','퀘스트'],['profile','프로필'],['places','장소'],['history','기록'],['settings','설정']];if(!tabs.some(t=>t[0]===currentTab))currentTab='quests';const label=tabs.find(t=>t[0]===currentTab)[1];const today=w?gfqCurrentDate(w):null;const empty='<div class="gfq-empty"><strong>월드를 먼저 골라 주세요</strong><span class="gfq-sub">게임에서 월드를 열면 자동으로 연결됩니다.</span></div>';
-    panel.innerHTML=`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.6.0</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`;}
-  function content(w){switch(currentTab){case 'quests':return `<div class="gfq-row"><select id="gfq-filter">${['전체','일일','주간','의뢰','업적'].map(t=>`<option ${activeFilter===t?'selected':''}>${t}</option>`).join('')}</select>${btn('＋ 퀘스트','add-quest','class="primary"')}</div>${w.quests.filter(q=>activeFilter==='전체'||q.type===activeFilter).map(q=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(q.title)}</b><small>${esc(q.type)}</small></div><div class="gfq-muted">${esc(q.detail)}</div>${Array.isArray(q.steps)&&q.steps.length?`<div class="gfq-muted">세부 목표</div><div class="gfq-row">${q.steps.map((t,i)=>btn((q.stepDone?.[i]?'✓ ':'○ ')+esc(t),'toggle-step',`data-id="${esc(q.id)}" data-step="${i}" aria-pressed="${q.stepDone?.[i]?'true':'false'}"`)).join("")}</div>`:""}${gfqQuestDatesHtml(q)}${gfqQuestProgressHtml(q)}${btn('＋1','increment',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn(q.claimed?'완료됨':'완료','complete',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn('삭제','delete-quest',`data-id="${esc(q.id)}"`)}</div><div class="gfq-muted">보상(기록용): ${esc(gfqQuestRewardLabel(q))}</div>${(q.rewardDetails||[]).map((r,i)=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?btn('거래 내역에 기록: '+esc(r.name),'reward-to-ledger',`data-id="${esc(q.id)}" data-idx="${i}"`):'').join('')}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">▤</div><strong>진행 중인 퀘스트가 없습니다</strong><span class="gfq-muted">새 퀘스트를 등록하면 여기에 표시됩니다.</span></div>'}`;
+    const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
+    panel.innerHTML=`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.6.1</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`;panel.dataset.tab=currentTab;if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
+  function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
   case 'history':return `${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}${candidateHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
@@ -2309,10 +2517,15 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function exportData(){const file=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');const url=URL.createObjectURL(file);a.href=url;a.download='quest-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=async()=>{const f=inp.files?.[0];if(!f||f.size>2e6)return alert('2MB 이하의 JSON 파일만 지원합니다.');try{const d=JSON.parse(await f.text());if(d.v!==1||typeof d.worlds!=='object'||!d.worlds||Array.isArray(d.worlds))throw Error('백업 형식이 올바르지 않습니다.');for(const w of Object.values(d.worlds)){if(!Array.isArray(w.quests)||!Array.isArray(w.fields)||!Array.isArray(w.items)||!Array.isArray(w.history))throw Error('월드 데이터가 올바르지 않습니다.');}if(!confirm('현재 퀘스트 데이터를 백업 파일로 교체하시겠습니까?'))return;const previous=data;data=d;if(!save()){data=previous;return;}render();}catch(e){alert('가져오지 못했습니다: '+e.message);}};inp.click();}
   document.addEventListener('change',e=>{if(!panel||!panel.contains(e.target))return;if(e.target.id==='gfq-world'){data.world=e.target.value;save();render();}if(e.target.id==='gfq-filter'){activeFilter=e.target.value;render();}if(e.target.id==='gfq-ai-connection'){data.aiConnectionId=e.target.value;save();render();}if(e.target.id==='gfq-ai-mode'){data.aiMode=e.target.value;save();render();}if(e.target.id==='gfq-auto-apply'){data.autoApply=e.target.checked;save();render();}if(e.target.id==='gfq-scene-timed'){data.sceneTimed=e.target.checked;save();render();}if(e.target.id==='gfq-inject-on'){const w=current();if(w){if(!w.gfInject?.lorebookId){e.target.checked=false;alert('먼저 [스토리 반영용 로어북 만들기]를 눌러 주세요.');return;}w.gfInject.enabled=e.target.checked;record(w,'로어북 자동 반영 '+(e.target.checked?'켜기':'끄기'));save();render();if(e.target.checked)gfqInjectSync(true);}}if(e.target.id==='gfq-inject-limit'){const w=current();if(w){w.gfInject={...(w.gfInject||{}),limit:Math.max(150,Math.min(4000,Number(e.target.value)||600))};save();render();}}if(e.target.id==='gfq-ai-range'){data.aiRange=e.target.value;save();}if(e.target.id==='gfq-hero'){const w=current();if(w){gfqRuleCtx(w);w.protagonist=String(e.target.value||'').trim().slice(0,40);record(w,'주인공 이름 설정: '+(w.protagonist||'(비움)'));save();render();}}if(e.target.id==='gfq-legacy'){const w=current();if(w){gfqRuleCtx(w);w.gfRulePack=e.target.checked?GFQ_LEGACY_PACK:'';record(w,'기존 월드 전용 보정 규칙 '+(e.target.checked?'사용':'해제'));save();render();}}});
+  document.addEventListener('click',e=>{if(panel&&!e.target.closest?.('.gfq-drop'))panel.querySelectorAll('.gfq-drop[open]').forEach(d=>d.open=false);});
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
+  if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
+  if(act==='select-quest'){selectedQuest=id;return render();}
+  if(act==='pick-world'){data.world=id;save();return render();}
   if(act==='item-filter'){itemFilter=id;selectedItem='';return render();}
   if(act==='select-item'){selectedItem=id;return render();}
-  if(act==='select-place'){selectedPlace=id;currentTab='places';return render();}
+  if(act==='select-place'){const same=currentTab==='places';selectedPlace=id;currentTab='places';render();if(same){const c=panel.querySelector('.gfq-placecard');if(c&&c.scrollIntoView)c.scrollIntoView({block:'nearest'});}return;}
+  if(act==='open-quest'){selectedQuest=id;questFilter='전체';currentTab='quests';return render();}
   if(act==='load-places'){if(!w.gfRunId)return alert('게임 월드와 아직 연결되지 않았습니다. 게임에서 월드를 연 뒤 다시 눌러 주세요.');el.disabled=true;gfqApi('/api/gacha-forge/locations','POST',{runId:w.gfRunId}).then(r=>{gfqRememberPlaces(w.gfRunId,r,'/api/gacha-forge/locations',{});if(!Object.keys(r?.places||{}).length)alert('게임에 저장된 배경 장소가 없습니다. 챕터를 열면 장면별 장소가 자동으로 기록됩니다.');render();}).catch(e=>{el.disabled=false;alert('장소를 불러오지 못했습니다: '+e.message);});return;}
   if(act==='close')return openPanel();if(act==='resync-world')return syncWorld();if(act==='new-world'){const name=ask('새 월드 이름');if(name===null)return;const key=name.trim();if(!key||key.length>100)return alert('1~100자로 입력해 주세요.');if(data.worlds[key])return alert('이미 존재하는 월드입니다.');data.worlds[key]=blank();data.world=key;save();return render();}if(!w)return;
   if(act==='review-candidate'||act==='dismiss-candidate'){const c=storyCandidates(w).find(x=>x.id===id);if(!c)return;const key=c.type+'|'+c.quote;if(act==='review-candidate'){if(!confirm('다음 문장을 검토 기록으로 채택하시겠습니까? 실제 퀘스트 및 자산 상태는 변경되지 않습니다.\\n\\n'+c.quote))return;w.gfReviewed||=[];w.gfReviewed.push(key);record(w,'스토리 검토: ['+c.type+'] '+c.source+' · '+c.quote);}else{w.gfDismissed||=[];w.gfDismissed.push(key);}save();render();return;}

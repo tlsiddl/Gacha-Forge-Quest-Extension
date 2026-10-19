@@ -45,6 +45,11 @@ const W=()=>JSON.parse(win.localStorage.getItem('gf-quest-v1')).worlds.w;
   click('[data-tab="places"]');
   assert.strictEqual(panel.querySelectorAll('.gfq-pinbox').length,2);assert.ok(panel.querySelector('.gfq-pinbox.here'));
   assert.ok(panel.innerHTML.includes('제1공방 긴급 방어 작전'),'related quest by name');
-  click('.gfq-pinbox:not(.here)');assert.ok(panel.querySelector('.gfq-dossier h4').textContent==='각성자 관리국');
+  click('.gfq-pinbox:not(.here)');assert.ok(panel.querySelector('.gfq-placeinfo h4').textContent==='각성자 관리국');
+  // Related quest opens on the quest tab; the quest shows its place.
+  click('.gfq-pinbox.here');click('[data-action="open-quest"]');assert.ok(panel.querySelector('.gfq-qdetail h3').textContent.includes('제1공방 긴급 방어 작전'));
+  assert.ok(panel.querySelector('.gfq-qplace')?.textContent.includes('제1공방'),'quest shows its place');
+  // Item icons are chosen from the name.
+  assert.ok(src.includes("건틀릿|장갑"),'icon keywords');
   console.log('UI places OK');process.exit(0);
 })().catch(e=>{console.error(e);process.exit(1);});
