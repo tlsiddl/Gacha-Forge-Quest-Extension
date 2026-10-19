@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.2.4",
-    "description": "마리나라 generate/raw API로 직접 AI 스토리 분석·후보 검토 (서버 브리지 불필요)",
+    "version": "0.2.5",
+    "description": "가챠 포지 퀘스트 — 백그라운드 점검·중복 저장 최적화",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
