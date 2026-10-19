@@ -1,10 +1,11 @@
 const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
-const skip=src.match(/  const GFQ_SKIP=.*\n/)[0]+src.match(/  const GFQ_TIMING=.*\n/)[0];
-const names=['gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
-const code="let n=0;const uid=()=>'id'+(n++);"+skip+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
+const consts=['GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc'].map(c=>src.match(new RegExp('  const '+c+'=.*\\n'))[0]).join('');
+const names=['gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const code="let n=0;const uid=()=>'id'+(n++);"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
+const L={legacy:true,hero:'채서래'};
 let pass=0;const t=(name,fn)=>{fn();pass++;console.log('✓',name);};
 const story='채서래는 계약서에 서명했다.  기본 수당 950,000원과 위험 수당 450,000원, 총 1,400,000원이 지급될 예정이다. 그는 이후 C급 면허를 취득했다.';
 t('근거: 공백·따옴표 차이 허용, 원문 구간 반환',()=>{
@@ -17,7 +18,7 @@ t('근거: 너무 짧은 인용은 거부',()=>{assert.strictEqual(F.gfqLocateEv
 t('면허 이름: 다른 면허는 강제 변경하지 않음',()=>{
   const a=F.gfqSafeProposal({category:'credential',name:'B급 탐색자 면허',evidence:'B급 탐색자 면허를 받았다'});
   assert.strictEqual(a.name,'B급 탐색자 면허');
-  const b=F.gfqSafeProposal({category:'credential',name:'C급 면허',evidence:'물리계 C급 정식 면허를 발급받았다'});
+  const b=F.gfqSafeProposal({category:'credential',name:'C급 면허',evidence:'물리계 C급 정식 면허를 발급받았다'},L);
   assert.strictEqual(b.name,'물리계 C급 정식 면허');
 });
 t('정산 완료만으로 received 확정 안 함 (기존 동작 유지)',()=>{
@@ -56,7 +57,7 @@ t('이미 승인한 근거는 다시 후보로 만들지 않음',()=>{
 });
 t('v0.3.4 통합 사례 회귀: 구성 수당 제거, 총액 유지',()=>{
   const ev=[{category:'asset',name:'긴급 설비 방어 보수',amount:1400000,unit:'원',source:'챕터 3 · 장면 4'},{category:'asset',name:'기본 수당',amount:950000,unit:'원',source:'챕터 3 · 장면 4'},{category:'asset',name:'위험 수당',amount:450000,unit:'원',source:'챕터 3 · 장면 4'}];
-  const r=F.gfqIntegrateQuests(ev);assert.strictEqual(r.length,1);assert.strictEqual(r[0].name,'긴급 설비 방어 보수 총액');
+  const r=F.gfqIntegrateQuests(ev,L);assert.strictEqual(r.length,1);assert.strictEqual(r[0].name,'긴급 설비 방어 보수 총액');
 });
 t('퀘스트 보상: 정산 완료 표현만으로 수령 확인 금지',()=>{
   const a=F.gfqSafeProposal({category:'quest',status:'completed',financialStatus:'received',evidence:'현장 긴급 대응 수당 정산을 완료한다',questRewards:[{name:'현장 긴급 대응 수당',kind:'money',certainty:'received',evidence:''}]});
@@ -74,7 +75,27 @@ t('지급 시점: 상대 표현은 발화 장면 기준으로 기록',()=>{
   assert.strictEqual(F.gfqTiming({evidence:'기본급 500,000원은 그대로 보장됩니다',source:'s'}),null);
 });
 t('총액 보정이 퀘스트 제목을 덮어쓰지 않음',()=>{
-  const r=F.gfqIntegrateQuests([{category:'quest',name:'제1공방 방어',questObjective:'제1공방 용해로 폭발을 막는다',amount:1400000,unit:'원',source:'챕터 3 · 장면 1',evidence:'e'}]);
+  const r=F.gfqIntegrateQuests([{category:'quest',name:'제1공방 방어',questObjective:'제1공방 용해로 폭발을 막는다',amount:1400000,unit:'원',source:'챕터 3 · 장면 1',evidence:'e'}],L);
   assert.strictEqual(r[0].name,'제1공방 긴급 방어 작전');
+});
+t('월드 판별: 기존 월드는 이름과 보정 규칙을 자동 설정',()=>{
+  const old={gfStorySamples:[{text:'채서래는 하역 통로를 지켰다.'}]};
+  assert.deepStrictEqual(F.gfqRuleCtx(old),{legacy:true,hero:'채서래'});
+  const fresh={gfStorySamples:[{text:'홍길동은 의뢰를 받았다.'}]};
+  assert.deepStrictEqual(F.gfqRuleCtx(fresh),{legacy:false,hero:''});
+  fresh.protagonist='홍길동';assert.deepStrictEqual(F.gfqRuleCtx(fresh),{legacy:false,hero:'홍길동'});
+  old.gfRulePack='';assert.strictEqual(F.gfqRuleCtx(old).legacy,false);
+});
+t('새 월드: 기존 월드 전용 규칙이 적용되지 않음',()=>{
+  const ev=[{category:'asset',name:'긴급 설비 방어 보수',amount:1400000,unit:'원',source:'챕터 3 · 장면 4'},{category:'asset',name:'기본 수당',amount:950000,unit:'원',source:'챕터 3 · 장면 4'},{category:'quest',name:'냉장 물류창고 조사',source:'챕터 1 · 줄거리',evidence:'x'}];
+  const r=F.gfqIntegrateQuests(ev);assert.strictEqual(r.length,3);assert.strictEqual(r[0].name,'긴급 설비 방어 보수');
+  assert.strictEqual(F.gfqSafeProposal({category:'credential',name:'물리계 C급 면허',evidence:'물리계 C급 면허'}).name,'물리계 C급 면허');
+  assert.strictEqual(F.gfqDuplicate({category:'credential',name:'물리계 면허',evidence:'a'},{category:'credential',name:'물리계 C급 면허',evidence:'b'}),false);
+  assert.strictEqual(F.gfqEventEligible({category:'quest',owner:'player',name:'보수 정산'}),true);
+});
+t('기존 월드: v0.3.4 필터 유지',()=>{
+  assert.strictEqual(F.gfqEventEligible({category:'quest',owner:'player',name:'보수 정산'},L),false);
+  assert.strictEqual(F.gfqEventEligible({category:'item',owner:'player',name:'앰플',evidence:'한도윤이 앰플을 추가 장전했다'},L),false);
+  assert.strictEqual(F.gfqDuplicate({category:'credential',name:'물리계 면허',evidence:'a'},{category:'credential',name:'물리계 C급 면허',evidence:'b'},L),true);
 });
 console.log('\n'+pass+'개 통과');

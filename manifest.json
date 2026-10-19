@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.5",
-    "description": "분석 안정성 개선·근거 대조 완화·입금 누락 진단",
+    "version": "0.3.6",
+    "description": "월드별 주인공·보정 규칙 분리",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
