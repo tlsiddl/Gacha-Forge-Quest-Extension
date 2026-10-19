@@ -2,8 +2,8 @@ const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
-const consts=['gfqWeekday','GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqCleanLore','gfqMergeLore','gfqInjectText','gfqVNDate','gfqDayDiff','gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const consts=['GFQ_INJECT_SECTIONS','gfqWeekday','GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
+const names=['gfqCleanLore','gfqMergeLore','gfqInjectText','gfqQuestRewardItems','gfqInjectLines','gfqInjectFit','gfqInjectSections','gfqCash','gfqVNDate','gfqDayDiff','gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -532,5 +532,19 @@ t('가챠 포지 로어북 연결: 맨 앞에 추가, 기존 설정 유지, 해�
   assert.deepStrictEqual(F.gfqMergeLore({...lore,worldIds:['wb1','lb']},'lb',true).worldIds,['lb','wb1'],'moved to the front, not duplicated');
   assert.deepStrictEqual(F.gfqMergeLore({...lore,worldIds:['lb','wb1']},'lb',false),{worldIds:['wb1'],castIds:['cb'],worldBudget:6000,castBudget:20000,beat:false});
   assert.deepStrictEqual(F.gfqCleanLore({worldIds:Array.from({length:30},(_,i)=>'x'+i)}).worldIds.length,24,'game limit');
+});
+t('보상 물품: 퀘스트 보상은 수령 예정으로 등록되고, 이름이 같은 수령 대사가 그 칸을 보유로 바꿈',()=>{
+  const w={items:[],history:[]};const q={title:'방어 작전',rewardDetails:[{name:'맞춤 경량 건틀릿',kind:'item',certainty:'confirmed'},{name:'명성 상승',kind:'reputation',certainty:'suggested'}]};
+  assert.strictEqual(F.gfqQuestRewardItems(w,q),1);assert.strictEqual(w.items[0].state,'pending');assert.ok(q.rewardDetails[0].chainKey);
+  assert.strictEqual(F.gfqQuestRewardItems(w,q),0,'not twice');
+  assert.strictEqual(F.gfqApplyItem(w,{name:'맞춤 경량 건틀릿',status:'confirmed',financialStatus:'received',amount:1,unit:'개',evidence:'건틀릿을 건네받았다'}),true);
+  assert.strictEqual(w.items.length,1);assert.strictEqual(w.items[0].state,undefined,'same entry now owned');
+  const w2={items:[{id:'a',name:'회복 포션 세트',state:'pending'},{id:'b',name:'회복 포션 상자',state:'pending'}],history:[]};
+  F.gfqApplyItem(w2,{name:'회복 포션',status:'confirmed',amount:2,unit:'개',evidence:'e'});
+  assert.ok(w2.items.filter(i=>i.state==='pending').length===2,'two possible matches: no guess');
+});
+t('배경 관리자 호환: 패널 글자의 챕터는 보이는 모양은 같지만 검색에 걸리지 않음',()=>{
+  const gfqNoMatch=new Function(grabConst('gfqNoMatch')+';return gfqNoMatch;')();const h=gfqNoMatch('<small>챕터 4 · 3챕터</small>'),re=/(?:\d+\s*챕터|챕터\s*\d+)/;
+  assert.ok(!re.test(h));assert.strictEqual(h.replace(/⁠/g,''),'<small>챕터 4 · 3챕터</small>');
 });
 console.log('\n'+pass+'개 통과');

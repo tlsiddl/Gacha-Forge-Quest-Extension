@@ -6,7 +6,7 @@ const win=dom.window,doc=win.document;
 win.HTMLDialogElement.prototype.showModal=function(){this.open=true};win.HTMLDialogElement.prototype.close=function(){this.open=false};
 const alerts=[];win.alert=m=>alerts.push(m);win.confirm=()=>true;win.localStorage.setItem('marinara_admin_secret','s3cret');let answer='2033-04-10';win.prompt=()=>answer;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const calls=[];
+const calls=[];let entryN=0;
 const reply=(body,status=200)=>({ok:status<400,status,headers:{get:()=> 'application/json'},clone(){return this},json:async()=>body});
 win.fetch=async(url,opts={})=>{
   const u=String(url),m=String(opts.method||'GET');
@@ -14,7 +14,7 @@ win.fetch=async(url,opts={})=>{
   if(u.includes('/api/gacha-forge/run/lorebooks')){const b=JSON.parse(opts.body);calls.push({m,u,body:b,admin:opts.headers?.['X-Admin-Secret']});return reply({ok:true,lore:b.lore});}
   if(u.includes('/api/lorebooks')){calls.push({m,u,body:opts.body?JSON.parse(opts.body):null,csrf:opts.headers?.['x-marinara-csrf'],admin:opts.headers?.['X-Admin-Secret']});
     if(m==='POST'&&u.endsWith('/api/lorebooks'))return reply({id:'lb1',name:JSON.parse(opts.body).name});
-    if(m==='POST'&&u.endsWith('/entries'))return reply({id:'en1'});
+    if(m==='POST'&&u.endsWith('/entries'))return reply({id:'en'+(++entryN)});
     if(m==='PATCH')return reply({id:'en1'});}
   return reply({});
 };
@@ -36,14 +36,17 @@ win.eval(src);
   assert.ok(conn,'auto-connected after creation');assert.strictEqual(conn.admin,'s3cret');
   assert.deepStrictEqual(conn.body,{runId:'run-x',lore:{worldIds:['lb1','wb1','wb2'],castIds:['cb'],worldBudget:6000,castBudget:20000,beat:true}});
   assert.match(panel.innerHTML,/<b>연결됨<\/b> \(월드 로어북 맨 앞\) · 스토리 장면에도 사용/);
-  assert.strictEqual(calls[1].body.constant,true);assert.match(calls[1].body.content,/진행 중: 제1공방 긴급 방어 작전 — 다음 목표: 게이트 파편 파괴/);
+  // v0.6.2: four constant entries (요약·퀘스트·돈·소지품), one per section.
+  const made=calls.filter(c=>c.m==='POST'&&c.u.endsWith('/entries'));
+  assert.deepStrictEqual(made.map(c=>c.body.name),['퀘스트 현황 · 요약','퀘스트 현황 · 퀘스트','퀘스트 현황 · 돈','퀘스트 현황 · 소지품']);
+  assert.ok(made.every(c=>c.body.constant===true));assert.match(made[1].body.content,/진행 중: 제1공방 긴급 방어 작전 — 다음 목표: 게이트 파편 파괴/);
   let w=JSON.parse(win.localStorage.getItem('gf-quest-v1')).worlds.w;
-  assert.deepStrictEqual([w.gfInject.lorebookId,w.gfInject.entryId,w.gfInject.enabled],['lb1','en1',true]);
+  assert.deepStrictEqual([w.gfInject.lorebookId,w.gfInject.entryId,w.gfInject.enabled,w.gfInject.entries.items.id],['lb1','en1',true,'en4']);
   // A change in state is pushed to the entry after the 3 s debounce, once.
   click('[data-tab="profile"]');click('[data-action="date-set"]');
   await sleep(3400);
   const patches=calls.filter(c=>c.m==='PATCH');
-  assert.strictEqual(patches.length,1,'one update per change');
+  assert.strictEqual(patches.length,1,'only the changed section is updated');
   assert.ok(patches[0].u.endsWith('/api/lorebooks/lb1/entries/en1'));
   assert.match(patches[0].body.content,/날짜: 2033-04-10 \(일\)/);
   // Saving again without any change sends nothing.

@@ -1,4 +1,4 @@
-/* 퀘스트 v0.6.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.6.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -62,7 +62,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-close{width:38px;height:38px;padding:0;font-size:16px}
 #gfq-01-panel button,#gfq-01-panel select,#gfq-01-panel input,#gfq-01-panel textarea{border-radius:0;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);font-family:var(--sans)}
 #gfq-01-panel button{font-weight:700;padding:6px 12px;cursor:pointer}
-#gfq-01-panel button:hover:not(:disabled){background:#fff}
+#gfq-01-panel button:hover:not(:disabled):not(.on):not([aria-pressed=true]):not(.primary){background:#fff}
 #gfq-01-panel button:disabled{opacity:.45;cursor:default}
 #gfq-01-panel button:focus-visible,#gfq-01-panel select:focus-visible,#gfq-01-panel input:focus-visible,#gfq-01-panel summary:focus-visible{outline:2px solid var(--ind2);outline-offset:2px}
 #gfq-01-panel button.primary{background:var(--ind);border-color:var(--ind);color:#fff}
@@ -141,7 +141,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-slot.on .gfq-glyph.q{color:var(--mark)}
 #gfq-01-panel .gfq-dossier{background:var(--card);border:1px solid var(--line);border-top:4px double var(--ind);box-shadow:4px 4px 0 #00000017;padding:0 0 16px}
 #gfq-01-panel .gfq-dossier.empty{padding:20px;text-align:center}
-#gfq-01-panel .gfq-dossier header{display:flex;align-items:center;gap:10px;padding:12px 0 12px 14px;border-bottom:1px solid var(--line)}
+#gfq-01-panel .gfq-dossier .gfq-hd{display:flex;align-items:center;gap:10px;padding:12px 0 12px 14px;border-bottom:1px solid var(--line)}
 #gfq-01-panel .gfq-pin{flex:none;width:14px;height:14px;border-radius:50%;background:var(--ind);box-shadow:0 0 0 3px #3b3f7a33;transform:translateY(-1px)}
 #gfq-01-panel .gfq-dossier h4{flex:1;margin:0;font:700 19px/1.25 var(--cond);color:var(--ind);letter-spacing:.03em;overflow-wrap:anywhere}
 #gfq-01-panel .gfq-no{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-left:1px solid var(--line);font-size:13px;line-height:1.1;color:var(--sub)}
@@ -195,7 +195,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-pinbox:hover:not(:disabled){background:none}
 #gfq-01-panel .gfq-pinbox img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 6px #0004;background:#fff}
 #gfq-01-panel .gfq-pin-dot{flex:none;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,var(--ind) 0 7px,#fff 7.5px 11px,var(--ind) 11.5px 13px,transparent 13.5px),#ffffffb0;border:1.5px solid var(--ind)}
-#gfq-01-panel .gfq-pin-text{display:flex;flex-direction:column;padding:6px 12px;background:#fff;border:1px solid var(--line);box-shadow:2px 2px 0 #0000001a;min-width:0}
+#gfq-01-panel .gfq-pin-text{display:flex;text-align:left;flex-direction:column;padding:6px 12px;background:#fff;border:1px solid var(--line);box-shadow:2px 2px 0 #0000001a;min-width:0}
 #gfq-01-panel .gfq-pin-text b{font:700 14px/1.25 var(--cond);color:var(--ind);letter-spacing:.02em;overflow-wrap:anywhere}
 #gfq-01-panel .gfq-pin-text small{font-size:11px;color:var(--sub);white-space:nowrap}
 #gfq-01-panel .gfq-pin-text em{font-style:normal;margin-left:4px;padding:0 6px;background:var(--mark);color:var(--ink);border-radius:999px;font-weight:700}
@@ -225,6 +225,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-route{display:none}#gfq-01-panel .gfq-pinbox{position:relative;left:auto!important;top:auto!important;transform:none;max-width:none}#gfq-01-panel .gfq-halo{left:-20px;width:84px;height:84px;margin-top:-42px}}
 @media(prefers-reduced-motion:reduce){#gfq-01-panel *{transition:none!important}}
 /* v0.6.1 */
+#gfq-01-panel .gfq-seg button[aria-pressed=true]:hover:not(:disabled),#gfq-01-panel .gfq-card button[aria-pressed=true]:hover:not(:disabled){background:var(--ind2);color:#fff}
+#gfq-01-panel .gfq-qitem.on:hover:not(:disabled),#gfq-01-panel .gfq-slot.on:hover:not(:disabled){background:var(--ind2);color:#fff}
+#gfq-01-panel .gfq-pinbox.on:hover .gfq-pin-text{background:var(--ind2)}
 #gfq-01-panel .gfq-top h2{font:800 30px/1 var(--serif);letter-spacing:.06em;color:var(--ind)}
 #gfq-01-panel .gfq-ticket{grid-template-columns:272px minmax(0,1fr) 84px}
 #gfq-01-panel .gfq-tk-photo{justify-content:center;padding:30px 22px 26px}
@@ -331,13 +334,28 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-placephoto img{width:100%;height:100%;min-height:300px;max-height:460px;object-fit:cover;display:block}
 #gfq-01-panel .gfq-placephoto.none{display:grid;place-items:center;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px)}
 #gfq-01-panel .gfq-placeinfo{padding-bottom:16px;min-width:0}
-#gfq-01-panel .gfq-placeinfo header{display:flex;align-items:center;gap:10px;padding:14px 0 14px 16px;border-bottom:1px solid var(--line)}
+#gfq-01-panel .gfq-placeinfo .gfq-hd{display:flex;align-items:center;gap:10px;padding:14px 0 14px 16px;border-bottom:1px solid var(--line)}
 #gfq-01-panel .gfq-placeinfo h4{flex:1;margin:0;font:800 21px/1.3 var(--serif);color:var(--ind);overflow-wrap:anywhere}
 #gfq-01-panel .gfq-placeinfo h5{margin:14px 16px 6px;font:700 14px var(--cond);letter-spacing:.06em;display:flex;align-items:center;gap:6px}
 #gfq-01-panel .gfq-placeinfo h5::before{content:"";width:12px;height:12px;border:1.5px solid var(--ink);box-shadow:inset 0 0 0 2px var(--card),inset 0 0 0 6px var(--ind)}
 #gfq-01-panel .gfq-placeinfo .gfq-facts{margin:0 16px}#gfq-01-panel .gfq-pad{padding:0 16px}
 #gfq-01-panel .gfq-placeinfo .gfq-here{margin:12px 16px 0}
 @media(max-width:760px){#gfq-01-panel .gfq-ticket{grid-template-columns:1fr}#gfq-01-panel .gfq-photo{width:150px;height:190px}#gfq-01-panel .gfq-quests,#gfq-01-panel .gfq-rw,#gfq-01-panel .gfq-placecard{grid-template-columns:1fr}#gfq-01-panel .gfq-qside{position:static}#gfq-01-panel .gfq-qlist{max-height:240px}#gfq-01-panel .gfq-qhead{padding:16px}#gfq-01-panel .gfq-qcrest{width:54px;height:68px}#gfq-01-panel .gfq-qhead h3{font-size:21px}#gfq-01-panel .gfq-qbody{padding:16px}#gfq-01-panel .gfq-qfoot{padding:12px 16px}#gfq-01-panel .gfq-pinbox{width:auto!important}#gfq-01-panel .gfq-drop{max-width:none}}
+
+/* v0.6.2 */
+#gfq-01-panel .gfq-tk-rows dd.gfq-cash{flex-direction:column;align-items:flex-start;gap:2px}
+#gfq-01-panel .gfq-cash b{font-size:30px!important;line-height:1.05!important;color:var(--ind)}
+#gfq-01-panel .gfq-cash small{font-size:11px}
+#gfq-01-panel .gfq-cash .gfq-link{font-size:12px}
+#gfq-01-panel .gfq-pager{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+#gfq-01-panel .gfq-pager>button{width:36px;height:36px;padding:0;font-size:20px;line-height:1}
+#gfq-01-panel .gfq-pager-tabs{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;padding:2px}
+#gfq-01-panel .gfq-pager-tabs button{flex:none;padding:6px 14px;font:700 14px var(--serif);background:var(--card)}
+#gfq-01-panel .gfq-pager-tabs button small{color:var(--sub);font-family:var(--cond);margin-left:3px}
+#gfq-01-panel .gfq-pager-tabs button[aria-pressed=true]{background:var(--ind);border-color:var(--ind);color:#fff}
+#gfq-01-panel .gfq-pager-tabs button[aria-pressed=true] small{color:#c9cbe0}
+#gfq-01-panel .gfq-pager-n{font-size:20px;font-weight:700;color:var(--ind);white-space:nowrap}#gfq-01-panel .gfq-pager-n small{font-size:13px;color:var(--sub)}
+#gfq-01-panel .gfq-pager-tabs button[aria-pressed=true]:hover:not(:disabled){background:var(--ind2)}
 `;
   style.textContent+=`
 #${ID}-toasts{position:fixed;inset:16px 16px auto auto;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;gap:8px;z-index:2147483002;max-width:min(380px,calc(100vw - 32px))}
@@ -365,7 +383,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const fs=[...gameRoot.querySelectorAll('.gf-fs-bar')].find(el=>el.classList.contains('icon-button'));
     if(!fs || !fs.parentElement)return;
     const b=document.createElement('button');b.type='button';b.className='icon-button';b.dataset.gfq='top';
-    b.title='퀘스트';b.setAttribute('aria-label','퀘스트');b.textContent='📜';
+    b.title='퀘스트';b.setAttribute('aria-label','퀘스트');b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M12 2.8 20.6 12 12 21.2 3.4 12z"/><path d="M12 7.8v5.4"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg>';
     b.addEventListener('pointerdown',e=>e.stopPropagation());
     b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openPanel();});
     fs.parentElement.insertBefore(b,fs);
@@ -608,6 +626,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
     return h.avatarPath||'';
   }
+  // v0.6.2: the Background Manager extension looks for any visible text like '챕터 4' to place its label. An invisible
+  // word joiner inside '챕터' keeps our panel and toasts out of that search; it looks and reads the same.
+  const gfqNoMatch=h=>String(h).replace(/챕터/g,'챕\u2060터');
   const gfqImgSrc=s=>/^(\/(?!\/)|https?:\/\/|data:image\/)/.test(String(s||''))?String(s):'';
   function gfqCleanLore(l){
     const ids=v=>[...new Set((Array.isArray(v)?v:[]).map(x=>String(x||'').trim()).filter(Boolean))].slice(0,24);
@@ -1510,12 +1531,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '- 새 후보가 등록된 퀘스트의 이어지는 장면(진행·완료)이면 existingQuestId에 그 퀘스트 ID(e로 시작)를 넣습니다.',
       '- 모든 새 후보 ID(c로 시작)는 정확히 한 그룹에만 넣습니다. 묶을 대상이 없는 후보도 단독 그룹으로 출력합니다.',
       '- title은 게임 의뢰처럼 간결한 한국어 제목, objective는 장소·행동·완료 조건을 담은 한 문장입니다.',
-      '- steps는 시간순 2~6개입니다. done은 후보 내용으로 완료가 확인된 단계만 true입니다.',
+      '- steps는 시간순 2~6개입니다. done은 후보 내용으로 완료가 확인된 단계만 true입니다. done이 true면 doneBy에 그 단계를 끝낸 장면의 후보 ID(c로 시작) 하나를 넣습니다. 모르면 비워 둡니다.',
       '- status는 후보 중 완료가 확인될 때만 completed, 아니면 active입니다.',
       '- \'보상 후보\' 중 그 임무의 대가로 받는 수당·보수·물품·자격이 있으면 ID(r로 시작)를 rewardIds에 넣습니다. 임무와 무관한 거래, 다른 임무의 보상은 넣지 않습니다. 확신이 없으면 넣지 않습니다.',
       '- reputation은 이 확장의 명성 규칙에 따른 제안입니다. 임무의 규모와 공적을 보고 amount를 정합니다: 1 소규모 의뢰, 2 다수의 인명·시설을 지킨 주목할 공적, 3 협회·길드 차원에서 인정받을 공적, 4 도시 단위 위기 해결, 5 세계관 전체에 알려질 업적. reason에는 근거가 된 공적을 한 문장으로 적습니다. 공적이 불분명하면 1입니다.',
       '- 후보와 등록된 퀘스트에 없는 사건이나 보상을 만들지 않습니다. 주인공: '+(hero||'플레이어 캐릭터')+'.',
-      '반환 JSON만 출력: {"groups":[{"memberIds":["c1"],"existingQuestId":"","rewardIds":[],"reputation":{"amount":1,"reason":""},"title":"","objective":"","steps":[{"text":"","done":false}],"status":"active"}]}',
+      '반환 JSON만 출력: {"groups":[{"memberIds":["c1"],"existingQuestId":"","rewardIds":[],"reputation":{"amount":1,"reason":""},"title":"","objective":"","steps":[{"text":"","done":false,"doneBy":""}],"status":"active"}]}',
       '[새 퀘스트 후보]\n'+JSON.stringify(input.candidates),
       '[등록된 퀘스트]\n'+JSON.stringify(input.existing),
       '[보상 후보]\n'+JSON.stringify(input.rewards||[])
@@ -1539,7 +1560,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       const ms=members.map(id=>byId.get(id));members.forEach(id=>used.add(id));
       const base=ms.find(p=>Array.isArray(p.questRewards)&&p.questRewards.length)||ms[0];
       const title=clean(g.title,90)||base.questTitle||base.name;
-      const steps=(Array.isArray(g.steps)?g.steps:[]).slice(0,8).map(v=>typeof v==='string'?{text:v,done:false}:{text:v?.text,done:v?.done===true}).map(v=>({text:clean(v.text,80),done:v.done})).filter(v=>v.text);
+      const steps=(Array.isArray(g.steps)?g.steps:[]).slice(0,8).map(v=>typeof v==='string'?{text:v,done:false}:{text:v?.text,done:v?.done===true,by:candMap.get(String(v?.doneBy||''))}).map(v=>({text:clean(v.text,80),done:v.done,evidence:v.done&&v.by&&members.includes(v.by)?String(byId.get(v.by)?.evidence||''):''})).filter(v=>v.text);
       const anyDone=ms.some(p=>p.status==='completed'),allDone=ms.every(p=>p.status==='completed');
       const rewards=[...linkedRewards],seen=new Set(linkedRewards.map(r=>r.name+'|'+(r.amount??'')));
       rewardLinks+=linkedRewards.filter(r=>r.kind!=='reputation').length;
@@ -1547,7 +1568,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       for(const r of ms.flatMap(p=>Array.isArray(p.questRewards)?p.questRewards:[])){if(!r)continue;const k=String(r.name||'')+'|'+(r.amount??'');if(seen.has(k)||(typeof r.amount==='number'&&linkedRewards.some(v=>v.amount===r.amount&&v.unit===String(r.unit||''))))continue;seen.add(k);rewards.push(r);}
       const evidence=[...new Set(ms.flatMap(p=>Array.isArray(p.sourceEvidence)&&p.sourceEvidence.length?p.sourceEvidence:[p.evidence]).filter(Boolean))].slice(0,12);
       const merged={...base,id:uid(),name:title,questTitle:title,questObjective:clean(g.objective,350)||base.questObjective||'',
-        questSteps:steps.map(v=>v.text),questStepDone:steps.map(v=>v.done),
+        questSteps:steps.map(v=>v.text),questStepDone:steps.map(v=>v.done),questStepEvidence:steps.map(v=>v.evidence),
         // Completion needs every member completed, or the AI's verdict backed by all listed steps being done.
         status:allDone||(g.status==='completed'&&anyDone&&steps.length>0&&steps.every(v=>v.done))?'completed':'active',
         questRewards:[...rewards.filter(r=>r.kind!=='reputation'),...rewards.filter(r=>r.kind==='reputation')].slice(0,8),sourceEvidence:evidence,
@@ -1749,7 +1770,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function gfqToastOffer(title,text,onAccept,onLater){
     if(!document.body)return;
     const box=gfqToastBox(),el=document.createElement('div');el.className='gfq-toast gfq-toast-quest gfq-toast-offer';
-    el.innerHTML='<b>'+esc(title)+'</b><span>'+esc(text)+'</span><div class="gfq-offer-row"><button type="button" data-o="yes">수락</button><button type="button" data-o="later">나중에</button></div>';
+    el.innerHTML=gfqNoMatch('<b>'+esc(title)+'</b><span>'+esc(text)+'</span>')+'<div class="gfq-offer-row"><button type="button" data-o="yes">수락</button><button type="button" data-o="later">나중에</button></div>';
     el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;el.remove();gfqToastHide();(b.dataset.o==='yes'?onAccept:onLater)();});
     box.append(el);
   }
@@ -1757,7 +1778,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(!document.body)return;
     gfqToastBox();
     const el=document.createElement('button');el.type='button';el.className='gfq-toast gfq-toast-'+kind;
-    el.innerHTML='<b>'+esc(title)+'</b><span>'+esc(text)+'</span>';
+    el.innerHTML=gfqNoMatch('<b>'+esc(title)+'</b><span>'+esc(text)+'</span>');
     el.addEventListener('click',()=>{el.remove();gfqToastHide();currentTab=['date','money','item','benefit','credential','rep'].includes(kind)?'profile':['review','info'].includes(kind)?'history':'quests';if(!panel)openPanel();else render();});
     toastBox.append(el);gfqToastTrim();
     setTimeout(()=>{el.remove();gfqToastHide();},kind==='review'?12000:7000);
@@ -1895,8 +1916,13 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
     // An intermediate evidence line completes the next unfinished sub-goal.
     target.stepDone=(target.steps||[]).map((_,k)=>target.stepDone?.[k]===true);
-    const k=target.stepDone.indexOf(false);
-    if(k>=0){target.stepDone[k]=true;record(w,'세부 목표 달성: '+target.title+' · '+target.steps[k]);events.push({kind:'step',title:'목표 달성',text:target.title+' · '+target.steps[k]});}
+    // v0.6.2: when the analysis says which scene finished which sub-goal, tick exactly that one.
+    const key=t=>gfqNormMap(t).out,line=key(list[at]||''),se=Array.isArray(p.questStepEvidence)?p.questStepEvidence:[],ps=Array.isArray(p.questSteps)?p.questSteps:[];
+    target.steps=Array.isArray(target.steps)?target.steps:[];
+    const ks=[];
+    if(se.some(Boolean)){ps.forEach((t,i)=>{if(!se[i]||key(se[i])!==line)return;let k=target.steps.findIndex(v=>key(v)===key(t));if(k<0&&target.steps.length<12){target.steps.push(t);target.stepDone.push(false);k=target.steps.length-1;}if(k>=0&&!target.stepDone[k])ks.push(k);});}
+    else{const k=target.stepDone.indexOf(false);if(k>=0)ks.push(k);}
+    for(const k of ks){target.stepDone[k]=true;record(w,'세부 목표 달성: '+target.title+' · '+target.steps[k]);events.push({kind:'step',title:'목표 달성',text:target.title+' · '+target.steps[k]});}
     p.stage=at+1;
   }
   function gfqAcceptQuest(id,at){
@@ -1910,7 +1936,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       const pres=gfqQuestPresentation(gfqSafeProposal(p,gfqRuleCtx(w)));
       const q={id:uid(),...(p.date?{startDate:p.date}:{}),title:pres.title,type:'의뢰',detail:pres.objective,target:1,progress:0,reward:pres.rewardList.map(r=>r.name).join(' · '),rewardDetails:pres.rewardList,claimed:false,sourceEvidence:p.evidence,source:p.source,steps:pres.steps,stepDone:pres.steps.map(()=>false),rewardTransactionId:''};
       w.quests.push(q);p.acceptedQuestId=q.id;p.stage=(typeof at==='number'?at:0)+1;
-      record(w,'퀘스트 수락: '+q.title);gfqRelinkQuestRewards(w);
+      record(w,'퀘스트 수락: '+q.title);gfqRelinkQuestRewards(w);gfqQuestRewardItems(w,q);
       events.push({kind:'quest',title:'퀘스트 수락',text:q.title});
     }
     save();if(panel)render();for(const e of events)gfqToast(e.title,e.text,e.kind);
@@ -1955,11 +1981,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // v0.5.0: story injection through a Marinara lorebook. Gacha Forge re-reads the world lorebooks for every
   // scene it narrates (when 'lorebooks feed story scenes' is on) and always includes constant entries, so
   // keeping one constant entry current puts the quest status into the next scene's prompt.
-  function gfqInjectText(w,limit=600){
+  function gfqInjectLines(w){
     const lines=[],ledger=w.gfLedger||[],items=w.items||[],fields=w.fields||[];
-    const head='[퀘스트 현황 · 퀘스트 확장 자동 기록] '+(String(w.protagonist||'').trim()||'주인공')+'의 확정된 진행 상태입니다. 이야기와 어긋나지 않게 이어 가되, 여기에 없는 지급·획득·완료를 새로 만들지 마세요.';
     const won=(n,u)=>typeof n==='number'?gfqAmount(n,u).replace(' 원','원'):'금액 미확인';
     const date=gfqCurrentDate(w);if(date)lines.push(['날짜',date.date+' ('+gfqWeekday(date.date)+')']);
+    const place=w.gfPlaceNow&&w.gfPlaces?.[w.gfPlaceNow.key];if(place)lines.push(['현재 위치',place.name]);
+    const cash=gfqCash(w);if(cash.known)lines.push(['소지금',won(cash.balance,'원')]);
     const open=(w.quests||[]).filter(q=>!q.claimed).slice(-4).reverse();
     for(const q of open){const k=(q.steps||[]).findIndex((_,i)=>q.stepDone?.[i]!==true);lines.push(['진행 중',q.title+(k>=0?' — 다음 목표: '+q.steps[k]:'')]);}
     for(const t of ledger.filter(t=>['pending','receivable'].includes(t.state)).slice(-6))lines.push(['받을 돈',t.name+' '+won(t.amount,t.unit)+(t.state==='pending'?' (지급 예정'+(t.timing?.text?' · '+t.timing.text:'')+')':' (확정·미입금)')]);
@@ -1970,6 +1997,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const rep=fields.find(f=>f.name==='명성');if(rep)lines.push(['명성',rep.value+(rep.unit||'')]);
     for(const q of (w.quests||[]).filter(q=>q.claimed).slice(-3).reverse())lines.push(['완료',q.title+(q.doneDate?' ('+q.doneDate+')':'')]);
     for(const i of items.filter(i=>i.state!=='pending'&&i.kind!=='voucher'&&i.qty>0).slice(-8))lines.push(['소지품',i.name+' ×'+i.qty]);
+    for(const q of open){const st=(q.steps||[]).map((t,i)=>(q.stepDone?.[i]===true?'✓':'○')+t);if(st.length)lines.push(['목표 현황',q.title+': '+st.join(' / ')]);const rw=(q.rewardDetails||[]).filter(r=>r.kind!=='reputation').map(r=>r.name+(typeof r.amount==='number'?' '+won(r.amount,r.unit):'')+' ['+gfqRewardState(w,r).text+']');if(rw.length)lines.push(['걸린 보상',q.title+': '+rw.join(', ')]);}
+    return lines;
+  }
+  const GFQ_INJECT_SECTIONS=[{key:'status',name:'퀘스트 현황 · 요약',labels:['날짜','현재 위치','소지금','명성','보유 자격','보유 혜택']},{key:'quests',name:'퀘스트 현황 · 퀘스트',labels:['진행 중','목표 현황','걸린 보상','완료']},{key:'money',name:'퀘스트 현황 · 돈',labels:['받을 돈','최근 입금','최근 지출']},{key:'items',name:'퀘스트 현황 · 소지품',labels:['수령 예정','이용권','소지품']}];
+  function gfqInjectFit(head,lines,limit){
     // Group by label in priority order, then trim whole items from the end to fit the limit.
     let out=head;const max=Math.max(150,Number(limit)||600);
     for(const [label,text] of lines){
@@ -1979,6 +2011,17 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       else out+=seg;
     }
     return out;
+  }
+  function gfqInjectText(w,limit=600){
+    const head='[퀘스트 현황 · 퀘스트 확장 자동 기록] '+(String(w.protagonist||'').trim()||'주인공')+'의 확정된 진행 상태입니다. 이야기와 어긋나지 않게 이어 가되, 여기에 없는 지급·획득·완료를 새로 만들지 마세요.';
+    return gfqInjectFit(head,gfqInjectLines(w).filter(([l])=>!['목표 현황','걸린 보상','현재 위치','소지금'].includes(l)),limit);
+  }
+  // v0.6.2: one constant entry per section, each refreshed on its own when its content changes.
+  function gfqInjectSections(w,limit=600){
+    const all=gfqInjectLines(w),hero=String(w.protagonist||'').trim()||'주인공';
+    return GFQ_INJECT_SECTIONS.map((sec,i)=>{const mine=all.filter(([l])=>sec.labels.includes(l)).sort((a,b)=>sec.labels.indexOf(a[0])-sec.labels.indexOf(b[0]));
+      const head='['+sec.name+' · 퀘스트 확장 자동 기록] '+hero+'의 확정된 상태입니다. 여기에 없는 지급·획득·완료를 새로 만들지 마세요.';
+      return {...sec,order:i+1,text:mine.length?gfqInjectFit(head,mine,limit):head+'\n(기록 없음)'};});
   }
   async function gfqApi(path,method,body){
     const host=typeof marinara==='object'&&marinara?marinara:globalThis.marinara||{};
@@ -1994,8 +2037,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   async function gfqInjectCreate(w){
     const name=('퀘스트 확장 · '+(w.gfDisplayName||data.world)).slice(0,200);
     const book=await gfqApi('/api/lorebooks','POST',{name,description:'가챠 포지 퀘스트 확장이 자동으로 갱신하는 퀘스트 현황입니다. 내용은 확장이 덮어쓰므로 직접 고치지 마세요.',enabled:true,isGlobal:false,tags:['gacha-forge-quest']});
-    const entry=await gfqApi('/api/lorebooks/'+encodeURIComponent(book.id)+'/entries','POST',{name:'퀘스트 현황',content:gfqInjectText(w,w.gfInject?.limit),constant:true,enabled:true,keys:[],order:1,position:0,description:'퀘스트 확장 자동 기록'});
-    w.gfInject={...(w.gfInject||{}),enabled:true,lorebookId:book.id,lorebookName:name,entryId:entry.id,lastHash:'',error:''};
+    w.gfInject={...(w.gfInject||{}),enabled:true,lorebookId:book.id,lorebookName:name,entryId:'',entries:{},lastHash:'',error:''};
+    await gfqInjectSync(true,w);
     record(w,'스토리 반영용 로어북 생성: '+name);
     return book;
   }
@@ -2016,33 +2059,47 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   var injectTimer=0,injectBusy=false;
   function gfqInjectSchedule(){
     const w=typeof current==='function'?current():null;
-    if(!w?.gfInject?.enabled||!w.gfInject.entryId)return;
+    if(!w?.gfInject?.enabled||!w.gfInject.lorebookId)return;
     if(injectTimer)clearTimeout(injectTimer);
     injectTimer=setTimeout(()=>{injectTimer=0;gfqInjectSync(false);},3000);
   }
-  async function gfqInjectSync(force){
-    const w=current();if(!w?.gfInject?.entryId||injectBusy)return false;
-    const text=gfqInjectText(w,w.gfInject.limit);
-    let h=2166136261;for(let i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619)>>>0;
-    const hash=h.toString(36)+':'+text.length;
-    if(!force&&hash===w.gfInject.lastHash)return false;
-    injectBusy=true;
+  const gfqHash=t=>{let h=2166136261;for(let i=0;i<t.length;i++)h=Math.imul(h^t.charCodeAt(i),16777619)>>>0;return h.toString(36)+':'+t.length;};
+  // v0.6.2: one constant entry per section (요약·퀘스트·돈·소지품). Only sections whose text changed are sent.
+  // The entry made by v0.5.x becomes the 요약 entry, so nothing the player already connected is lost.
+  async function gfqInjectSync(force,target){
+    const w=target||current(),g=w?.gfInject;if(!g?.lorebookId||injectBusy)return false;
+    g.entries=g.entries&&typeof g.entries==='object'?g.entries:{};
+    if(g.entryId&&!g.entries.status)g.entries.status={id:g.entryId,hash:''};
+    const book='/api/lorebooks/'+encodeURIComponent(g.lorebookId)+'/entries';
+    injectBusy=true;let sent=0;
     try{
-      await gfqApi('/api/lorebooks/'+encodeURIComponent(w.gfInject.lorebookId)+'/entries/'+encodeURIComponent(w.gfInject.entryId),'PATCH',{content:text,constant:true,enabled:true});
-      w.gfInject.lastHash=hash;w.gfInject.lastAt=now();w.gfInject.error='';
-    }catch(e){w.gfInject.error=e.status===404?'로어북 항목을 찾지 못했습니다. 설정 탭에서 다시 만들어 주세요.':String(e.message||e);}
+      for(const sec of gfqInjectSections(w,g.limit)){
+        const e=g.entries[sec.key]||{},hash=gfqHash(sec.name+'\n'+sec.text);
+        if(!force&&e.id&&e.hash===hash)continue;
+        const body={name:sec.name,content:sec.text,constant:true,enabled:true,order:sec.order};
+        try{
+          if(e.id)await gfqApi(book+'/'+encodeURIComponent(e.id),'PATCH',body);
+          else{const made=await gfqApi(book,'POST',{...body,keys:[],position:0,description:'퀘스트 확장 자동 기록'});e.id=made.id;}
+        }catch(err){
+          if(err.status!==404||!e.id)throw err;
+          const made=await gfqApi(book,'POST',{...body,keys:[],position:0,description:'퀘스트 확장 자동 기록'});e.id=made.id; // entry deleted by hand: make it again
+        }
+        e.hash=hash;e.at=now();g.entries[sec.key]=e;sent++;
+      }
+      g.entryId=g.entries.status?.id||g.entryId;if(sent){g.lastAt=now();}g.error='';
+    }catch(e){g.error=e.status===404?'로어북을 찾지 못했습니다. 설정 탭에서 다시 만들어 주세요.':String(e.message||e);}
     finally{injectBusy=false;}
     try{localStorage.setItem(STORE,JSON.stringify(data));}catch{}
     if(panel&&currentTab==='settings')render();
-    return !w.gfInject.error;
+    return !g.error;
   }
   function gfqTokens(t){try{const h=typeof marinara==='object'&&marinara?marinara:globalThis.marinara;if(h&&typeof h.estimateTextTokens==='function')return h.estimateTextTokens(t);}catch{}return Math.ceil(String(t).length*0.9);}
   function gfqInjectHtml(w){
-    const g=w.gfInject||{},text=gfqInjectText(w,g.limit);
-    return '<div class="gfq-card"><b>스토리 반영 (로어북)</b><p class="gfq-muted">퀘스트·돈·물품·날짜 현황을 전용 로어북의 상시 항목 하나로 계속 갱신합니다. 가챠 포지가 장면을 쓸 때마다 이 로어북을 새로 읽어, 다음 장면부터 이야기에 반영됩니다. 게임 저장 데이터와 직접 쓰신 지침은 바꾸지 않습니다.</p>'+
+    const g=w.gfInject||{},secs=gfqInjectSections(w,g.limit),text=secs.map(x=>x.text).join('\n\n');
+    return '<div class="gfq-card"><b>스토리 반영 (로어북)</b><p class="gfq-muted">퀘스트·돈·물품·날짜 현황을 전용 로어북의 상시 항목 네 개(요약·퀘스트·돈·소지품)로 나눠, 목록이 바뀔 때마다 바뀐 항목만 자동으로 갱신합니다. 가챠 포지가 장면을 쓸 때마다 이 로어북을 새로 읽어, 다음 장면부터 이야기에 반영됩니다. 게임 저장 데이터와 직접 쓰신 지침은 바꾸지 않습니다.</p>'+
       (g.lorebookId?'<p class="gfq-muted">연결된 로어북: <b>'+esc(g.lorebookName||g.lorebookId)+'</b>'+(g.lastAt?' · 마지막 갱신 '+esc(g.lastAt):'')+(g.error?' · <span class="gfq-danger">'+esc(g.error)+'</span>':'')+'</p>':'')+
       '<label><input type="checkbox" id="gfq-inject-on" style="width:auto" '+(g.enabled&&g.lorebookId?'checked':'')+'> 현황을 로어북에 자동 반영</label>'+
-      '<label for="gfq-inject-limit">최대 글자 수 (중요한 항목부터 채웁니다)</label><input id="gfq-inject-limit" type="number" min="150" max="4000" step="50" value="'+esc(g.limit||600)+'">'+
+      '<label for="gfq-inject-limit">항목별 최대 글자 수 (중요한 내용부터 채웁니다)</label><input id="gfq-inject-limit" type="number" min="150" max="4000" step="50" value="'+esc(g.limit||600)+'">'+
       '<label>현재 반영 내용 ('+text.length+'자 · 약 '+gfqTokens(text).toLocaleString('ko-KR')+'토큰'+(w.gfRunLore?' / 월드 로어북 예산 '+(w.gfRunLore.worldBudget||6000).toLocaleString('ko-KR')+'토큰':'')+')</label><textarea readonly rows="7">'+esc(text)+'</textarea>'+
       (g.lorebookId?'<p class="gfq-muted">가챠 포지 연결: '+(w.gfRunLore?(w.gfRunLore.worldIds.includes(g.lorebookId)?'<b>연결됨</b>'+(w.gfRunLore.worldIds[0]===g.lorebookId?' (월드 로어북 맨 앞)':'')+(w.gfRunLore.beat?' · 스토리 장면에도 사용':' · <span class="gfq-danger">스토리 장면 사용 꺼짐</span>'):'<span class="gfq-danger">연결 안 됨</span>'):'게임 설정을 아직 읽지 못했습니다 (가챠 포지 화면을 한 번 열어 주세요)')+'</p>':'')+
       '<div class="gfq-row">'+(g.lorebookId?btn('지금 반영','inject-now')+(w.gfRunLore&&w.gfRunLore.worldIds.includes(g.lorebookId)?btn('가챠 포지 연결 해제','inject-disconnect'):btn('가챠 포지에 연결','inject-connect','class="primary"'))+btn('로어북 다시 만들기','inject-create'):btn('스토리 반영용 로어북 만들기','inject-create','class="primary"'))+'</div>'+
@@ -2160,7 +2217,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // v0.3.8: items promised for later are kept as '수령 예정' and become owned when a linked receipt is approved.
   function gfqApplyItem(w,x){
     const chain=String(x.chainKey||'').trim();
-    const waiting=chain?(w.items||[]).find(i=>i.state==='pending'&&(i.chainKey===chain||i.id===chain)):null;
+    let waiting=chain?(w.items||[]).find(i=>i.state==='pending'&&(i.chainKey===chain||i.id===chain)):null;
+    // v0.6.2: a receipt line that names a waiting item (e.g. a quest reward) flips that entry even without a link.
+    if(!waiting){const nk=t=>gfqNormMap(String(t||'').replace(/\s+/g,'')).out,mine=nk(x.name);
+      const cands=mine.length>=4?(w.items||[]).filter(i=>i.state==='pending'&&(()=>{const o=nk(i.name);return o.length>=4&&(o.includes(mine)||mine.includes(o));})()):[];
+      if(cands.length===1)waiting=cands[0];}
     const qtyOk=typeof x.amount==='number'&&Number.isSafeInteger(x.amount)&&x.amount>0&&x.unit!=='원';
     const receiving=x.financialStatus!=='pending'&&['confirmed','completed'].includes(x.status);
     if(waiting&&receiving){
@@ -2240,6 +2301,21 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
     return linked;
   }
+  // v0.6.2: an item promised as a quest reward appears in the inventory as 'to receive' (or owned when the
+  // reward line already confirms receipt). Linked by chainKey so a later receipt line flips the same entry.
+  function gfqQuestRewardItems(w,q){
+    let added=0;
+    for(const r of (Array.isArray(q.rewardDetails)?q.rewardDetails:[])){
+      if(r.kind!=='item'||!String(r.name||'').trim()||r.certainty==='suggested'||r.certainty==='uncertain')continue;
+      const linked=r.chainKey&&w.items.find(i=>i.chainKey===r.chainKey||i.id===r.chainKey);if(linked)continue;
+      const same=w.items.find(i=>i.name===r.name&&i.kind!=='voucher');if(same){r.chainKey=same.chainKey||same.id;continue;}
+      r.chainKey=r.chainKey||uid();
+      if(r.certainty==='received'){w.items.push({id:uid(),name:String(r.name).slice(0,100),qty:1,chainKey:r.chainKey,receivedAt:now()});record(w,'퀘스트 보상 수령: '+r.name+' · '+q.title);}
+      else{w.items.push({id:uid(),name:String(r.name).slice(0,100),qty:1,state:'pending',chainKey:r.chainKey});record(w,'퀘스트 보상 수령 예정 등록: '+r.name+' · '+q.title);}
+      added++;
+    }
+    return added;
+  }
   function gfqRewardToLedger(w,q,index){
     const r=q.rewardDetails?.[index];
     if(!r||r.kind!=='money'||typeof r.amount!=='number'||r.txId)return null;
@@ -2264,10 +2340,16 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }[k]||'')+'</svg>';
   function gfqDateBlock(w){
     const c=gfqCurrentDate(w);
-    return '<div class="gfq-tk-date"><span class="gfq-k">세계관 날짜</span><b class="gfq-num">'+esc(c?c.date.replace(/-/g,'.'):'—')+'</b><span class="gfq-sub">'+(c?esc(gfqWeekday(c.date))+'요일 · '+esc(c.basis)+(c.source?' · '+esc(c.source):''):'아직 날짜 줄을 만나지 못했습니다')+'</span>'+
+    return '<div class="gfq-tk-date"><span class="gfq-k">세계관 날짜</span><b class="gfq-num">'+esc(c?c.date.replace(/-/g,'.'):'—')+'</b><small class="gfq-sub">'+(c?esc(gfqWeekday(c.date))+'요일 · '+esc(c.basis)+(c.source?' · '+esc(c.source):''):'아직 날짜 줄을 만나지 못했습니다')+'</small>'+
       '<div class="gfq-row">'+btn('날짜 직접 입력','date-set')+btn('하루 경과','date-next',c?'':'disabled')+'</div></div>';
   }
   // Protagonist as an admission ticket: photo stub, details, perforated barcode stub.
+  // v0.6.2: cash on hand = the starting amount the player entered + confirmed deposits − payments (원 only).
+  // Promised or pending money is never counted.
+  function gfqCash(w){
+    const sm=gfqLedgerSummary(w),base=typeof w.gfCashBase?.amount==='number'?w.gfCashBase.amount:null;
+    return {known:base!==null,base,net:sm.received-sm.paid,balance:base===null?null:base+sm.received-sm.paid,owed:sm.receivable+sm.pending};
+  }
   function gfqTicket(w){
     const name=String(w.protagonist||w.gfHero?.name||'').trim(),world=w.gfDisplayName||data.world||'';
     const img=gfqImgSrc(gfqHeroAvatar(w));
@@ -2284,6 +2366,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<h3 class="gfq-tk-name">'+(name?esc(name):'<span class="gfq-sub">이름 미설정</span>')+'</h3>'+
         (name?'':'<p class="gfq-sub">게임 상태를 받으면 주인공 이름을 채웁니다. 설정 탭에서 직접 입력할 수도 있습니다.</p>')+
         '<dl class="gfq-tk-rows">'+
+          '<dt>소지금</dt><dd class="gfq-cash">'+(()=>{const c=gfqCash(w);return c.known?'<b class="gfq-num">'+esc(gfqAmount(c.balance,'원'))+'</b><small>시작 '+esc(gfqAmount(c.base,'원'))+' + 입금 확인 − 지출'+(c.owed?' · 받을 돈 '+esc(gfqAmount(c.owed,'원'))+' 별도':'')+'</small><button class="gfq-link" data-action="cash-base">시작 금액 고치기</button>':'<span class="gfq-sub">확인된 순변동 '+esc((c.net>=0?'+':'')+gfqAmount(c.net,'원'))+'</span><button class="gfq-link" data-action="cash-base">시작 소지금 입력</button>';})()+'</dd>'+
           '<dt>명성</dt><dd>'+(repN===null?'<span class="gfq-sub">'+(rep?esc(rep.value+(rep.unit||'')):'아직 없음')+'</span>':dots+'<b class="gfq-num">'+repN+'</b><small>점</small>')+'</dd>'+
           '<dt>자격</dt><dd>'+(creds.map(f=>'<span class="gfq-stamp">'+esc(f.name.replace(/^보유 자격 · /,''))+(f.value?'<small>'+esc(String(f.value).replace(/^취득 · /,''))+'</small>':'')+'</span>').join('')||'<span class="gfq-sub">아직 없음</span>')+'</dd>'+
           '<dt>의뢰</dt><dd><b class="gfq-num">'+open+'</b><small> 진행 중 · 전체 '+w.quests.length+'</small></dd>'+
@@ -2293,7 +2376,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '<div class="gfq-tk-stub">'+gfqBarcode(data.world)+'<span class="gfq-num">'+esc(String(w.gfRunId||data.world||'').slice(-8).toUpperCase())+'</span></div>'+
     '</section>';
   }
-  let itemFilter='전체',selectedItem='',selectedPlace='';
+  let itemFilter='전체',selectedItem='',selectedPlace='',placePage='';
   function gfqItemGlyph(i){
     const ic=gfqThing(i.name,i.kind==='voucher'?'voucher':'item');
     if(i.state==='pending')return '<span class="gfq-glyph">'+ic+'<em class="gfq-badge q" aria-label="수령 예정">?</em></span>';
@@ -2316,7 +2399,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       if(sel.value)facts.push('가치: '+gfqAmount(sel.value,'원'));
       if(sel.detail)facts.push(sel.detail);
       const acts=sel.state==='pending'?btn('수령 확인','receive-item',`data-id="${esc(sel.id)}" class="primary"`):sel.kind==='voucher'?btn('사용','use-voucher',`data-id="${esc(sel.id)}" class="primary" ${sel.qty>0?'':'disabled'}`):btn('수정','edit-item',`data-id="${esc(sel.id)}"`);
-      detail='<article class="gfq-dossier"><header><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">No.<br>'+gfqSerial(sel.id)+'</span></header>'+
+      detail='<article class="gfq-dossier"><div class="gfq-hd"><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">No.<br>'+gfqSerial(sel.id)+'</span></div>'+
         '<div class="gfq-plate">'+gfqItemGlyph(sel)+'<span class="gfq-plate-tag">'+(sel.state==='pending'?'수령 예정':sel.kind==='voucher'?'이용권':'보유')+'</span></div>'+
         '<h5>요약</h5><ul class="gfq-facts">'+facts.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+
         (sel.evidence||sel.source?'<p class="gfq-quote"><mark>'+esc(String(sel.evidence||'').slice(0,40))+'</mark>'+esc(String(sel.evidence||'').slice(40,200))+(sel.source?' <small>'+esc(sel.source)+'</small>':'')+'</p>':'')+
@@ -2345,8 +2428,19 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function gfqProfileHtml(w){return gfqTicket(w)+gfqItemsHtml(w)+'<div class="gfq-split">'+gfqReceipt(w)+gfqFieldsHtml(w)+'</div>';}
   // Places as an evidence board: pins in order of first appearance, joined by a route line.
   function gfqPlacesHtml(w){
-    const list=gfqPlaceList(w),nowKey=w.gfPlaceNow?.key||'';
-    if(!list.length)return '<div class="gfq-empty"><strong>아직 기록된 장소가 없습니다</strong><span class="gfq-sub">게임이 챕터 계획을 받을 때 장면마다 정해진 장소를 모읍니다. 이미 만든 장면의 배경 장소는 아래 버튼으로 가져올 수 있습니다.</span>'+btn('장소 불러오기','load-places','class="primary"')+'</div>';
+    const all=gfqPlaceList(w),nowKey=w.gfPlaceNow?.key||'';
+    if(!all.length)return '<div class="gfq-empty"><strong>아직 기록된 장소가 없습니다</strong><span class="gfq-sub">게임이 챕터 계획을 받을 때 장면마다 정해진 장소를 모읍니다. 이미 만든 장면의 배경 장소는 아래 버튼으로 가져올 수 있습니다.</span>'+btn('장소 불러오기','load-places','class="primary"')+'</div>';
+    // v0.6.2: pages of three chapters each (a place shows on every page whose chapters it appears in), then background-only places.
+    const chs=[...new Set(all.flatMap(p=>p.chapters||[]))].filter(n=>n>0).sort((x,y)=>x-y),pages=[];
+    for(let from=1;chs.length&&from<=chs[chs.length-1];from+=3){const to=from+2,firstIn=p=>{const sc=(p.scenes||[]).find(v=>v.chapter>=from&&v.chapter<=to);return sc?sc.chapter*1000+sc.index:(p.chapters||[]).find(c=>c>=from&&c<=to)*1000;};
+      const items=all.filter(p=>(p.chapters||[]).some(c=>c>=from&&c<=to)).sort((x,y)=>firstIn(x)-firstIn(y));if(items.length)pages.push({id:'c'+from,label:from===to?'챕터 '+from:'챕터 '+from+'–'+to,items});}
+    const bgOnly=all.filter(p=>!(p.chapters||[]).length);if(bgOnly.length)pages.push({id:'bg',label:'배경만 확인',items:bgOnly});
+    const has=(x,k)=>k&&x.items.some(p=>p.key===k);const page=pages.find(x=>x.id===placePage&&(!selectedPlace||has(x,selectedPlace)))||pages.find(x=>has(x,selectedPlace))||pages.find(x=>has(x,nowKey))||pages.filter(x=>x.id!=='bg').pop()||pages[0];
+    const list=page.items,pi=pages.indexOf(page);
+    const pager='<div class="gfq-pager" role="group" aria-label="장소 페이지">'+btn('<span aria-hidden="true">‹</span>','place-page',`data-id="${pages[pi-1]?.id||''}" aria-label="이전 페이지" ${pi>0?'':'disabled'}`)+
+      '<div class="gfq-pager-tabs">'+pages.map(x=>'<button data-action="place-page" data-id="'+x.id+'" aria-pressed="'+(x===page)+'">'+esc(x.label)+' <small class="gfq-num">'+x.items.length+'</small></button>').join('')+'</div>'+
+      '<span class="gfq-num gfq-pager-n">'+String(pi+1).padStart(2,'0')+'<small>/'+String(pages.length).padStart(2,'0')+'</small></span>'+
+      btn('<span aria-hidden="true">›</span>','place-page',`data-id="${pages[pi+1]?.id||''}" aria-label="다음 페이지" ${pi<pages.length-1?'':'disabled'}`)+'</div>';
     // Pins sit in fixed-width columns (zigzag rows) so a long name can never squeeze into a sliver.
     const cols=(panel?.clientWidth||1200)>=1000?4:3,cw=100/cols,rowH=132,rows=Math.ceil(list.length/cols),H=rows*rowH+30;
     const pos=list.map((p,i)=>{const r=Math.floor(i/cols),c=r%2?cols-1-i%cols:i%cols;let h=0;for(const ch of p.key)h=(h*33+ch.charCodeAt(0))>>>0;return {x:c*cw+1.2,y:22+r*rowH+(h%28)};});
@@ -2354,15 +2448,15 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const route='<svg class="gfq-route" viewBox="0 0 100 '+H+'" preserveAspectRatio="none" aria-hidden="true"><polyline points="'+pos.map(q=>(q.x+1.9)+','+(q.y+24)).join(' ')+'"/></svg>';
     const pins=list.map((p,i)=>'<button class="gfq-pinbox'+(p.key===sel.key?' on':'')+(p.key===nowKey?' here':'')+'" style="left:'+pos[i].x.toFixed(2)+'%;top:'+pos[i].y+'px;width:calc('+cw.toFixed(2)+'% - 14px)" data-action="select-place" data-id="'+esc(p.key)+'">'+
       (p.key===nowKey?'<span class="gfq-halo" aria-hidden="true"></span>':'')+(gfqImgSrc(p.url)?'<img src="'+esc(p.url)+'" alt="" loading="lazy">':'<span class="gfq-pin-dot" aria-hidden="true"></span>')+
-      '<span class="gfq-pin-text"><b>'+esc(p.name)+'</b><small>'+(p.chapters?.length?'챕터 '+esc(p.chapters.join(', ')):'배경만 확인')+' <em class="gfq-num">#'+(i+1)+'</em></small></span></button>').join('');
+      '<div class="gfq-pin-text"><b>'+esc(p.name)+'</b><small>'+(p.chapters?.length?'챕터 '+esc(p.chapters.join(', ')):'배경만 확인')+' <em class="gfq-num">#'+(i+1)+'</em></small></div></button>').join('');
     const related=w.quests.filter(q=>(q.title+' '+(q.detail||'')+' '+[].concat(q.sourceEvidence||[]).join(' ')).includes(sel.name));
     const detail='<article class="gfq-placecard">'+(gfqImgSrc(sel.url)?'<div class="gfq-placephoto"><img src="'+esc(sel.url)+'" alt="'+esc(sel.name)+' 배경" loading="lazy"></div>':'<div class="gfq-placephoto none"><span class="gfq-sub">배경 이미지가 아직 없습니다</span></div>')+
-      '<div class="gfq-placeinfo"><header><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">No.<br>'+String(list.indexOf(sel)+1).padStart(3,'0')+'</span></header>'+
+      '<div class="gfq-placeinfo"><div class="gfq-hd"><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">No.<br>'+String(list.indexOf(sel)+1).padStart(3,'0')+'</span></div>'+
       (sel.key===nowKey?'<p class="gfq-here">지금 읽고 있는 장면의 장소입니다.</p>':'')+
       '<h5>등장한 장면</h5>'+((sel.scenes||[]).length?'<ul class="gfq-facts">'+sel.scenes.map(s=>'<li><b>챕터 '+esc(s.chapter)+' · '+esc(s.index)+'번째 장면</b> '+esc(s.title)+(s.goal?'<br><span class="gfq-sub">'+esc(s.goal)+'</span>':'')+'</li>').join('')+'</ul>':'<p class="gfq-sub gfq-pad">배경 이미지로만 확인한 장소입니다. 이 장소가 나오는 챕터 계획을 게임이 받으면 장면이 채워집니다.</p>')+
       (related.length?'<h5>관련 퀘스트</h5><ul class="gfq-facts">'+related.map(q=>'<li><button class="gfq-link" data-action="open-quest" data-id="'+esc(q.id)+'">'+esc(q.title)+'</button>'+(q.claimed?' · 완료':'')+'</li>').join('')+'</ul>':'')+'</div></article>';
-    return '<div class="gfq-board" style="height:'+H+'px">'+route+pins+'</div>'+
-      '<div class="gfq-row gfq-board-foot">'+btn('장소 불러오기','load-places')+'<span class="gfq-sub">번호는 처음 등장한 순서입니다. 장소를 누르면 아래에 크게 보입니다.</span></div>'+detail;
+    return pager+'<div class="gfq-board" style="height:'+H+'px">'+route+pins+'</div>'+
+      '<div class="gfq-row gfq-board-foot">'+btn('장소 불러오기','load-places')+'<span class="gfq-sub">번호는 이 페이지에서 처음 등장한 순서입니다. 장소를 누르면 아래에 크게 보입니다.</span></div>'+detail;
   }
 
   function approveAiProposal(id,bulk=false){
@@ -2408,6 +2502,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(gfqMoney(x)&&x.financialStatus==='paid'&&Array.isArray(x.purchasedItems))gfqApplyPurchase(w,x);
     if(gfqMoney(x)&&Array.isArray(x.soldItems))gfqApplySale(w,x);
     gfqRelinkQuestRewards(w);
+    if(x.category==='quest')for(const q of w.quests.filter(q=>q.id===x.updateOf||q.title===gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).title))gfqQuestRewardItems(w,q);
     record(w,'AI 검토 승인: '+x.name+' · '+x.source);
     w.aiAcceptedKeys||=[];w.aiAcceptedKeys.push(x.category+'|'+x.evidence);
     w.aiProposals=w.aiProposals.filter(v=>v.id!==id);if(!bulk){save();render();}return true;
@@ -2487,9 +2582,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         (big.length?'<div class="gfq-rw-rows">'+big.map(x=>{const st=gfqRewardState(w,x.r);return '<div class="gfq-rw-row"><span class="gfq-rw-ic">'+gfqThing(x.r.name,x.r.kind)+'</span><span class="gfq-rw-rname">'+esc(x.r.name)+'<span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span>'+toLedger(x)+'</span><b class="gfq-num">'+esc(amount(x.r))+(x.r.kind==='money'?'<small>'+esc(x.r.unit||'원')+'</small>':'')+'</b></div>';}).join('')+'</div>':'')+'</div>':
       '<p class="gfq-sub">기록된 보상이 없습니다. '+esc(sel.reward||'')+'</p>';
     const why=(sel.rewardDetails||[]).find(r=>r.kind==='reputation'&&r.assessed&&r.evidence);
-    const detail='<article class="gfq-qdetail"><header class="gfq-qhead"><div class="gfq-qcrest" aria-hidden="true"><span>'+esc(String(sel.type||'의뢰').slice(0,2))+'</span></div><div class="gfq-qhead-t"><h3>'+esc(sel.title)+'</h3>'+
+    const detail='<article class="gfq-qdetail"><div class="gfq-qhead"><div class="gfq-qcrest" aria-hidden="true"><span>'+esc(String(sel.type||'의뢰').slice(0,2))+'</span></div><div class="gfq-qhead-t"><h3>'+esc(sel.title)+'</h3>'+
         (place?'<button class="gfq-qplace" data-action="select-place" data-id="'+esc(place.key)+'">'+gfqIcon('places')+esc(place.name)+'</button>':'')+
-        '<div class="gfq-qmeta">'+[done?'완료':'진행 중',sel.startDate?'시작 '+esc(sel.startDate):'',sel.doneDate?'완료 '+esc(sel.doneDate):'',sel.source?esc(sel.source):''].filter(Boolean).join('<i></i>')+'</div></div></header>'+
+        '<div class="gfq-qmeta">'+[done?'완료':'진행 중',sel.startDate?'시작 '+esc(sel.startDate):'',sel.doneDate?'완료 '+esc(sel.doneDate):'',sel.source?esc(sel.source):''].filter(Boolean).join('<i></i>')+'</div></div></div>'+
       '<div class="gfq-qbody"><div class="gfq-objs"><div class="gfq-objs-h"><span>세부 목표</span><span class="gfq-num">'+s.done+' / '+s.total+'</span></div>'+steps+'</div>'+
         (sel.detail?'<p class="gfq-qdesc">'+esc(sel.detail)+'</p>':'')+
         '<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
@@ -2505,7 +2600,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }
   function render(){if(!panel)return;let w=current();if(currentTab==='assets'||currentTab==='items')currentTab='profile';const tabs=[['quests','퀘스트'],['profile','프로필'],['places','장소'],['history','기록'],['settings','설정']];if(!tabs.some(t=>t[0]===currentTab))currentTab='quests';const label=tabs.find(t=>t[0]===currentTab)[1];const today=w?gfqCurrentDate(w):null;const empty='<div class="gfq-empty"><strong>월드를 먼저 골라 주세요</strong><span class="gfq-sub">게임에서 월드를 열면 자동으로 연결됩니다.</span></div>';
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
-    panel.innerHTML=`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.6.1</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`;panel.dataset.tab=currentTab;if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.6.2</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
   function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
@@ -2522,6 +2617,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
   if(act==='select-quest'){selectedQuest=id;return render();}
   if(act==='pick-world'){data.world=id;save();return render();}
+  if(act==='cash-base'){const cur=w.gfCashBase?.amount;const v=ask('이야기를 시작할 때 주인공이 가진 돈(원)을 숫자로 입력해 주세요. 거래 내역의 입금 확인과 지출을 더하고 빼서 현재 소지금을 계산합니다.',cur!=null?String(cur):'');if(v===null)return;const n=Number(String(v).replace(/[,\s원]/g,''));if(!Number.isFinite(n)||n<0)return alert('0 이상의 숫자로 입력해 주세요.');return update(w=>{w.gfCashBase={amount:Math.round(n),at:now()};record(w,'시작 소지금 설정: '+gfqAmount(Math.round(n),'원'));});}
+  if(act==='place-page'){placePage=id;selectedPlace='';return render();}
   if(act==='item-filter'){itemFilter=id;selectedItem='';return render();}
   if(act==='select-item'){selectedItem=id;return render();}
   if(act==='select-place'){const same=currentTab==='places';selectedPlace=id;currentTab='places';render();if(same){const c=panel.querySelector('.gfq-placecard');if(c&&c.scrollIntoView)c.scrollIntoView({block:'nearest'});}return;}
