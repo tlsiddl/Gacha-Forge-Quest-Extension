@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.1.0",
-    "description": "가챠 포지 월드별 퀘스트·자산·소지품·사용자 필드 기록 (수동 관리 베타)",
+    "version": "0.1.1",
+    "description": "가챠 포지 앱 내부 상단바 퀘스트 아이콘 및 월드별 수동 퀘스트·자산 관리",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
