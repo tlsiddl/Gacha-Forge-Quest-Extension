@@ -372,4 +372,13 @@ t('퀘스트 자체에는 금액을 두지 않음(경고 없이)',()=>{
   const p=ev({category:'quest',name:'공방 방어',status:'active',amount:1400000,unit:'원',evidence:'1차 방어 소집 기본급 500,000원과'});
   assert.strictEqual(p.amount,null);assert.ok(!/원문 근거에 없어/.test(p.auditNote||''));
 });
+t('원장 승인: 금액이 분명히 다른 거래는 묻지 않고 새 거래, 같은 금액이면 번호로 묻기',()=>{
+  const w={gfLedger:[{id:'L',name:'보수 총액',amount:1400000,unit:'원',state:'pending',chainKeys:[],history:[{source:'챕터 3'}]}],history:[]};
+  F.gfqLedgerRecord(w,M('b',{n:'1차 방어 소집 기본급',a:500000}),false); // prompt stub throws if called
+  assert.strictEqual(w.gfLedger.length,2);
+  let asked='';const g=globalThis;
+  const W={gfLedger:[{id:'L',name:'보수 총액',amount:1400000,unit:'원',state:'pending',chainKeys:[],history:[]}],history:[]};
+  try{F.gfqLedgerRecord(W,M('c',{n:'보수 입금',a:1400000,f:'received'}),false);}catch(e){asked=e.message;}
+  assert.strictEqual(asked,'prompt called','same amount → asks');
+});
 console.log('\n'+pass+'개 통과');
