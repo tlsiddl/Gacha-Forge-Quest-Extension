@@ -26,7 +26,7 @@ let d=JSON.parse(win.localStorage.getItem('gf-quest-v1'));assert.deepStrictEqual
 click('[data-tab="history"]');
 const html=panel.innerHTML;
 assert.ok(html.includes('기존 퀘스트 갱신: 제1공방 방어'),'update label');assert.ok(html.includes('통합된 후보 2개'));assert.ok(html.includes('✓ 냉각 밸브 개방'));
-assert.ok(html.includes('퀘스트 · 제1공방 방어')&&html.includes('완료 · 구분 전'),'korean labels');
+assert.ok(html.includes('퀘스트 · 제1공방 방어')&&html.includes('<small>완료</small>'),'korean labels');
 click('[data-action="approve-ai-proposal"]');
 d=JSON.parse(win.localStorage.getItem('gf-quest-v1'));const w=d.worlds['run-x'];
 assert.strictEqual(w.quests.length,1,'no duplicate quest');

@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.12",
-    "description": "돈·혜택 구분 강화, 금액 원문 검증, 보상 중복 정리",
+    "version": "0.3.13",
+    "description": "누락 의심 금액 검사·보상 표시 정리",
     "runtime": "client",
     "enabled": false,
     "capabilities": [

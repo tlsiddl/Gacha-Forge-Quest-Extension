@@ -2,8 +2,8 @@ const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
-const consts=['GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const consts=['GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
+const names=['gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -350,5 +350,26 @@ t('보상 정리: 같은 금액 중복과 총액의 구성 금액 제거',()=>{
 t('보상 표시: 명성 점수와 사유',()=>{
   assert.strictEqual(F.gfqRewardText({name:'명성 상승',kind:'reputation',amount:3,unit:'점',certainty:'suggested',assessed:true,evidence:'확장 명성 규칙 제안: 공방 폭발을 막음'}),'명성 상승 +3점 (제안·미지급) — 공방 폭발을 막음');
   assert.strictEqual(F.gfqRewardText({name:'보수',kind:'money',amount:1400000,unit:'원',certainty:'pending'}),'보수 1,400,000 원 (지급 예정)');
+});
+t('누락 의심 금액: AI가 빠뜨린 50만 원 기본급을 원문에서 찾아냄',()=>{
+  const w={gfStorySamples:[{chapter:'3',index:'1',text:S3}],aiProposals:[
+    {category:'asset',amount:1400000,evidence:'기본 수당 950,000원에 고온·약물 매연 및 용해로 폭발 위험 수당 450,000원을 확정 가산하여, 임무 완료 시 금일 오후 6시 정각에 세후 총 1,400,000원'}]};
+  const m=F.gfqMissingMoney(w);
+  assert.deepStrictEqual(m.map(x=>x.amount),[500000]);assert.match(m[0].sentence,/1차 방어 소집 기본급 500,000원/);
+  w.gfMoneyDismissed=[500000];assert.strictEqual(F.gfqMissingMoney(w).length,0,'dismissed amounts stay quiet');
+});
+t('누락 의심 금액: 물품 가치(상당)와 지급 표현 없는 금액은 제외',()=>{
+  const w={gfStorySamples:[{chapter:'1',index:'1',text:'1,240,000원 상당의 건틀릿을 받게 됩니다. 시장에서 사과가 3,000원이었다.'}]};
+  assert.strictEqual(F.gfqMissingMoney(w).length,0);
+});
+t('보상 표시: 적용된 혜택은 적용됨, 이름에 있는 금액은 반복하지 않음, 같은 혜택 중복 제거',()=>{
+  assert.strictEqual(F.gfqRewardText({name:'공임비 면제',kind:'benefit',amount:400000,unit:'원',certainty:'received'}),'공임비 면제 400,000 원 (적용됨)');
+  assert.strictEqual(F.gfqRewardText({name:'보수 세후 1,400,000원',kind:'money',amount:1400000,unit:'원',certainty:'confirmed'}),'보수 세후 1,400,000원 (확정·미수령)');
+  const r=F.gfqDedupeRewards([{name:'작전 중 의복·신체 손상 및 열기 피로도 무상 보험·치료',kind:'benefit',evidence:'a'},{name:'의복·신체 손상 및 열기 피로도 무상 보험·치료',kind:'benefit',evidence:'b'}]);
+  assert.strictEqual(r.length,1);
+});
+t('퀘스트 자체에는 금액을 두지 않음(경고 없이)',()=>{
+  const p=ev({category:'quest',name:'공방 방어',status:'active',amount:1400000,unit:'원',evidence:'1차 방어 소집 기본급 500,000원과'});
+  assert.strictEqual(p.amount,null);assert.ok(!/원문 근거에 없어/.test(p.auditNote||''));
 });
 console.log('\n'+pass+'개 통과');
