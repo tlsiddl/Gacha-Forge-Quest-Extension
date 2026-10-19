@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.2.3",
-    "description": "선택 AI 연결을 이용한 선택형 서버 브리지 분석 버튼 (별도 서버 패키지 설치 필요)",
+    "version": "0.2.4",
+    "description": "마리나라 generate/raw API로 직접 AI 스토리 분석·후보 검토 (서버 브리지 불필요)",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
