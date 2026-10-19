@@ -27,7 +27,8 @@ win.fetch=async(url,opts)=>{
     {category:'quest',name:'제1공방 방어',status:'completed',financialStatus:'not_applicable',evidence:'비상 냉각 밸브를 열어 용해로 폭발을 막아 냈다',owner:'player',source:'챕터 3 · 장면 3',questTitle:'제1공방 방어',questObjective:'폭발을 막는다'}]};
   return reply({content:JSON.stringify(out)});
 };
-win.localStorage.setItem('gf-quest-v1',JSON.stringify({v:1,world:'',aiConnectionId:'c1',aiMode:'chapter',autoApply:true,worlds:{}}));
+const MODE=process.argv[3]||'chapter';
+win.localStorage.setItem('gf-quest-v1',JSON.stringify({v:1,world:'',aiConnectionId:'c1',aiMode:MODE,autoApply:true,worlds:{}}));
 const host=doc.createElement('marinara-capability-gacha-forge');doc.body.append(host);
 host.attachShadow({mode:'open'}).innerHTML='<div><button class="gf-fs-bar icon-button">⛶</button></div>';
 win.eval(src);
@@ -36,6 +37,22 @@ win.eval(src);
   const send=async(chapter,index,text)=>{nextBody={beat:{chapter,storyIndex:index,segments:[{text}]}};await win.fetch('/api/gacha-forge/beat',{method:'POST',body:JSON.stringify({runId:'run-abc',chapter,storyIndex:index})});await new Promise(r=>setTimeout(r,30));};
   await send(3,1,S1);await send(3,2,S2);await send(3,3,S3);
   await new Promise(r=>setTimeout(r,6600));
+  if(MODE==='scene'){
+    // Generation-complete mode: chapter 3 is analysed as soon as its responses go quiet.
+    for(let k=0;k<200;k++){const d=JSON.parse(win.localStorage.getItem('gf-quest-v1'));if(d.worlds[d.world]?.gfLastAnalysis)break;await new Promise(r=>setTimeout(r,50));}
+    let d=JSON.parse(win.localStorage.getItem('gf-quest-v1')),w=d.worlds[d.world];
+    assert.deepStrictEqual(w.gfLastAnalysis.chapters,['3'],'chapter 3 analysed right after generation');
+    assert.strictEqual(w.quests.length,1);assert.strictEqual(w.quests[0].claimed,true);
+    const calls=prompts.filter(p=>!p.includes('[새 퀘스트 후보]')).length;
+    assert.strictEqual(calls,1,'one extraction call for the whole chapter');
+    // Chapter 4 arrives: only its new scene is sent, with chapter 3 results as context.
+    await send(4,1,S4);await new Promise(r=>setTimeout(r,6600));
+    for(let k=0;k<200;k++){d=JSON.parse(win.localStorage.getItem('gf-quest-v1'));if(d.worlds[d.world].gfLastAnalysis.chapters[0]==='4')break;await new Promise(r=>setTimeout(r,50));}
+    const last=prompts.filter(p=>!p.includes('[새 퀘스트 후보]')).at(-1);
+    assert.ok(last.includes(S4)&&!last.includes(S1),'only the new chapter is analysed');
+    assert.ok(last.includes('[이전 맥락]'),'earlier results passed as context');
+    console.log('UI auto (generation-complete mode) OK');process.exit(0);
+  }
   assert.strictEqual(prompts.length,0,'chapter 3 is still the latest chapter, nothing analysed yet');
   await send(4,1,S4);
   for(let k=0;k<200&&!JSON.parse(win.localStorage.getItem('gf-quest-v1')).worlds[Object.keys(JSON.parse(win.localStorage.getItem('gf-quest-v1')).worlds)[0]]?.gfLastAnalysis;k++)await new Promise(r=>setTimeout(r,50));

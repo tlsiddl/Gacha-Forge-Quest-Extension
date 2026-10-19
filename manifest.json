@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.4.0",
-    "description": "챕터·장면 자동 분석, 자동 반영(되돌리기), 퀘스트 알림",
+    "version": "0.4.1",
+    "description": "스토리 생성 직후 자동 분석(권장 방식)",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
