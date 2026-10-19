@@ -1,4 +1,4 @@
-/* 퀘스트 v0.4.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.4.3 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -641,6 +641,14 @@
   // v0.3.13: deterministic safety net for missed payments. Every story sentence that states a won amount
   // together with a payment cue is checked against candidates, quest rewards and the ledger.
   const GFQ_PAY_CUE=/(수당|보수|급여|기본급|정산|지급|입금|송금|대금|상금|사례금|보상금|지원금|일당|용역비|받으|받았|드립니다|보장)/u;
+  function gfqSumTotals(amounts){
+    const out=new Set(),list=amounts.filter(n=>Number.isFinite(n)&&n>0).slice(0,10);
+    for(const t of list){
+      const rest=list.filter(n=>n<t);
+      for(let mask=1;mask<(1<<rest.length);mask++){const sub=rest.filter((_,i)=>mask&(1<<i));if(sub.length>=2&&sub.reduce((a,b)=>a+b,0)===t){out.add(t);break;}}
+    }
+    return out;
+  }
   function gfqMissingMoney(w){
     const covered=new Set(),texts=[];
     const addAmounts=t=>{for(const n of gfqAmountsIn(t))covered.add(n);};
@@ -654,10 +662,12 @@
     for(const rec of gfqStoryRecords(w)){
       for(const sentence of rec.text.split(/(?<=[.!?。])\s+|\n+/u)){
         if(!GFQ_PAY_CUE.test(sentence))continue;
-        for(const m of sentence.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*(억|만|천)?\s*원(?!\s*상당)/gu)){
-          const n=Number(m[1].replace(/,/g,''))*(m[2]==='억'?1e8:m[2]==='만'?1e4:m[2]==='천'?1e3:1);
-          if(!Number.isFinite(n)||n<=0||covered.has(n)||seen.has(n))continue;
-          seen.add(n);out.push({amount:n,source:rec.source,sentence:sentence.trim().slice(0,300)});
+        const found=[...sentence.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*(억|만|천)?\s*원(?!\s*상당)/gu)].map(m=>Number(m[1].replace(/,/g,''))*(m[2]==='억'?1e8:m[2]==='만'?1e4:m[2]==='천'?1e3:1));
+        // v0.4.3: a running total (1,200,000 + 1,300,000 + 1,400,000 = 3,900,000) is a recap, not a payment.
+        const totals=gfqSumTotals(found);
+        for(const n of found){
+          if(!Number.isFinite(n)||n<=0||covered.has(n)||seen.has(n)||totals.has(n))continue;
+          seen.add(n);out.push({amount:n,source:rec.source,sentence:sentence.trim().slice(0,300),recap:/(전날|어제|지난|앞서|이전|이미|에 이어|까지 더하면|누적|합계|모두 합)/u.test(sentence)});
           if(out.length>=30)return out;
         }
       }
@@ -668,7 +678,7 @@
     const list=w.gfMissingMoney||[];
     if(!list.length)return '';
     return '<div class="gfq-card"><b>누락 의심 금액 ('+list.length+'개)</b><p class="gfq-muted">원문에 지급 관련 금액이 있지만 검토 후보·퀘스트 보상·거래 원장 어디에도 없는 문장입니다. AI 분석이 빠뜨렸을 수 있습니다. 상태를 직접 정해 후보로 추가하거나, 지급과 무관하면 무시해 주세요.</p>'+
-      list.map((m,i)=>'<div class="gfq-muted"><b>'+esc(gfqAmount(m.amount,'원'))+'</b> · '+esc(m.source)+'<br>'+esc(m.sentence)+'</div><div class="gfq-row">'+btn('후보로 추가','money-to-candidate','data-idx="'+i+'"')+btn('무시','money-dismiss','data-idx="'+i+'"')+'</div>').join('')+
+      list.map((m,i)=>'<div class="gfq-muted"><b>'+esc(gfqAmount(m.amount,'원'))+'</b> · '+esc(m.source)+(m.recap?' · 지난 지급을 되짚는 문장':'')+'<br>'+esc(m.sentence)+'</div><div class="gfq-row">'+((w.gfLedger||[]).some(t=>t.amount===null)?btn('금액 미확인 거래에 채우기','money-fill-ledger','data-idx="'+i+'"'):'')+btn('후보로 추가','money-to-candidate','data-idx="'+i+'"')+btn('무시','money-dismiss','data-idx="'+i+'"')+'</div>').join('')+
       '<div class="gfq-row">'+btn('누락 금액 다시 검사','money-rescan')+'</div></div>';
   }
   function gfqDiagnosticsHtml(w){
@@ -676,6 +686,7 @@
     const parts=[];
     if(a)parts.push('<div class="gfq-muted">최근 분석 ('+esc(a.at)+'): '+esc(gfqAnalysisSummary(a)).replace(/\n/g,'<br>')+'</div>');
     if(ev&&ev.length)parts.push('<div class="gfq-muted">보관 한도(장면 180개)를 넘어 삭제된 오래된 장면: '+ev.map(([c,n])=>'챕터 '+esc(c)+' '+n+'개').join(', ')+'. 이 장면에 있던 거래는 분석 대상에 포함되지 않습니다.</div>');
+    if(Array.isArray(w.gfAutoLog)&&w.gfAutoLog.length)parts.push('<details><summary class="gfq-muted">최근 자동 분석 기록 ('+w.gfAutoLog.length+')</summary>'+w.gfAutoLog.slice().reverse().map(l=>'<div class="gfq-muted">'+esc(l.at)+' · 챕터 '+esc(l.chapters.join(', '))+' · 새 장면 '+l.scenes+'개('+l.chars+'자) · '+esc(l.result)+'</div>').join('')+'</details>');
     if(w.gfUndo)parts.push('<div class="gfq-row">'+btn('마지막 자동 반영 되돌리기 ('+w.gfUndo.count+'개 · '+esc(w.gfUndo.at)+')','undo-auto')+'</div>');
     return (parts.length?'<div class="gfq-card">'+parts.join('')+'</div>':'')+gfqMissingMoneyHtml(w);
   }
@@ -875,6 +886,7 @@
       '총액이 명시된 지급은 총액 1건만 출력하고, 기본 수당·위험 수당 같은 구성 내역은 따로 출력하지 않고 name에 괄호로 적습니다. 총액이 없으면 각 금액을 출력합니다. amount에는 원문에 적힌 숫자만 씁니다.',
       '할인·감면·면제·우선 이용·무료 서비스 같은 혜택은 category=benefit입니다. 앞으로 쓸 수 있으면 benefitUses(명시 없으면 1), 기한 없이 계속 적용되면 benefitPermanent=true, 이미 특정 거래에 적용되어 끝났으면 benefitConsumed=true입니다. amount에는 할인율(%)이나 면제 금액을 넣습니다.',
       '돈을 내고 물건을 산 구매는 category=asset, financialStatus=paid, eventKind=expense로 출력하고 purchasedItems에 산 물품과 수량을 넣습니다. 주문만 하고 아직 받지 않았으면 received=false입니다. 물건이 없는 지출(숙박비, 수수료 등)은 purchasedItems를 빈 배열로 둡니다.',
+      '지난 지급을 되짚는 문장(예: 전날 A 1,200,000원과 오늘 B 1,300,000원에 이어 이번 금액까지 합계 3,900,000원)은 새 수입이 아닙니다. 각 과거 지급은 이전 맥락에 같은 항목이 있으면 linkTo로 연결하고 원문 금액을 amount에 넣어 금액을 보완합니다. 이전 맥락에 없으면 별도 항목으로 출력하되, 합계 금액은 출력하지 않습니다.',
       '물건을 팔고 대금을 받은 판매는 category=asset, eventKind=payment로 출력하고 soldItems에 판 물품과 수량을 넣습니다. 대금을 실제로 받았으면 received, 받기로만 했으면 receivable 또는 pending입니다.',
       'N원 상당의 물품·장비·세트는 돈이 아닙니다. category=item으로 출력하고, 아직 받지 않았으면 financialStatus=pending, amount=null로 둡니다. 받을 돈(receivable)으로 처리하지 않습니다.',
       'timing에는 지급·수령·완료가 실제로 일어나는 시점이나 기한만 넣습니다. \'중도 철수 시\'처럼 일어나지 않을 수도 있는 가정 조건은 넣지 않습니다.',
@@ -1325,10 +1337,33 @@
     const w=data.worlds[key];if(!w||key!==data.world)return;
     const {list,hashes}=gfqAutoBatches(w,data.aiMode);
     if(!list.length)return;
-    gfqToast('자동 분석','챕터 '+[...new Set(list.map(b=>b.chapter))].join(', ')+' 분석을 시작합니다','info');
+    // v0.4.3: guards against back-to-back runs while the game loads scenes one by one.
+    const gate=gfqAutoGate(w,list,Date.now(),data.aiMode);
+    if(gate.wait){if(autoTimer)clearTimeout(autoTimer);autoTimer=setTimeout(()=>{autoTimer=0;gfqAutoRun(key);},gate.wait);return;}
+    const chapters=[...new Set(list.map(b=>b.chapter))],scenes=list.reduce((n,b)=>n+b.filter(t=>t.id).length,0);
+    w.gfAutoLastAt=Date.now();
+    gfqToast('자동 분석','챕터 '+chapters.join(', ')+' · 새 장면 '+scenes+'개 분석을 시작합니다','info');
     const r=await gfqRunAnalysis(key,list,hashes,{auto:true});
-    if(r.error)gfqToast('자동 분석 실패',r.error.slice(0,140),'review');
+    w.gfAutoLog=[...(w.gfAutoLog||[]),{at:now(),chapters,scenes,chars:list.reduce((n,b)=>n+b.reduce((m,t)=>m+t.text.length,0),0),result:r.error?'실패: '+r.error.slice(0,60):'완료 · 새 후보 '+r.found+'개'}].slice(-10);
+    if(!r.error)w.gfAutoLastChapter=Math.max(Number(w.gfAutoLastChapter||0),...chapters.map(c=>Number(c)||0));
+    if(r.error){w.gfAutoFailAt=Date.now();gfqToast('자동 분석 실패',r.error.slice(0,140),'review');}
+    save();
     if(autoAgain){autoAgain=false;gfqAutoSchedule(key);}
+  }
+  // Pure: whether to run now or wait. Scene mode waits for a meaningful amount of new text and
+  // never runs more often than every 90 s; after a failure it waits 5 minutes.
+  function gfqAutoGate(w,list,nowMs,mode){
+    const since=nowMs-(w.gfAutoLastAt||0),failSince=nowMs-(w.gfAutoFailAt||0);
+    if(w.gfAutoFailAt&&failSince<300000)return {wait:300000-failSince};
+    if(mode==='scene'){
+      // A chapter newer than anything analysed so far was just generated: run now.
+      if(Math.max(...list.map(b=>Number(b.chapter)||0))>Number(w.gfAutoLastChapter||0))return {wait:0};
+      if(since<90000)return {wait:90000-since};
+      const chars=list.reduce((n,b)=>n+b.filter(t=>t.id).reduce((m,t)=>m+t.text.length,0),0);
+      const chapterAhead=list.some(b=>Number(b.chapter)<Math.max(...list.map(x=>Number(x.chapter)||0)));
+      if(chars<600&&!chapterAhead&&since<600000)return {wait:Math.max(30000,90000-since)};
+    }
+    return {wait:0};
   }
   function gfqAutoBatches(w,mode){
     const all=gfqChapterBatches(gfqStoryRecords(w)),hashes=gfqChapterHashes(all);
@@ -1707,7 +1742,7 @@
   }
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
   function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(data.worlds[w]?.gfDisplayName||w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
-  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.4.2</span></footer></div>`;}
+  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.4.3</span></footer></div>`;}
   function content(w){switch(currentTab){case 'quests':return `<div class="gfq-row"><select id="gfq-filter">${['전체','일일','주간','의뢰','업적'].map(t=>`<option ${activeFilter===t?'selected':''}>${t}</option>`).join('')}</select>${btn('＋ 퀘스트','add-quest','class="primary"')}</div>${w.quests.filter(q=>activeFilter==='전체'||q.type===activeFilter).map(q=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(q.title)}</b><small>${esc(q.type)}</small></div><div class="gfq-muted">${esc(q.detail)}</div>${Array.isArray(q.steps)&&q.steps.length?`<div class="gfq-muted">세부 목표</div><div class="gfq-row">${q.steps.map((t,i)=>btn((q.stepDone?.[i]?'✓ ':'○ ')+esc(t),'toggle-step',`data-id="${esc(q.id)}" data-step="${i}" aria-pressed="${q.stepDone?.[i]?'true':'false'}"`)).join("")}</div>`:""}${gfqQuestProgressHtml(q)}${btn('＋1','increment',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn(q.claimed?'완료됨':'완료','complete',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn('삭제','delete-quest',`data-id="${esc(q.id)}"`)}</div><div class="gfq-muted">보상(기록용): ${esc(gfqQuestRewardLabel(q))}</div>${(q.rewardDetails||[]).map((r,i)=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?btn('원장에 기록: '+esc(r.name),'reward-to-ledger',`data-id="${esc(q.id)}" data-idx="${i}"`):'').join('')}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">▤</div><strong>진행 중인 퀘스트가 없습니다</strong><span class="gfq-muted">새 퀘스트를 등록하면 여기에 표시됩니다.</span></div>'}`;
   case 'assets':return `${gfqLedgerHtml(w)}${btn('＋ 필드 추가','add-field','class="primary"')}<p class="gfq-muted">소지금, 은행, 평판, 직업 등 월드별 자유 필드</p>${w.fields.map(f=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(f.name)}</b><span>${esc(f.value)} ${esc(f.unit)}</span>${btn('수정','edit-field',`data-id="${esc(f.id)}"`)}${btn('삭제','delete-field',`data-id="${esc(f.id)}"`)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◈</div><strong>등록된 자산이 없습니다</strong><span class="gfq-muted">소지금, 직업, 평판 등 원하는 항목을 추가해 주세요.</span></div>'}`;
   case 'items':return `${btn('＋ 소지품','add-item','class="primary"')}${w.items.filter(i=>i.state==='pending').length?'<h3>수령 예정</h3><p class="gfq-muted">아직 받지 않은 물품입니다. 소지품 목록과 스토리 문맥에는 보유품으로 포함되지 않습니다.</p>':''}${w.items.filter(i=>i.state==='pending').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><small>수령 예정</small></div>${i.timing?`<div class="gfq-muted">수령 시점: ${esc(gfqTimingText(i.timing))}</div>`:''}${i.value?`<div class="gfq-muted">가치: ${esc(gfqAmount(i.value,'원'))}</div>`:''}<div class="gfq-row">${btn('수령 확인','receive-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.kind==='voucher')?'<h3>혜택·이용권</h3><p class="gfq-muted">퀘스트 보상이나 계약으로 받은 할인·감면 혜택입니다. 사용하면 횟수가 줄어들고 변경 기록에 남습니다.</p>':''}${w.items.filter(i=>i.kind==='voucher').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>${i.qty>0?'남은 횟수 '+i.qty:'사용 완료'}</span></div>${i.detail?`<div class="gfq-muted">${esc(i.detail)}</div>`:''}<div class="gfq-row">${btn('사용','use-voucher',`data-id="${esc(i.id)}" ${i.qty>0?'':'disabled'}`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.state==='pending'||i.kind==='voucher')?'<h3>보유 소지품</h3>':''}${w.items.filter(i=>i.state!=='pending'&&i.kind!=='voucher').map(i=>`<div class="gfq-card gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>× ${i.qty}</span>${btn('수정','edit-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>소지품 목록이 비어 있습니다</strong><span class="gfq-muted">스토리에서 얻은 아이템을 기록할 수 있습니다.</span></div>'}`;
@@ -1726,6 +1761,15 @@
   if(act==='add-quest'){const title=ask('퀘스트 이름');if(!title?.trim())return;const type=ask('종류: 일일 / 주간 / 의뢰 / 업적','의뢰');if(!['일일','주간','의뢰','업적'].includes(type))return alert('올바른 퀘스트 종류가 아닙니다.');const detail=ask('조건 및 설명','');if(detail===null)return;const count=Number(ask('목표 횟수 (1 이상)','1'));if(!Number.isSafeInteger(count)||count<1)return alert('목표 횟수를 확인해 주세요.');const reward=ask('보상 메모 (게임 재화로 자동 지급되지 않습니다)','');if(reward===null)return;return update(w=>{w.quests.push({id:uid(),title:title.trim(),type,detail,target:count,progress:0,reward,claimed:false});record(w,'퀘스트 등록: '+title);});}
   if(act==='undo-auto'){if(!w.gfUndo)return;if(!confirm('마지막 자동 반영('+w.gfUndo.count+'개) 직전 상태로 퀘스트·자산·소지품·거래 원장·검토 목록을 되돌리시겠습니까? 그 이후 직접 수정한 내용도 함께 되돌아갑니다.'))return;try{const s=JSON.parse(w.gfUndo.snap);Object.assign(w,s);delete w.gfUndo;record(w,'마지막 자동 반영을 되돌렸습니다.');save();render();}catch(e){alert('되돌리지 못했습니다: '+e.message);}return;}
   if(act==='money-rescan'){w.gfMissingMoney=gfqMissingMoney(w);save();render();return alert('누락 의심 금액 '+w.gfMissingMoney.length+'개를 찾았습니다.');}
+  if(act==='money-fill-ledger'){
+    const m=(w.gfMissingMoney||[])[Number(el.dataset.idx)];if(!m)return;
+    const open=(w.gfLedger||[]).filter(t=>t.amount===null);if(!open.length)return;
+    const ans=ask('이 금액('+gfqAmount(m.amount,'원')+')이 어느 거래의 금액인지 번호를 입력해 주세요. 상태(입금 여부)는 바뀌지 않습니다.\n'+m.sentence.slice(0,160)+'\n\n'+open.map((t,i)=>(i+1)+': '+t.name+' · '+gfqLabel('money',t.state)+(t.history?.[0]?.source?' · '+t.history[0].source:'')).join('\n'),'1');
+    if(ans===null)return;const t=open[Number(ans)-1];if(!t)return alert('번호를 확인해 주세요.');
+    t.amount=m.amount;t.unit=t.unit||'원';t.history||=[];t.history.push({at:now(),state:t.state,amount:m.amount,evidence:m.sentence,source:m.source,note:'금액 보완'});
+    record(w,'거래 금액 보완: '+t.name+' → '+gfqAmount(m.amount,'원')+' · '+m.source);
+    w.gfMissingMoney=w.gfMissingMoney.filter(v=>v!==m);gfqRelinkQuestRewards(w);save();render();return;
+  }
   if(act==='money-dismiss'){const m=(w.gfMissingMoney||[])[Number(el.dataset.idx)];if(!m)return;w.gfMoneyDismissed||=[];w.gfMoneyDismissed.push(m.amount);w.gfMissingMoney=w.gfMissingMoney.filter(v=>v!==m);save();render();return;}
   if(act==='money-to-candidate'){
     const m=(w.gfMissingMoney||[])[Number(el.dataset.idx)];if(!m)return;

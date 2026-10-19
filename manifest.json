@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.4.2",
-    "description": "대사 시점 반영·퀘스트 수락 창·돈/아이템 알림",
+    "version": "0.4.3",
+    "description": "회고 금액 처리·자동 분석 반복 방지",
     "runtime": "client",
     "enabled": false,
     "capabilities": [

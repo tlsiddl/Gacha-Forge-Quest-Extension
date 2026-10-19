@@ -3,7 +3,7 @@ const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
 const consts=['gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const names=['gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -428,5 +428,23 @@ t('알림 문구: 돈 수령·지출·아이템 획득·수령 예정·혜택',(
   assert.deepStrictEqual(ev({category:'item',name:'맞춤 건틀릿',status:'active',financialStatus:'pending',evidence:'내일 이 시간에 수령하시게 됩니다'}),['수령 예정 | 맞춤 건틀릿 · 내일 이 시간']);
   assert.deepStrictEqual(ev({category:'benefit',name:'공임 50% 감면',benefitMode:'voucher',benefitUses:1}),['혜택 획득 | 공임 50% 감면권 ×1']);
   assert.deepStrictEqual(ev({category:'asset',name:'기본 수당',financialStatus:'pending',amount:950000,unit:'원',role:'component'}),[],'components stay quiet');
+});
+t('누락 의심: 회고 문장의 합계(3,900,000원)는 제외하고 과거 지급만 표시',()=>{
+  const S='전날 물류창고 기본 보수 1,200,000원과 오늘 오전 협회 격리동 방어 수당 1,300,000원에 이어, 이번 1,400,000원까지 더하면 채서래 씨가 이틀간 현금으로만 확정 지으신 순수 용역 수익이 벌써 세후 3,900,000원에 달합니다!';
+  const w={gfStorySamples:[{chapter:'3',index:'3',text:S}],gfLedger:[{amount:1400000,unit:'원',state:'pending',history:[]}]};
+  const m=F.gfqMissingMoney(w);
+  assert.deepStrictEqual(m.map(x=>x.amount),[1200000,1300000]);assert.ok(m.every(x=>x.recap));
+  assert.deepStrictEqual([...F.gfqSumTotals([1200000,1300000,1400000,3900000])],[3900000]);
+});
+t('자동 분석 간격: 새 챕터는 바로, 같은 챕터의 짧은 추가 장면은 기다림, 실패 후 5분 대기',()=>{
+  const b=(ch,len)=>Object.assign([{id:'x',text:'가'.repeat(len)}],{chapter:ch});
+  const t0=1e9;
+  assert.strictEqual(F.gfqAutoGate({},[b('3',50)],t0,'scene').wait,0,'first chapter');
+  assert.strictEqual(F.gfqAutoGate({gfAutoLastAt:t0-5000,gfAutoLastChapter:3},[b('4',50)],t0,'scene').wait,0,'newly generated chapter');
+  assert.ok(F.gfqAutoGate({gfAutoLastAt:t0-5000,gfAutoLastChapter:3},[b('3',50)],t0,'scene').wait>=30000,'trickling scenes of the same chapter wait');
+  assert.ok(F.gfqAutoGate({gfAutoLastAt:t0-120000,gfAutoLastChapter:3},[b('3',100)],t0,'scene').wait>0,'too little new text');
+  assert.strictEqual(F.gfqAutoGate({gfAutoLastAt:t0-120000,gfAutoLastChapter:3},[b('3',900)],t0,'scene').wait,0);
+  assert.ok(F.gfqAutoGate({gfAutoFailAt:t0-60000},[b('5',900)],t0,'scene').wait>=240000,'back off after a failure');
+  assert.strictEqual(F.gfqAutoGate({gfAutoLastAt:t0-1000},[b('3',10)],t0,'chapter').wait,0,'chapter mode is not throttled');
 });
 console.log('\n'+pass+'개 통과');
