@@ -3,7 +3,7 @@ const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
 const consts=['GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const names=['gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -230,5 +230,40 @@ t('챕터 단위 분석: 챕터마다 한 회차, 긴 챕터는 나눠서 순서
   assert.deepStrictEqual(b.map(x=>x.label),['챕터 1','챕터 2','챕터 3 1/3부','챕터 3 2/3부','챕터 3 3/3부','챕터 미상']);
   assert.deepStrictEqual(b.map(x=>x.length),[2,1,2,2,1,1]);
   assert.strictEqual(b[0][0].text,'p1');
+});
+t('물품 가치: N원 상당 물품은 현금이 아닌 수령 예정 물품',()=>{
+  const r=F.gfqSafeProposal({category:'contract',name:'건틀릿 수령 예정',financialStatus:'receivable',amount:1240000,unit:'원',status:'confirmed',evidence:'1,240,000원 상당의 맞춤 경량 건틀릿 및 특수 수선 세트를 내일 이 시간에 그대로 수령하시게 됩니다.'});
+  assert.strictEqual(r.category,'item');assert.strictEqual(r.financialStatus,'pending');assert.strictEqual(r.amount,null);assert.strictEqual(r.value,1240000);
+  const cash=F.gfqSafeProposal({category:'asset',name:'보수',financialStatus:'pending',amount:1400000,unit:'원',evidence:'세후 총 1,400,000원을 정산해 드립니다'});
+  assert.strictEqual(cash.category,'asset');
+});
+t('보상 연결: 통합 단계에서 같은 챕터 수당·면허를 퀘스트 보상으로 연결, 명성 기본값 대체',()=>{
+  const pool=[Q('q',{t:'격리동 수습',s:'completed',src:'챕터 2'}),
+    {id:'m',category:'asset',name:'현장 긴급 대응 수당',financialStatus:'receivable',amount:null,unit:'',status:'completed',evidence:'수당 정산을 완료한다',source:'챕터 2'},
+    {id:'c',category:'credential',name:'물리계 정식 면허',status:'completed',evidence:'면허 교부',source:'챕터 2'}];
+  const inp=F.gfqConsolidationInput({quests:[]},pool);
+  assert.strictEqual(inp.rewards.length,2);
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1'],rewardIds:['r1','r2','r9'],title:'격리동 수습'}],inp.candMap,inp.questMap,inp.rewardMap);
+  const q=r.list.find(p=>p.category==='quest');
+  assert.deepStrictEqual(q.questRewards.map(x=>[x.kind,x.certainty,x.chainKey]),[['money','confirmed','m'],['credential','received','c']]);
+  assert.strictEqual(r.list.length,3,'reward candidates stay for their own approval');
+  assert.ok(!F.gfqQuestPresentation(q).rewardList.some(x=>x.kind==='reputation'));
+  const w={quests:[{rewardDetails:q.questRewards}],gfLedger:[{id:'T',chainKeys:['m'],state:'receivable'}]};
+  assert.strictEqual(F.gfqRelinkQuestRewards(w),1);assert.strictEqual(w.quests[0].rewardDetails[0].txId,'T');
+});
+t('보상 연결: 한 보상 후보는 한 임무에만',()=>{
+  const pool=[Q('a',{t:'A'}),Q('b',{t:'B'}),{id:'m',category:'asset',name:'보수',financialStatus:'pending',amount:5,unit:'원',evidence:'e'}];
+  const inp=F.gfqConsolidationInput({quests:[]},pool);
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1'],rewardIds:['r1']},{memberIds:['c2'],rewardIds:['r1']}],inp.candMap,inp.questMap,inp.rewardMap);
+  assert.strictEqual(r.rewardLinks,1);assert.strictEqual(r.list.find(p=>p.name==='B').questRewards.length,0);
+});
+t('세부 목표: 목표 문장만 반복하는 단일 단계는 표시하지 않음',()=>{
+  assert.deepStrictEqual(F.gfqQuestPresentation({name:'x',questSteps:['목표 문장 전체']}).steps,[]);
+});
+t('챕터 클리어 참고 표시',()=>{
+  const w={gfChapterIndex:[{chapter:1,cleared:true},{chapter:3,cleared:false}]};
+  assert.match(F.gfqClearedHint(w,{category:'quest',status:'active',source:'챕터 1'}),/클리어/);
+  assert.strictEqual(F.gfqClearedHint(w,{category:'quest',status:'active',source:'챕터 3 · 장면 1'}),'');
+  assert.strictEqual(F.gfqClearedHint(w,{category:'quest',status:'completed',source:'챕터 1'}),'');
 });
 console.log('\n'+pass+'개 통과');

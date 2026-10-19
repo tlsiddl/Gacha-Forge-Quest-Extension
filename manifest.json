@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.9",
-    "description": "챕터 단위 AI 분석",
+    "version": "0.3.10",
+    "description": "물품 가치·현금 구분, 퀘스트 보상 자동 연결",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
