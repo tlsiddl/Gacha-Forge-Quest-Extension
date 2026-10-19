@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.1.9",
-    "description": "월드 표시 이름 개선 및 권한 없는 챕터 조회 방지",
+    "version": "0.2.0",
+    "description": "기존 챕터 줄거리 및 게임 응답 스토리 문장 분석 후보와 검토 기록",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
