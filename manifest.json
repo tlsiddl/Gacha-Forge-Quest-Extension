@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.11",
-    "description": "명성 수치·혜택 이용권·구매/판매 내역·분석 범위",
+    "version": "0.3.12",
+    "description": "돈·혜택 구분 강화, 금액 원문 검증, 보상 중복 정리",
     "runtime": "client",
     "enabled": false,
     "capabilities": [

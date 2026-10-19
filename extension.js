@@ -1,4 +1,4 @@
-/* 퀘스트 v0.3.11 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.3.12 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -392,19 +392,45 @@
     if(x.category==='item'&&/각성제|밀수품/.test(name)&&!new RegExp(gfqEsc(ctx.hero||'채서래')+'.*(획득|수령|소지)').test(quote))return false;
     return true;
   }
+  // v0.3.12: words that mark cash income vs. discounts/free services.
+  const GFQ_CASH_WORDS=/(수당|보수|급여|기본급|정산금|대금|상금|사례금|보상금|지원금|위로금|일당|월급|용역비)/u;
+  const GFQ_DISCOUNT_WORDS=/(감면|할인|우대|면제|무상|무료)/u;
+  // Every amount written in a text (1,400,000 / 140만 / 1.5억 / 50퍼센트 ...).
+  function gfqAmountsIn(text){
+    const out=new Set(),t=String(text||'');
+    for(const m of t.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*(억|만|천)?/gu)){
+      const n=Number(m[1].replace(/,/g,''));if(!Number.isFinite(n))continue;
+      out.add(m[2]==='억'?n*1e8:m[2]==='만'?n*1e4:m[2]==='천'?n*1e3:n);
+      if(m[2]==='만'||m[2]==='억')out.add(n); // "140만" may also be read as 140
+    }
+    return out;
+  }
   function gfqSafeProposal(x,ctx=GFQ_GENERIC){
     const result={...x};
     const q=String(result.evidence||''),name=String(result.name||'');
     // v0.3.10: "N원 상당의 <물품>" is the value of goods, never cash owed or received.
-    if(['asset','contract'].includes(result.category)&&String(result.unit||'')==='원'&&/원\s*상당(?:의)?\s*(?!금액|현금|액수)\S/u.test(q)){
+    if(['asset','contract'].includes(result.category)&&!GFQ_CASH_WORDS.test(name)&&/원\s*상당(?:의)?\s*(?!금액|현금|액수)\S/u.test(q)){
       const got=/(수령했|받았|건네받|지급받았|손에 넣)/u.test(q);
       Object.assign(result,{category:'item',status:got?'confirmed':'active',financialStatus:got?'ownership':'pending',
-        value:typeof result.amount==='number'?result.amount:null,amount:null,unit:'',
+        value:typeof result.amount==='number'?result.amount:([...gfqAmountsIn((q.match(/([\d,]+(?:\.\d+)?\s*(?:억|만)?)\s*원\s*상당/u)||[])[1]||'')][0]??null),amount:null,unit:'',
         auditNote:'금액은 물품의 가치이며 현금이 아닙니다. '+(got?'수령한 물품':'수령 예정 물품')+'으로 분류했습니다.'});
     }
     // v0.3.11: a future discount (e.g. '공임 50퍼센트 감면 보장') is a benefit voucher, not money.
-    if(['asset','contract'].includes(result.category)&&(String(result.unit||'')==='%'||/퍼센트|%/.test(name))&&/(감면|할인|우대|면제)/.test(name+' '+q)){
-      Object.assign(result,{category:'benefit',benefitUses:1,auditNote:'금전 거래가 아닌 혜택으로 분류했습니다. 승인하면 1회 이용권으로 소지품에 추가됩니다.'});
+    if(['asset','contract'].includes(result.category)&&!GFQ_CASH_WORDS.test(name)&&(String(result.unit||'')==='%'||/퍼센트|%/.test(name))&&GFQ_DISCOUNT_WORDS.test(name+' '+q)){
+      result.category='benefit';
+    }
+    // v0.3.12: money labelled as a benefit goes back to the ledger (수당·보수는 이용권이 아니라 자산입니다).
+    if(result.category==='benefit'&&GFQ_CASH_WORDS.test(name)&&(String(result.unit||'')==='원'||!GFQ_DISCOUNT_WORDS.test(name))){
+      const mixed=GFQ_DISCOUNT_WORDS.test(name);
+      Object.assign(result,{category:'asset',financialStatus:['received','receivable','pending'].includes(result.financialStatus)?result.financialStatus:'pending',
+        auditNote:'금전 보수이므로 혜택이 아닌 거래로 분류했습니다.'+(mixed?' 함께 언급된 할인·감면 혜택은 별도 항목으로 확인해 주세요.':'')});
+    }
+    if(result.category==='benefit'){
+      // Voucher: a discount you can use later. Record: a waiver/free service already applied to a specific job. Permanent: ongoing perk.
+      const future=/(감면|할인|우대)/u.test(name+' '+q)&&(String(result.unit||'')==='%'||/퍼센트|%|\d+\s*회|이용권|쿠폰|할인권|감면권/u.test(name+' '+q))&&!/(무상 적용|면제합니다|적용되며|적용됩니다)/u.test(q);
+      result.benefitMode=result.benefitConsumed?'record':future?'voucher':result.benefitPermanent?'permanent':'record';
+      result.benefitUses=Math.max(1,Math.min(99,Number.isSafeInteger(Number(result.benefitUses))?Number(result.benefitUses):1));
+      result.auditNote=result.auditNote||(result.benefitMode==='voucher'?'앞으로 쓸 수 있는 할인 혜택입니다. 승인하면 이용권으로 소지품에 추가됩니다.':result.benefitMode==='permanent'?'상시 혜택입니다. 승인하면 자산 탭의 보유 혜택으로 등록됩니다.':'이미 적용된 면제·무상 혜택입니다. 승인하면 기록만 남깁니다.');
     }
     if(['asset','contract'].includes(result.category)&&result.financialStatus==='received'){
       // Settled/closed accounts are not necessarily bank deposits.
@@ -530,7 +556,7 @@
       source:String(x.source||'').slice(0,120),amount:typeof safe.amount==='number'&&Number.isFinite(safe.amount)?safe.amount:null,
       unit:String(safe.unit||'').slice(0,30),owner:String(x.owner||'unknown'),eventKind:String(x.eventKind||''),
       financialStatus:safe.financialStatus,auditNote:safe.auditNote||'',...(typeof safe.value==='number'?{value:safe.value}:{}),
-      ...(safe.category==='benefit'?{benefitUses:Math.max(1,Math.min(99,Number.isSafeInteger(Number(safe.benefitUses))?Number(safe.benefitUses):1)),benefitPermanent:safe.benefitPermanent===true,benefitConsumed:safe.benefitConsumed===true}:{}),
+      ...(safe.category==='benefit'?{benefitUses:safe.benefitUses||1,benefitMode:safe.benefitMode||'record',benefitPermanent:safe.benefitMode==='permanent',benefitConsumed:safe.benefitMode==='record'}:{}),
       ...(Array.isArray(x.soldItems)&&x.soldItems.length&&['received','receivable','pending'].includes(safe.financialStatus)?{soldItems:x.soldItems.slice(0,5).filter(v=>v&&typeof v.name==='string'&&v.name.trim()).map(v=>({name:v.name.trim().slice(0,80),qty:Number.isSafeInteger(Number(v.qty))&&Number(v.qty)>0?Math.min(999,Number(v.qty)):1}))}:{}),
       ...(Array.isArray(x.purchasedItems)&&x.purchasedItems.length&&safe.financialStatus==='paid'?{purchasedItems:x.purchasedItems.slice(0,5).filter(v=>v&&typeof v.name==='string'&&v.name.trim()).map(v=>({name:v.name.trim().slice(0,80),qty:Number.isSafeInteger(Number(v.qty))&&Number(v.qty)>0?Math.min(999,Number(v.qty)):1,received:v.received!==false}))}:{}),
       transactionId:String(x.transactionId||'').slice(0,100),timing:String(x.timing||'').slice(0,80),linkTo:String(x.linkTo||'').slice(0,12)};
@@ -542,7 +568,22 @@
     if(!gfqEventEligible(x,ctx)||!['completed','active','confirmed','uncertain'].includes(x.status))return {reason:'filtered'};
     const evidence=gfqLocateEvidence(x.evidence.trim(),texts);
     if(!evidence)return {reason:'evidence'};
-    return {proposal:gfqBuildProposal(x,evidence,ctx)};
+    const p=gfqBuildProposal(x,evidence,ctx);
+    // v0.3.12: a number the AI wrote must actually be in the quoted text (e.g. 900,000원 when the text says 950,000원).
+    if(typeof p.amount==='number'&&['원','%'].includes(p.unit)&&!gfqAmountsIn(evidence).has(p.amount)){
+      p.auditNote=[p.auditNote,'AI가 제시한 금액 '+gfqAmount(p.amount,p.unit)+'이(가) 원문 근거에 없어 금액을 비웠습니다.'].filter(Boolean).join(' ');p.amount=null;
+    }
+    // Rewards written inside a quest are kept only when their own evidence is found in this chapter's text.
+    if(p.category==='quest'&&p.questRewards.length){
+      p.questRewards=p.questRewards.map(r=>{
+        if(!r||typeof r!=='object')return null;
+        const ev=typeof r.evidence==='string'&&r.evidence.trim().length>=6?gfqLocateEvidence(r.evidence.trim(),texts):null;
+        if(!ev)return null;
+        const amount=typeof r.amount==='number'&&(!['원','%'].includes(String(r.unit||''))||gfqAmountsIn(ev).has(r.amount))?r.amount:null;
+        return {...r,evidence:ev,amount};
+      }).filter(Boolean);
+    }
+    return {proposal:p};
   }
   function gfqDuplicate(a,b,ctx=GFQ_GENERIC){
     if(a.category!==b.category)return false;
@@ -576,7 +617,7 @@
       '<label for="gfq-ai-range">분석 범위</label><select id="gfq-ai-range"><option value="new" '+((data.aiRange||'new')==='new'?'selected':'')+'>새로 추가·변경된 챕터만</option><option value="all" '+(data.aiRange==='all'?'selected':'')+'>전체 챕터</option><option value="pick" '+(data.aiRange==='pick'?'selected':'')+'>챕터 직접 지정</option></select> '+
       '<button data-action="invoke-quest-bridge">AI 분석 실행</button> <button data-action="prepare-ai-prompt">분석 지침 복사</button> <button data-action="import-ai-result">AI 분석 JSON 가져오기</button>'+
       (rows.length?'<div class="gfq-row"><button data-action="select-all-ai">전체 선택</button><button data-action="unselect-all-ai">선택 해제</button><button data-action="approve-selected-ai">선택 승인</button><button data-action="delete-selected-ai">선택 삭제</button><button data-action="delete-all-ai" class="gfq-danger">전체 삭제</button></div>':'')+
-      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(gfqLabel('category',x.category))+' · '+esc(x.name)+'</b><small>'+esc(gfqLabel('status',x.status))+' · '+esc(gfqLabel('money',x.financialStatus))+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(gfqAmount(x.amount,x.unit))+' · 출처: '+esc(x.source||'미확인')+'</div>'+(gfqTiming(x)?'<div class="gfq-muted">'+(x.category==='quest'?'기한·시점':'지급·수령 시점')+': '+esc(gfqTimingText(gfqTiming(x)))+'</div>':'')+(x.value?'<div class="gfq-muted">물품 가치: '+esc(gfqAmount(x.value,'원'))+' (현금 아님)</div>':'')+gfqClearedHint(w,x)+gfqProposalLinkExtra(x)+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).objective)+'</div>'+gfqProposalQuestExtra(w,x)+'<div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).rewardList.map(r=>r.name+' ('+gfqLabel('certainty',r.certainty)+')').join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
+      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(gfqLabel('category',x.category))+' · '+esc(x.name)+'</b><small>'+esc(gfqLabel('status',x.status))+' · '+esc(gfqLabel('money',x.financialStatus))+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(gfqAmount(x.amount,x.unit))+' · 출처: '+esc(x.source||'미확인')+'</div>'+(gfqTiming(x)?'<div class="gfq-muted">'+(x.category==='quest'?'기한·시점':'지급·수령 시점')+': '+esc(gfqTimingText(gfqTiming(x)))+'</div>':'')+(x.value?'<div class="gfq-muted">물품 가치: '+esc(gfqAmount(x.value,'원'))+' (현금 아님)</div>':'')+gfqClearedHint(w,x)+gfqProposalLinkExtra(x)+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).objective)+'</div>'+gfqProposalQuestExtra(w,x)+'<div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).rewardList.map(gfqRewardText).join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
   }
   function gfqDiagnosticsHtml(w){
     const a=w.gfLastAnalysis,ev=w.gfEvicted&&Object.entries(w.gfEvicted);
@@ -678,6 +719,29 @@
     if(x.status==='completed'&&!q.claimed){q.claimed=true;q.progress=q.target;note+=' → 완료';gfqAwardQuestReputation(w,q);}
     record(w,note+' · '+x.evidence);
   }
+  function gfqDedupeRewards(list){
+    const out=[];
+    for(const r of list){
+      const money=r.kind==='money'&&typeof r.amount==='number';
+      const twin=money&&out.find(v=>v.kind==='money'&&v.amount===r.amount&&String(v.unit||'')===String(r.unit||''));
+      if(twin){if(!twin.chainKey&&r.chainKey)out[out.indexOf(twin)]=r;continue;}
+      if(!money&&out.some(v=>v.kind===r.kind&&v.name===r.name))continue;
+      out.push(r);
+    }
+    // Amounts that add up exactly to another listed amount are its breakdown (e.g. 950,000 + 450,000 = 1,400,000).
+    const money=out.filter(r=>r.kind==='money'&&typeof r.amount==='number'&&r.amount>0),drop=new Set();
+    for(const total of [...money].sort((a,b)=>b.amount-a.amount)){
+      if(drop.has(total))continue;
+      const rest=money.filter(r=>r!==total&&!drop.has(r)&&r.amount<total.amount&&String(r.unit||'')===String(total.unit||'')).slice(0,10);
+      for(let mask=1;mask<(1<<rest.length);mask++){const sub=rest.filter((_,i)=>mask&(1<<i));if(sub.length>=2&&sub.reduce((s,r)=>s+r.amount,0)===total.amount){sub.forEach(r=>drop.add(r));break;}}
+    }
+    return out.filter(r=>!drop.has(r));
+  }
+  function gfqRewardText(r){
+    const amt=r.amount!==null&&r.amount!==undefined?' '+(r.kind==='reputation'?'+':'')+Number(r.amount).toLocaleString('ko-KR')+(r.unit?(r.kind==='reputation'?'':' ')+r.unit:''):'';
+    const why=r.kind==='reputation'&&r.assessed&&r.evidence?' — '+String(r.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''):'';
+    return r.name+amt+' ('+gfqLabel('certainty',r.certainty)+')'+why;
+  }
   function gfqQuestPresentation(x){
     const raw=String(x.name||'').trim(),quote=String(x.evidence||''),source=String(x.source||'');
     const title=String(x.questTitle||raw).trim().slice(0,90);
@@ -689,7 +753,7 @@
     let activeRewards=haveMoney?rewardCandidates.filter(r=>r.kind!=='reputation'||r.assessed):rewardCandidates;
     const reps=activeRewards.filter(r=>r?.kind==='reputation');
     if(reps.length>1){const keep=reps.reduce((a,b)=>(b.assessed&&!a.assessed)||((b.assessed===a.assessed)&&(b.amount||1)>(a.amount||1))?b:a);activeRewards=activeRewards.filter(r=>r.kind!=='reputation'||r===keep);}
-    const rewardList=activeRewards.slice(0,8).filter(r=>r&&typeof r.name==='string'&&r.name.trim()).map(r=>({
+    const rewardList=gfqDedupeRewards(activeRewards.filter(r=>r&&typeof r.name==='string'&&r.name.trim())).slice(0,8).map(r=>({
       name:String(r.name).slice(0,100),
       kind:['money','item','credential','reputation','benefit','other'].includes(r.kind)?r.kind:'other',
       certainty:['received','confirmed','pending','suggested','uncertain'].includes(r.certainty)?r.certainty:'uncertain',
@@ -743,6 +807,8 @@
       '반환 JSON: {"events":[{"category":"quest|asset|item|credential|contract|benefit","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","linkTo":"이전 맥락 목록의 ID(t1, i2 등) 또는 빈 문자열","benefitUses":"혜택일 때 사용 가능 횟수(명시 없으면 1) 또는 null","benefitPermanent":false,"benefitConsumed":false,"purchasedItems":[{"name":"구매한 물품","qty":1,"received":true}],"soldItems":[{"name":"판매한 물품","qty":1}],"timing":"지급·수령·완료 시점을 나타내는 원문 표현 그대로(예: 내일 이 시간, 임무 완료 시, 금일 오후 6시) 또는 빈 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
       '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다.',
       '거래의 지급 의사나 보장만으로 실제 입금(received)으로 처리하지 않습니다. 금액을 확정했지만 입금 문장이 없으면 received를 쓰지 않습니다. 총액과 그 구성 수당은 같은 transactionId를 사용하고 각각 중복 수입으로 합산하지 않습니다.',
+      'name은 반드시 한국어로 씁니다. 수당·보수·기본급·정산금처럼 돈으로 받는 것은 혜택(benefit)이 아니라 category=asset입니다.',
+      '총액이 명시된 지급은 총액 1건만 출력하고, 기본 수당·위험 수당 같은 구성 내역은 따로 출력하지 않고 name에 괄호로 적습니다. 총액이 없으면 각 금액을 출력합니다. amount에는 원문에 적힌 숫자만 씁니다.',
       '할인·감면·면제·우선 이용·무료 서비스 같은 혜택은 category=benefit입니다. 앞으로 쓸 수 있으면 benefitUses(명시 없으면 1), 기한 없이 계속 적용되면 benefitPermanent=true, 이미 특정 거래에 적용되어 끝났으면 benefitConsumed=true입니다. amount에는 할인율(%)이나 면제 금액을 넣습니다.',
       '돈을 내고 물건을 산 구매는 category=asset, financialStatus=paid, eventKind=expense로 출력하고 purchasedItems에 산 물품과 수량을 넣습니다. 주문만 하고 아직 받지 않았으면 received=false입니다. 물건이 없는 지출(숙박비, 수수료 등)은 purchasedItems를 빈 배열로 둡니다.',
       '물건을 팔고 대금을 받은 판매는 category=asset, eventKind=payment로 출력하고 soldItems에 판 물품과 수량을 넣습니다. 대금을 실제로 받았으면 received, 받기로만 했으면 receivable 또는 pending입니다.',
@@ -873,7 +939,7 @@
     if(x.linkInfo)parts.push('이전 기록 연결: '+x.linkInfo.name+' ('+gfqLabel('money',x.linkInfo.from)+' → '+(x.category==='item'?(x.financialStatus==='pending'?'수령 예정':'수령'):gfqLabel('money',x.financialStatus))+')');
     if(x.role==='total'&&x.componentNote)parts.push(x.componentNote);
     if(x.role==='component')parts.push('구성 금액 · 승인해도 거래 원장에 별도 수입으로 기록하지 않습니다');
-    if(x.category==='benefit')parts.push(x.benefitConsumed?'이미 적용된 혜택 · 승인하면 기록만 남깁니다':x.benefitPermanent?'상시 혜택 · 승인하면 자산 탭에 \'보유 혜택\'으로 등록됩니다':'승인하면 소지품에 이용권 ×'+(x.benefitUses||1)+'로 추가됩니다');
+    if(x.category==='benefit')parts.push(x.benefitMode==='record'?'이미 적용된 혜택 · 승인하면 기록만 남깁니다':x.benefitMode==='permanent'?'상시 혜택 · 승인하면 자산 탭에 \'보유 혜택\'으로 등록됩니다':'승인하면 소지품에 이용권 ×'+(x.benefitUses||1)+'로 추가됩니다');
     if(Array.isArray(x.soldItems)&&x.soldItems.length)parts.push('판매 물품: '+x.soldItems.map(v=>v.name+' ×'+v.qty).join(', ')+' · 승인하면 소지품에서 차감합니다');
     if(Array.isArray(x.purchasedItems)&&x.purchasedItems.length)parts.push('구매 물품: '+x.purchasedItems.map(v=>v.name+' ×'+v.qty+(v.received?'':' (수령 예정)')).join(', '));
     return parts.map(t=>'<div class="gfq-muted">'+esc(t)+'</div>').join('');
@@ -915,7 +981,7 @@
     }
     if(p.category==='item')return {...base,amount:null,unit:'',kind:'item',certainty:p.financialStatus==='pending'?'pending':'confirmed'};
     if(p.category==='credential')return {...base,amount:null,unit:'',kind:'credential',certainty:['completed','confirmed'].includes(p.status)?'received':'pending'};
-    if(p.category==='benefit'&&!p.benefitConsumed)return {...base,kind:'benefit',certainty:'confirmed'};
+    if(p.category==='benefit')return {...base,kind:'benefit',certainty:p.benefitMode==='record'?'received':'confirmed'};
     return null;
   }
   function gfqConsolidationPrompt(input,hero){
@@ -1187,8 +1253,8 @@
   }
   // v0.3.11: benefits. One-off discounts become vouchers in the inventory; lasting ones are an asset field.
   function gfqApplyBenefit(w,x){
-    if(x.benefitConsumed){record(w,'혜택 적용 확인: '+x.name+' · '+x.evidence);return 'consumed';}
-    if(x.benefitPermanent){
+    if(x.benefitMode==='record'||(!x.benefitMode&&x.benefitConsumed)){record(w,'혜택 적용 확인: '+x.name+' · '+x.evidence);return 'consumed';}
+    if(x.benefitMode==='permanent'||(!x.benefitMode&&x.benefitPermanent)){
       const name='보유 혜택 · '+x.name,f=w.fields.find(v=>v.name===name);
       if(!f)w.fields.push({id:uid(),name,value:'적용 중',unit:''});
       record(w,'상시 혜택 등록: '+x.name+' · '+x.evidence);return 'permanent';
@@ -1310,7 +1376,7 @@
   }
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
   function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(data.worlds[w]?.gfDisplayName||w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
-  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.3.11</span></footer></div>`;}
+  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.3.12</span></footer></div>`;}
   function content(w){switch(currentTab){case 'quests':return `<div class="gfq-row"><select id="gfq-filter">${['전체','일일','주간','의뢰','업적'].map(t=>`<option ${activeFilter===t?'selected':''}>${t}</option>`).join('')}</select>${btn('＋ 퀘스트','add-quest','class="primary"')}</div>${w.quests.filter(q=>activeFilter==='전체'||q.type===activeFilter).map(q=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(q.title)}</b><small>${esc(q.type)}</small></div><div class="gfq-muted">${esc(q.detail)}</div>${Array.isArray(q.steps)&&q.steps.length?`<div class="gfq-muted">세부 목표</div><div class="gfq-row">${q.steps.map((t,i)=>btn((q.stepDone?.[i]?'✓ ':'○ ')+esc(t),'toggle-step',`data-id="${esc(q.id)}" data-step="${i}" aria-pressed="${q.stepDone?.[i]?'true':'false'}"`)).join("")}</div>`:""}<progress value="${Math.max(0,Math.min(q.progress,q.target))}" max="${q.target}"></progress><div class="gfq-row"><span class="gfq-fill">${q.progress} / ${q.target} ${q.claimed?'· 완료':''}</span>${btn('＋1','increment',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn(q.claimed?'완료됨':'완료','complete',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn('삭제','delete-quest',`data-id="${esc(q.id)}"`)}</div><div class="gfq-muted">보상(기록용): ${esc(gfqQuestRewardLabel(q))}</div>${(q.rewardDetails||[]).map((r,i)=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?btn('원장에 기록: '+esc(r.name),'reward-to-ledger',`data-id="${esc(q.id)}" data-idx="${i}"`):'').join('')}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">▤</div><strong>진행 중인 퀘스트가 없습니다</strong><span class="gfq-muted">새 퀘스트를 등록하면 여기에 표시됩니다.</span></div>'}`;
   case 'assets':return `${gfqLedgerHtml(w)}${btn('＋ 필드 추가','add-field','class="primary"')}<p class="gfq-muted">소지금, 은행, 평판, 직업 등 월드별 자유 필드</p>${w.fields.map(f=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(f.name)}</b><span>${esc(f.value)} ${esc(f.unit)}</span>${btn('수정','edit-field',`data-id="${esc(f.id)}"`)}${btn('삭제','delete-field',`data-id="${esc(f.id)}"`)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◈</div><strong>등록된 자산이 없습니다</strong><span class="gfq-muted">소지금, 직업, 평판 등 원하는 항목을 추가해 주세요.</span></div>'}`;
   case 'items':return `${btn('＋ 소지품','add-item','class="primary"')}${w.items.filter(i=>i.state==='pending').length?'<h3>수령 예정</h3><p class="gfq-muted">아직 받지 않은 물품입니다. 소지품 목록과 스토리 문맥에는 보유품으로 포함되지 않습니다.</p>':''}${w.items.filter(i=>i.state==='pending').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><small>수령 예정</small></div>${i.timing?`<div class="gfq-muted">수령 시점: ${esc(gfqTimingText(i.timing))}</div>`:''}${i.value?`<div class="gfq-muted">가치: ${esc(gfqAmount(i.value,'원'))}</div>`:''}<div class="gfq-row">${btn('수령 확인','receive-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.kind==='voucher')?'<h3>혜택·이용권</h3><p class="gfq-muted">퀘스트 보상이나 계약으로 받은 할인·감면 혜택입니다. 사용하면 횟수가 줄어들고 변경 기록에 남습니다.</p>':''}${w.items.filter(i=>i.kind==='voucher').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>${i.qty>0?'남은 횟수 '+i.qty:'사용 완료'}</span></div>${i.detail?`<div class="gfq-muted">${esc(i.detail)}</div>`:''}<div class="gfq-row">${btn('사용','use-voucher',`data-id="${esc(i.id)}" ${i.qty>0?'':'disabled'}`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.state==='pending'||i.kind==='voucher')?'<h3>보유 소지품</h3>':''}${w.items.filter(i=>i.state!=='pending'&&i.kind!=='voucher').map(i=>`<div class="gfq-card gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>× ${i.qty}</span>${btn('수정','edit-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>소지품 목록이 비어 있습니다</strong><span class="gfq-muted">스토리에서 얻은 아이템을 기록할 수 있습니다.</span></div>'}`;
