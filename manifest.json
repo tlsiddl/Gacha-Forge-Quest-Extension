@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.4.1",
-    "description": "스토리 생성 직후 자동 분석(권장 방식)",
+    "version": "0.4.2",
+    "description": "대사 시점 반영·퀘스트 수락 창·돈/아이템 알림",
     "runtime": "client",
     "enabled": false,
     "capabilities": [

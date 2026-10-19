@@ -2,8 +2,8 @@ const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
-const consts=['GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const consts=['gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
+const names=['gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -396,5 +396,37 @@ t('자동 반영 대상: 검증 경고가 붙은 항목은 검토 목록에 남�
   assert.strictEqual(F.gfqAutoEligible({status:'confirmed',auditNote:'AI가 제시한 금액 900,000 원이(가) 원문 근거에 없어 금액을 비웠습니다.'}),false);
   assert.strictEqual(F.gfqAutoEligible({status:'confirmed',auditNote:'이전 기록 연결 제안을 거부했습니다(금액 불일치). 별개 항목으로 검토해 주세요.'}),false);
   assert.strictEqual(F.gfqAutoEligible({status:'confirmed',auditNote:'계좌 입금 근거가 없어 미수·정산 기록으로 보류했습니다.'}),true,'a safe downgrade is still applied');
+});
+t('대사 화면 읽기: 챕터·대사 번호·현재 대사',()=>{
+  const el=(t)=>({textContent:t});
+  const root={querySelector:sel=>({'.vn':el('◀ 챕터 3챕터 · 제1공방 07 / 58 한도윤: 비상 냉각 밸브를 지금 열어!'),'.vn-caption':el('압수 폐기물의 출처3챕터 · 성수동 제1공방'),'.vn-count':el('07 / 58')})[sel]||null};
+  assert.deepStrictEqual(F.gfqVNState(root),{text:'◀ 챕터 3챕터 · 제1공방 07 / 58 한도윤: 비상 냉각 밸브를 지금 열어!',chapter:'3',line:7,total:58});
+  assert.strictEqual(F.gfqVNState({querySelector:()=>null}),null);
+});
+t('대사 일치: 근거 문장 전체 또는 앞뒤 일부가 화면 대사에 있을 때',()=>{
+  const vis=F.gfqNormMap('채서래는 비상 냉각 밸브를 열어 용해로 폭발을 막아 냈다.').out;
+  assert.ok(F.gfqLineHits('비상 냉각 밸브를 열어 용해로 폭발을 막아',vis));
+  assert.ok(F.gfqLineHits('비상 냉각 밸브를 열어 용해로 폭발을 막아 냈다. 그리고 공방장은 크게 웃었다.',vis),'evidence spanning two lines');
+  assert.ok(!F.gfqLineHits('세후 총 1,400,000원을 등록 계좌로',vis));
+});
+t('장면 도달 판정: 순서대로 근거를 따라가고, 지난 챕터·마지막 대사에서 남은 항목 처리',()=>{
+  const q={deferred:true,category:'quest',source:'챕터 3 · 장면 1',evidence:'용역을 위촉하고자 합니다',sourceEvidence:['용역을 위촉하고자 합니다','비상 냉각 밸브를 열어 용해로 폭발을 막아']};
+  const m={deferred:true,category:'asset',source:'챕터 3 · 장면 1',evidence:'세후 총 1,400,000원을 등록 계좌로'};
+  const vn=(text,line=5,chapter='3',total=58)=>({text,chapter,line,total});
+  assert.deepStrictEqual(F.gfqSceneHits([q,m],vn('공방장: 정식 긴급 설비 방어 용역을 위촉하고자 합니다!')).map(h=>h.at),[0]);
+  q.stage=1;assert.deepStrictEqual(F.gfqSceneHits([q],vn('공방장: 정식 긴급 설비 방어 용역을 위촉하고자 합니다!')),[],'an earlier line does not repeat');
+  assert.deepStrictEqual(F.gfqSceneHits([q],vn('채서래는 비상 냉각 밸브를 열어 용해로 폭발을 막아 냈다')).map(h=>h.at),[1]);
+  assert.deepStrictEqual(F.gfqSceneHits([q,m],vn('다른 대사',58)).map(h=>h.at),['flush','flush'],'last line of the chapter');
+  assert.deepStrictEqual(F.gfqSceneHits([m],vn('다른 대사',2,'4')).map(h=>h.at),['flush'],'reader is already in chapter 4');
+  assert.deepStrictEqual(F.gfqSceneHits([{...m,deferred:false}],vn('세후 총 1,400,000원을 등록 계좌로')),[]);
+});
+t('알림 문구: 돈 수령·지출·아이템 획득·수령 예정·혜택',()=>{
+  const ev=p=>F.gfqEventsFor({quests:[]},p,new Map(),0).map(e=>e.title+' | '+e.text);
+  assert.deepStrictEqual(ev({category:'asset',name:'방어 보수',financialStatus:'received',amount:1400000,unit:'원'}),['돈 수령 | +1,400,000원 · 방어 보수']);
+  assert.deepStrictEqual(ev({category:'asset',name:'포션 구매',financialStatus:'paid',amount:30000,unit:'원',purchasedItems:[{name:'회복 포션',qty:3,received:true}]}),['지출 | −30,000원 · 포션 구매','아이템 구매 | 회복 포션 ×3']);
+  assert.deepStrictEqual(ev({category:'item',name:'마석 조각',status:'confirmed',financialStatus:'ownership',amount:2,unit:'개'}),['아이템 획득 | 마석 조각 ×2']);
+  assert.deepStrictEqual(ev({category:'item',name:'맞춤 건틀릿',status:'active',financialStatus:'pending',evidence:'내일 이 시간에 수령하시게 됩니다'}),['수령 예정 | 맞춤 건틀릿 · 내일 이 시간']);
+  assert.deepStrictEqual(ev({category:'benefit',name:'공임 50% 감면',benefitMode:'voucher',benefitUses:1}),['혜택 획득 | 공임 50% 감면권 ×1']);
+  assert.deepStrictEqual(ev({category:'asset',name:'기본 수당',financialStatus:'pending',amount:950000,unit:'원',role:'component'}),[],'components stay quiet');
 });
 console.log('\n'+pass+'개 통과');

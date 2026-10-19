@@ -28,7 +28,7 @@ win.fetch=async(url,opts)=>{
   return reply({content:JSON.stringify(out)});
 };
 const MODE=process.argv[3]||'chapter';
-win.localStorage.setItem('gf-quest-v1',JSON.stringify({v:1,world:'',aiConnectionId:'c1',aiMode:MODE,autoApply:true,worlds:{}}));
+win.localStorage.setItem('gf-quest-v1',JSON.stringify({v:1,world:'',aiConnectionId:'c1',aiMode:MODE,autoApply:true,sceneTimed:false,worlds:{}}));
 const host=doc.createElement('marinara-capability-gacha-forge');doc.body.append(host);
 host.attachShadow({mode:'open'}).innerHTML='<div><button class="gf-fs-bar icon-button">⛶</button></div>';
 win.eval(src);
