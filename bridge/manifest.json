@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 2,
+  "capabilityApi": {
+    "major": 1,
+    "minor": 10
+  },
+  "builtAgainst": {
+    "engineVersion": "2.5.0"
+  },
+  "id": "gacha-quest-bridge",
+  "name": "Gacha Forge Quest Bridge",
+  "version": "0.1.0",
+  "description": "Optional server-side analysis using existing Marinara text AI connections",
+  "engine": {
+    "min": "2.5.0",
+    "maxExclusive": "4.0.0"
+  },
+  "kind": [
+    "agent"
+  ],
+  "entrypoints": {
+    "server": "server.mjs"
+  },
+  "permissions": [
+    "network",
+    "routes"
+  ],
+  "restartRequired": true
+}
