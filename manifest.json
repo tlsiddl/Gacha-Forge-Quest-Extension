@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.2.8",
-    "description": "스토리 분석 중복 퀘스트·면허 방지 및 입금 근거 검증",
+    "version": "0.2.9",
+    "description": "AI 수당 중복·미확정 입금·타인 물품 검증 강화",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
