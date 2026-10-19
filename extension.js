@@ -19,14 +19,42 @@
   const style=document.createElement('style');style.id=ID+'-style';
   style.textContent=`
 #${ID}-launcher{position:fixed;right:16px;bottom:82px;z-index:2147483000;background:#243448;color:#fff;border:1px solid #6b7f99;border-radius:999px;padding:11px 16px;font:600 13px system-ui;box-shadow:0 5px 18px #0005;cursor:pointer}
-#${ID}-panel{position:fixed;right:12px;top:50%;transform:translateY(-50%);width:min(410px,calc(100vw - 24px));max-height:min(88dvh,760px);overflow:auto;overscroll-behavior:contain;background:var(--gfq-bg,#fafafc);color:var(--gfq-fg,#222);border:1px solid #8992a555;border-radius:18px;z-index:2147483001;box-shadow:0 16px 45px #0007;font:14px/1.5 system-ui,sans-serif;padding:17px;box-sizing:border-box}
-#${ID}-panel *{box-sizing:border-box}#${ID}-panel .gfq-head{display:flex;align-items:center;justify-content:space-between;gap:8px}#${ID}-panel h2{font-size:19px;margin:0}#${ID}-panel h3{font-size:15px;margin:12px 0 8px}#${ID}-panel button,#${ID}-panel select,#${ID}-panel input,#${ID}-panel textarea{font:inherit;border-radius:9px;border:1px solid #8992a580;padding:7px;color:inherit;background:transparent;max-width:100%}#${ID}-panel button{cursor:pointer}#${ID}-panel button.primary{background:#476a96;color:white;border-color:#476a96}#${ID}-panel button:disabled{opacity:.5;cursor:default}#${ID}-panel input,#${ID}-panel textarea{width:100%}#${ID}-panel .gfq-tabs,#${ID}-panel .gfq-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#${ID}-panel .gfq-tabs{margin:12px 0}#${ID}-panel .gfq-card{border:1px solid #8992a550;border-radius:12px;padding:11px;margin:8px 0;overflow-wrap:anywhere}#${ID}-panel .gfq-muted{font-size:12px;opacity:.7}#${ID}-panel .gfq-fill{flex:1;min-width:0}#${ID}-panel label{display:block;font-size:12px;margin-top:7px;opacity:.8}#${ID}-panel .gfq-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}#${ID}-panel progress{width:100%;height:8px}#${ID}-panel textarea{min-height:60px;resize:vertical}#${ID}-panel .gfq-danger{color:#bc4545}#${ID}-panel [hidden]{display:none!important}
-@media(prefers-color-scheme:dark){#${ID}-panel{--gfq-bg:#20262f;--gfq-fg:#f1f4f8}}@media(max-width:600px){#${ID}-panel{inset:8px;width:auto;max-height:calc(100dvh - 16px);transform:none}#${ID}-launcher{bottom:18px}}
+#${ID}-panel{margin:0 12px 0 auto;position:fixed;right:12px;top:50%;transform:translateY(-50%);width:min(410px,calc(100vw - 24px));max-height:min(88dvh,760px);overflow:auto;overscroll-behavior:contain;background:var(--gfq-bg,#fafafc);color:var(--gfq-fg,#222);border:1px solid #8992a555;border-radius:18px;z-index:2147483001;box-shadow:0 16px 45px #0007;font:14px/1.5 system-ui,sans-serif;padding:17px;box-sizing:border-box}
+#${ID}-panel::backdrop{background:rgba(0,0,0,.45)}#${ID}-panel *{box-sizing:border-box}#${ID}-panel .gfq-head{display:flex;align-items:center;justify-content:space-between;gap:8px}#${ID}-panel h2{font-size:19px;margin:0}#${ID}-panel h3{font-size:15px;margin:12px 0 8px}#${ID}-panel button,#${ID}-panel select,#${ID}-panel input,#${ID}-panel textarea{font:inherit;border-radius:9px;border:1px solid #8992a580;padding:7px;color:inherit;background:transparent;max-width:100%}#${ID}-panel button{cursor:pointer}#${ID}-panel button.primary{background:#476a96;color:white;border-color:#476a96}#${ID}-panel button:disabled{opacity:.5;cursor:default}#${ID}-panel input,#${ID}-panel textarea{width:100%}#${ID}-panel .gfq-tabs,#${ID}-panel .gfq-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#${ID}-panel .gfq-tabs{margin:12px 0}#${ID}-panel .gfq-card{border:1px solid #8992a550;border-radius:12px;padding:11px;margin:8px 0;overflow-wrap:anywhere}#${ID}-panel .gfq-muted{font-size:12px;opacity:.7}#${ID}-panel .gfq-fill{flex:1;min-width:0}#${ID}-panel label{display:block;font-size:12px;margin-top:7px;opacity:.8}#${ID}-panel .gfq-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}#${ID}-panel progress{width:100%;height:8px}#${ID}-panel textarea{min-height:60px;resize:vertical}#${ID}-panel .gfq-danger{color:#bc4545}#${ID}-panel [hidden]{display:none!important}
+@media(prefers-color-scheme:dark){#${ID}-panel{--gfq-bg:#20262f;--gfq-fg:#f1f4f8}}@media(max-width:600px){#${ID}-panel{inset:8px;width:auto;max-height:calc(100dvh - 16px);transform:none;margin:auto}#${ID}-launcher{bottom:18px}}
 `;
   document.head.append(style);
   function allowed(){return !!document.querySelector('[data-agent-id="gacha-forge"], [data-package-id="gacha-forge"], [class*="gacha-forge"], [id*="gacha-forge"], [class*="gf-shell"], [class*="gf-app"]') || /gacha.forge/i.test(document.title) || /gacha-forge/i.test(location.pathname+location.hash);}
-  function mount(){if(!document.body)return; if(!root){root=document.createElement('button');root.id=ID+'-launcher';root.textContent='📜 퀘스트';root.type='button';root.onclick=()=>openPanel();document.body.append(root);}root.hidden=!allowed() && !panel;}
-  function openPanel(){if(panel){panel.remove();panel=null;mount();return;}panel=document.createElement('section');panel.id=ID+'-panel';panel.setAttribute('aria-label','퀘스트');document.body.append(panel);render();mount();}
+  const HOST_TAG = 'marinara-capability-gacha-forge';
+  let gameHost = null, gameRoot = null, gameObserver = null, gameDebounce = 0;
+  function findHost(){ return document.querySelector(HOST_TAG); }
+  function getButton(){return gameRoot?.querySelector('button[data-gfq="top"]');}
+  function placeButton(){
+    if(!gameRoot)return;
+    if(getButton())return;
+    const fs=[...gameRoot.querySelectorAll('.gf-fs-bar')].find(el=>el.classList.contains('icon-button'));
+    if(!fs || !fs.parentElement)return;
+    const b=document.createElement('button');b.type='button';b.className='icon-button';b.dataset.gfq='top';
+    b.title='퀘스트';b.setAttribute('aria-label','퀘스트');b.textContent='📜';
+    b.addEventListener('pointerdown',e=>e.stopPropagation());
+    b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openPanel();});
+    fs.parentElement.insertBefore(b,fs);
+  }
+  function mount(){
+    if(!document.body)return;
+    if(root){root.remove();root=null;}
+    const host=findHost();
+    if(host!==gameHost || (host && host.shadowRoot!==gameRoot)){
+      if(gameObserver){gameObserver.disconnect();gameObserver=null;}
+      gameHost=host;gameRoot=host?.shadowRoot||null;
+      if(gameRoot){
+        gameObserver=new MutationObserver(()=>{if(gameDebounce)return;gameDebounce=setTimeout(()=>{gameDebounce=0;placeButton();},120);});
+        gameObserver.observe(gameRoot,{childList:true,subtree:true});
+      }
+    }
+    placeButton();
+  }
+  function openPanel(){if(panel){panel.remove();panel=null;mount();return;}panel=document.createElement('dialog');panel.id=ID+'-panel';panel.setAttribute('aria-label','퀘스트');document.body.append(panel);panel.addEventListener('cancel',e=>{e.preventDefault();openPanel();});render();panel.showModal();mount();}
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
   function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
   function render(){if(!panel)return;let w=current();panel.innerHTML=`<div class="gfq-head"><h2>📜 퀘스트</h2>${btn('닫기','close','aria-label="닫기"')}</div><p class="gfq-muted">월드별 수동 기록 · 가챠 재화와 별도 저장</p>${worldSelect()}${w?`<nav class="gfq-tabs">${[['quests','퀘스트'],['assets','자산'],['items','소지품'],['history','기록'],['settings','설정']].map(([key,label])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}">${label}</button>`).join('')}</nav><div id="gfq-content">${content(w)}</div>`:'<p>먼저 월드를 추가해 줘. 공식 게임 월드와 자동 연결하지 않으므로 정확한 월드 이름을 직접 입력해야 해.</p>'}`;}
@@ -52,6 +80,7 @@
   if(act==='delete-item'){const it=w.items.find(x=>x.id===id);if(!it||!confirm('소지품을 삭제할까?'))return;return update(w=>{w.items=w.items.filter(x=>x.id!==id);record(w,'소지품 삭제: '+it.name);});}
   if(act==='export')return exportData();if(act==='import')return importData();if(act==='delete-world'){if(!confirm('현재 월드의 퀘스트 데이터를 삭제할까? 게임 원본 세이브는 삭제되지 않아.'))return;delete data.worlds[data.world];data.world=Object.keys(data.worlds)[0]||'';save();render();}
   });
-  mount();const mo=new MutationObserver(()=>{if(!document.body.contains(root))mount();else if(!panel)root.hidden=!allowed();});mo.observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener('pagehide',()=>{mo.disconnect();});
+  mount();const mo=new MutationObserver(()=>{if(findHost()!==gameHost)mount();});mo.observe(document.documentElement,{childList:true,subtree:false});
+  const sync=setInterval(()=>{if(!gameHost || !gameHost.isConnected || !getButton())mount();},1400);
+  window.addEventListener('pagehide',()=>{mo.disconnect();if(gameObserver)gameObserver.disconnect();if(gameDebounce)clearTimeout(gameDebounce);clearInterval(sync);});
 })();
