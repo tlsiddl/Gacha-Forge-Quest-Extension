@@ -3,7 +3,7 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "월드 연결 진단 표시 및 재시도, 확장 내부 존댓말 개선",
     "runtime": "client",
     "enabled": false,
