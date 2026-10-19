@@ -355,13 +355,21 @@
       '<button data-action="invoke-quest-bridge">AI 분석 실행</button> <button data-action="prepare-ai-prompt">분석 지침 복사</button> <button data-action="import-ai-result">AI 분석 JSON 가져오기</button>'+
       (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">'+esc(x.category)+' · '+esc(x.name)+'</b><small>'+esc(x.status)+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(x.amount??'미확인')+' '+esc(x.unit||'')+' · 출처: '+esc(x.source||'미확인')+'</div><div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
   }
-  function aiAnalysisPrompt(w){
-    const chapters=(w.gfChapterIndex||[]).map(c=>'[챕터 '+c.chapter+' / '+c.title+'] '+(c.premise||'')).join('\n');
-    const scenes=(w.gfStorySamples||[]).slice(-40).map(c=>'[챕터 '+c.chapter+' / 장면 '+c.index+'] '+c.text).join('\n');
-    return ['한국어 RPG 스토리 기록 분석. 오직 아래 텍스트의 확정 사실만 추출합니다. 거래 약속을 결제 완료로 처리하지 마세요. 계약과 제작 완료를 구분하세요. 플레이어의 행동·소유 관계를 날조하지 마세요. 구체적 금액이 없으면 amount:null로 두세요. 게임 시스템 재화는 제외합니다.',
-      '출력은 JSON 배열만 사용하세요. 각 항목 필드: category (quest|asset|item), name (짧은 한국어명), status (completed|active|confirmed|uncertain), evidence (정확한 근거 인용), source (챕터), amount (숫자 또는 null), unit (단위 또는 빈 문자열). 불확실하면 uncertain으로 지정합니다.',
-      '같은 사건은 중복 출력하지 마세요. 퀘스트를 완료했다고 추정하지 마세요. 장면에 없는 물품은 생성하지 마세요.',
-      '월드: '+(w.gfDisplayName||data.world),'[챕터 요약]\n'+chapters,'[수집된 장면]\n'+scenes].join('\n\n').slice(0,30000);
+  function aiAnalysisPrompt(w, records){
+    const input=(records||[
+      ...(w.gfChapterIndex||[]).map(c=>({source:'챕터 '+c.chapter+' · 줄거리',text:String(c.premise||'')})),
+      ...(w.gfStorySamples||[]).map(x=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:x.text}))
+    ]).map(x=>'['+x.source+']\n'+x.text).join('\n\n');
+    return [
+      '한국어 RPG 세계의 사건과 금전 출납부를 분석합니다. 입력에 없는 사실과 금액은 절대 추정하지 않습니다.',
+      '반환 JSON: {"events":[{"category":"quest|asset|item|credential|contract","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열"}]}',
+      '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다.',
+      '거래의 지급 의사나 보장만으로 실제 입금(received)으로 처리하지 않습니다. 금액을 확정했지만 입금 문장이 없으면 received를 쓰지 않습니다. 총액과 그 구성 수당은 같은 transactionId를 사용하고 각각 중복 수입으로 합산하지 않습니다.',
+      'C급 면허는 credential, 제작 계약은 contract, 제작 중인 물품은 완료된 아이템으로 처리하지 않습니다. 퀘스트 수락/완료도 구분합니다. 모든 항목은 입력 원문에서 확인할 수 있는 evidence가 있어야 합니다.',
+      '특히 돈 관련 사건은 적은 금액도 누락하지 말고 각각 독립 사건으로 나열하세요. JSON 외 다른 출력은 금지합니다.',
+      '월드: '+(w.gfDisplayName||data.world),
+      '[분석 대상]\n'+input
+    ].join('\n\n');
   }
   async function prepareAiPrompt(){
     const w=current();if(!w)return;
@@ -384,45 +392,61 @@
     const w=current();if(!w)return;
     const currentWorldKey=data.world,connectionId=String(data.aiConnectionId||'').trim();
     if(!connectionId)return alert('설정에서 분석용 AI 연결을 먼저 선택해 주세요.');
-    const records=[
+    const allRecords=[
       ...(w.gfChapterIndex||[]).map(c=>({source:'챕터 '+c.chapter+' · 줄거리',text:String(c.premise||'')})),
-      ...(w.gfStorySamples||[]).slice(-35).map(x=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:x.text}))
-    ].filter(x=>x.text.trim()).slice(0,50);
-    if(!records.length)return alert('분석할 스토리 기록이 없습니다.');
-    if(!confirm('스토리 '+records.length+'개를 선택한 AI 연결로 분석하시겠습니까? 모델 사용 요금이 발생할 수 있습니다.'))return;
-    const promptText=aiAnalysisPrompt(w);
+      ...(w.gfStorySamples||[]).map(x=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:x.text}))
+    ].filter(x=>x.text.trim());
+    if(!allRecords.length)return alert('분석할 스토리 기록이 없습니다.');
+    // Bounded chronological batches prevent old payments from being excluded by a recent-only slice.
+    const batches=[];let batch=[],chars=0;
+    for(const record of allRecords){
+      const item={source:record.source,text:record.text.slice(0,3500)};
+      if(batch.length && (batch.length>=12||chars+item.text.length>10500)){batches.push(batch);batch=[];chars=0;}
+      batch.push(item);chars+=item.text.length;
+    }
+    if(batch.length)batches.push(batch);
+    if(!confirm('저장된 스토리 '+allRecords.length+'개를 '+batches.length+'회로 나눠 분석하시겠습니까? 기존보다 AI 호출 비용이 증가할 수 있습니다.'))return;
+    const records=allRecords;
     const requestRun='gfq-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);
     const host=typeof marinara==='object'&&marinara?marinara:globalThis.marinara||{};
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),120000);
     try{
-      const opts={method:'POST',credentials:'same-origin',cache:'no-store',signal:controller.signal,
-        headers:{'content-type':'application/json','x-marinara-csrf':'1'},
-        body:JSON.stringify({connectionId,runId:requestRun,streaming:false,
-          messages:[{role:'system',content:'You are a cautious evidence-based Korean RPG story event extractor. Output only valid JSON object with events array. Never invent payments, ownership or quest completion.'},{role:'user',content:promptText+'\n\nReturn exactly {"events":[{"category":"quest|asset|item","name":"...","status":"completed|active|confirmed|uncertain","evidence":"verbatim excerpt","source":"...","amount":null,"unit":""}]}'}],
-          parameters:{maxTokens:3000,temperature:0.15}})
-      };
-      const response=typeof host.apiFetch==='function'?await host.apiFetch('generate/raw',opts):
-        typeof host.fetch==='function'?await host.fetch('/api/generate/raw',opts):
-        await fetch('/api/generate/raw',opts);
-      const body=await response.json().catch(()=>null);
-      if(!response.ok)throw Error(String(body?.error||body?.message||('HTTP '+response.status)));
-      const raw=questModelText(body).trim().replace(/^\x60\x60\x60(?:json)?\s*/i,'').replace(/\s*\x60\x60\x60$/,'');
-      let parsed;try{parsed=JSON.parse(raw);}catch{const match=raw.match(/\{[\s\S]*\}/);if(!match)throw Error('AI 응답에서 JSON을 찾을 수 없습니다.');parsed=JSON.parse(match[0]);}
-      const events=Array.isArray(parsed)?parsed:parsed?.events;
-      if(!Array.isArray(events))throw Error('AI 응답에 events 배열이 없습니다.');
-      if(data.world!==currentWorldKey||current()!==w)throw Error('분석 중 월드가 변경되어 결과를 적용하지 않았습니다.');
-      w.aiProposals||=[];
-      const existing=new Set(w.aiProposals.map(x=>x.category+'|'+x.evidence));
-      const all=records.map(x=>x.text);let n=0;
-      for(const x of events.slice(0,60)){
-        if(!x||!['quest','asset','item'].includes(x.category)||!['completed','active','confirmed','uncertain'].includes(x.status))continue;
-        if(typeof x.name!=='string'||!x.name.trim()||typeof x.evidence!=='string'||x.evidence.length<8||!all.some(t=>t.includes(x.evidence)))continue;
-        const identity=x.category+'|'+x.evidence;if(existing.has(identity))continue;
-        w.aiProposals.push({id:uid(),category:x.category,name:x.name.slice(0,100),status:x.status,evidence:x.evidence.slice(0,600),
-          source:String(x.source||'').slice(0,120),amount:typeof x.amount==='number'&&Number.isFinite(x.amount)?x.amount:null,unit:String(x.unit||'').slice(0,30)});
-        existing.add(identity);n++;
+      const existing=new Set((w.aiProposals||[]).map(x=>x.category+'|'+x.evidence));
+      const approved=new Set(w.aiAcceptedKeys||[]);
+      const eventsToAdd=[];
+      for(let batchIndex=0;batchIndex<batches.length;batchIndex++){
+        const segment=batches[batchIndex],promptText=aiAnalysisPrompt(w,segment);
+        const opts={method:'POST',credentials:'same-origin',cache:'no-store',signal:controller.signal,
+          headers:{'content-type':'application/json','x-marinara-csrf':'1'},
+          body:JSON.stringify({connectionId,runId:requestRun+'-'+batchIndex,streaming:false,
+            messages:[{role:'system',content:'Extract exhaustive story events and all actual or promised financial transactions. Return only a JSON object with events array.'},{role:'user',content:promptText}],
+            parameters:{maxTokens:4000,temperature:0.1}})
+        };
+        const response=typeof host.apiFetch==='function'?await host.apiFetch('generate/raw',opts):
+          typeof host.fetch==='function'?await host.fetch('/api/generate/raw',opts):await fetch('/api/generate/raw',opts);
+        const body=await response.json().catch(()=>null);
+        if(!response.ok)throw Error('묶음 '+(batchIndex+1)+'/'+batches.length+': '+String(body?.error||body?.message||('HTTP '+response.status)));
+        const raw=questModelText(body).trim().replace(/^\x60\x60\x60(?:json)?\s*/i,'').replace(/\s*\x60\x60\x60$/,'');
+        let parsed;try{parsed=JSON.parse(raw);}catch{const match=raw.match(/\{[\s\S]*\}/);if(!match)throw Error('묶음 '+(batchIndex+1)+': AI JSON 응답 없음');parsed=JSON.parse(match[0]);}
+        const events=Array.isArray(parsed)?parsed:parsed?.events;
+        if(!Array.isArray(events))throw Error('묶음 '+(batchIndex+1)+': events 배열 없음');
+        for(const x of events.slice(0,75)){
+          if(!x||!['quest','asset','item','credential','contract'].includes(x.category)||!['completed','active','confirmed','uncertain'].includes(x.status))continue;
+          if(typeof x.name!=='string'||!x.name.trim()||typeof x.evidence!=='string'||x.evidence.length<8||!segment.some(t=>t.text.includes(x.evidence)))continue;
+          const identity=x.category+'|'+x.evidence;
+          if(existing.has(identity)||approved.has(identity))continue;
+          eventsToAdd.push({id:uid(),category:x.category,name:x.name.slice(0,100),status:x.status,evidence:x.evidence.slice(0,600),
+            source:String(x.source||'').slice(0,120),amount:typeof x.amount==='number'&&Number.isFinite(x.amount)?x.amount:null,
+            unit:String(x.unit||'').slice(0,30),
+            financialStatus:['received','paid','pending','receivable','waived','ownership','not_applicable','uncertain'].includes(x.financialStatus)?x.financialStatus:'uncertain',
+            transactionId:String(x.transactionId||'').slice(0,100)});
+          existing.add(identity);
+        }
       }
+      if(data.world!==currentWorldKey||current()!==w)throw Error('분석 중 월드가 변경되어 결과를 적용하지 않았습니다.');
+      w.aiProposals||=[];w.aiProposals.push(...eventsToAdd);
+      const n=eventsToAdd.length;
       save();render();alert('AI 분석이 완료되었습니다. '+n+'개의 새 후보를 검토 목록에 추가했습니다.');
     }catch(e){
       alert('AI 분석에 실패했습니다: '+String(e?.message||e));
