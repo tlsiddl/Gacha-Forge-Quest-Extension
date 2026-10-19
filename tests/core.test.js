@@ -1,8 +1,8 @@
 const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
-const skip=src.match(/  const GFQ_SKIP=.*\n/)[0];
-const names=['gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const skip=src.match(/  const GFQ_SKIP=.*\n/)[0]+src.match(/  const GFQ_TIMING=.*\n/)[0];
+const names=['gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);"+skip+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 let pass=0;const t=(name,fn)=>{fn();pass++;console.log('✓',name);};
@@ -65,5 +65,16 @@ t('퀘스트 보상: 정산 완료 표현만으로 수령 확인 금지',()=>{
   assert.strictEqual(b.financialStatus,'pending');assert.strictEqual(b.questRewards[0].certainty,'pending');
   const c=F.gfqSafeProposal({category:'quest',status:'completed',financialStatus:'received',evidence:'수당이 계좌에 입금됐다',questRewards:[{name:'수당',kind:'money',certainty:'received'}]});
   assert.strictEqual(c.financialStatus,'received');assert.strictEqual(c.questRewards[0].certainty,'received');
+});
+t('지급 시점: 상대 표현은 발화 장면 기준으로 기록',()=>{
+  const a=F.gfqTiming({evidence:'맞춤 경량 건틀릿 및 특수 수선 세트를 내일 이 시간에 그대로 수령하시게 됩니다.',source:'챕터 3 · 장면 1'});
+  assert.deepStrictEqual(a,{text:'내일 이 시간',anchor:'챕터 3 · 장면 1'});
+  assert.strictEqual(F.gfqTiming({evidence:'임무 완료 시 금일 오후 6시 정각에 세후 총 1,400,000원을 정산',source:'s'}).text,'임무 완료 시 · 금일 오후 6시 정각');
+  assert.strictEqual(F.gfqTiming({timing:'임무 완료 시',evidence:'',source:'s'}).text,'임무 완료 시');
+  assert.strictEqual(F.gfqTiming({evidence:'기본급 500,000원은 그대로 보장됩니다',source:'s'}),null);
+});
+t('총액 보정이 퀘스트 제목을 덮어쓰지 않음',()=>{
+  const r=F.gfqIntegrateQuests([{category:'quest',name:'제1공방 방어',questObjective:'제1공방 용해로 폭발을 막는다',amount:1400000,unit:'원',source:'챕터 3 · 장면 1',evidence:'e'}]);
+  assert.strictEqual(r[0].name,'제1공방 긴급 방어 작전');
 });
 console.log('\n'+pass+'개 통과');

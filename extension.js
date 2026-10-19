@@ -458,7 +458,7 @@
       source:String(x.source||'').slice(0,120),amount:typeof x.amount==='number'&&Number.isFinite(x.amount)?x.amount:null,
       unit:String(x.unit||'').slice(0,30),owner:String(x.owner||'unknown'),eventKind:String(x.eventKind||''),
       financialStatus:safe.financialStatus,auditNote:safe.auditNote||'',
-      transactionId:String(x.transactionId||'').slice(0,100)};
+      transactionId:String(x.transactionId||'').slice(0,100),timing:String(x.timing||'').slice(0,80)};
   }
   // Returns {proposal} or {reason} so callers can report why candidates were dropped.
   function gfqScreenEvent(x,texts){
@@ -476,13 +476,30 @@
     if(a.category==='quest'&&/성수동 냉장 물류창고|게이트 앵커/.test(a.name)&&/성수동 냉장 물류창고|게이트 앵커/.test(b.name))return true;
     return false;
   }
+  // v0.3.5: Korean display labels. Stored values stay in English codes for compatibility.
+  const GFQ_LABELS={
+    category:{quest:'퀘스트',asset:'자산·거래',item:'소지품',credential:'자격·면허',contract:'계약'},
+    status:{completed:'완료',active:'진행 중',confirmed:'확인됨',uncertain:'불확실'},
+    money:{received:'입금 확인',paid:'지출',pending:'지급 예정',receivable:'미수금(확정·미입금)',waived:'면제',ownership:'지분·소유',not_applicable:'금전 무관',uncertain:'미확인'},
+    certainty:{received:'수령 확인',confirmed:'확정·미수령',pending:'지급 예정',suggested:'제안·미지급',uncertain:'미확인'}
+  };
+  const gfqLabel=(kind,v)=>v?(GFQ_LABELS[kind]?.[v]||String(v)):'구분 전';
+  const gfqAmount=(amount,unit)=>typeof amount==='number'&&Number.isFinite(amount)?amount.toLocaleString('ko-KR')+(unit?' '+unit:''):'미확인';
+  // v0.3.5: relative timing ("내일 이 시간") has no meaning without the scene it was said in.
+  const GFQ_TIMING=/(?:내일|모레|금일|오늘|익일|다음\s?날)(?:\s*(?:이 시간|오전|오후|저녁|아침))?(?:\s*\d{1,2}\s*시(?:\s*정각|\s*\d{1,2}\s*분|\s*반)?)?(?:\s*까지)?|(?:임무|작업|용역|제작)\s*완료\s*(?:즉시|시|후)|\d+\s*일\s*(?:후|뒤|이내)/u;
+  function gfqTiming(x){
+    const found=[...String(x.evidence||'').matchAll(new RegExp(GFQ_TIMING.source,'gu'))].map(m=>m[0].trim()).filter((v,i,a)=>v&&a.indexOf(v)===i);
+    const t=String(x.timing||'').trim()||found.join(' · ');
+    return t?{text:t.slice(0,80),anchor:String(x.source||'').slice(0,120)}:null;
+  }
+  const gfqTimingText=t=>t?t.text+(t.anchor?' ('+t.anchor+' 시점 기준)':''):'';
   function aiReviewHtml(w){
     const rows=Array.isArray(w.aiProposals)?w.aiProposals:[];
     return '<h3>AI 분석 결과 검토 ('+rows.length+'개)</h3>'+
       '<p class="gfq-muted">설정에서 선택한 AI 연결로 분석합니다. 원문을 확인한 후보만 승인할 수 있으며, 분석만으로 자산은 변경되지 않습니다.</p>'+gfqDiagnosticsHtml(w)+
       '<button data-action="invoke-quest-bridge">AI 분석 실행</button> <button data-action="prepare-ai-prompt">분석 지침 복사</button> <button data-action="import-ai-result">AI 분석 JSON 가져오기</button>'+
       (rows.length?'<div class="gfq-row"><button data-action="select-all-ai">전체 선택</button><button data-action="unselect-all-ai">선택 해제</button><button data-action="approve-selected-ai">선택 승인</button><button data-action="delete-selected-ai">선택 삭제</button><button data-action="delete-all-ai" class="gfq-danger">전체 삭제</button></div>':'')+
-      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(x.category)+' · '+esc(x.name)+'</b><small>'+esc(x.status)+' · '+esc(x.financialStatus||'구분 전')+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(x.amount??'미확인')+' '+esc(x.unit||'')+' · 출처: '+esc(x.source||'미확인')+'</div>'+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x)).objective)+'</div><div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x)).rewardList.map(r=>r.name+' ('+r.certainty+')').join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
+      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(gfqLabel('category',x.category))+' · '+esc(x.name)+'</b><small>'+esc(gfqLabel('status',x.status))+' · '+esc(gfqLabel('money',x.financialStatus))+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(gfqAmount(x.amount,x.unit))+' · 출처: '+esc(x.source||'미확인')+'</div>'+(gfqTiming(x)?'<div class="gfq-muted">지급·수령 시점: '+esc(gfqTimingText(gfqTiming(x)))+'</div>':'')+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x)).objective)+'</div><div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x)).rewardList.map(r=>r.name+' ('+gfqLabel('certainty',r.certainty)+')').join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
   }
   function gfqDiagnosticsHtml(w){
     const a=w.gfLastAnalysis,ev=w.gfEvicted&&Object.entries(w.gfEvicted);
@@ -522,13 +539,13 @@
       result.push(first);
     }
     const foundry=result.find(x=>x.category==='quest'&&gfqQuestGroup(x)==='foundry');
-    const contract=result.find(x=>x.amount===1400000&&x.unit==='원'&&/챕터 3/.test(x.source||'')&&/계약|수당|보수|정산/.test(x.name||''));
+    const contract=result.find(x=>['asset','contract'].includes(x.category)&&x.amount===1400000&&x.unit==='원'&&/챕터 3/.test(x.source||'')&&/계약|수당|보수|정산/.test(x.name||''));
     if(foundry&&contract){
       foundry.questRewards=[{name:'긴급 설비 방어 보수 (기본 950,000원 + 위험 450,000원)',kind:'money',certainty:'pending',amount:1400000,unit:'원',evidence:contract.evidence}];
       foundry.rewardTransactionId=contract.transactionId||'';
     }
     // The contractual total is the ledger candidate; components are its breakdown, not separate deposits.
-    const total=result.find(x=>x.amount===1400000&&String(x.unit)==='원'&&/챕터 3/.test(x.source||'')&&/긴급.*(방어|설비)|표준 긴급 방어/.test(x.name||''));
+    const total=result.find(x=>['asset','contract'].includes(x.category)&&x.amount===1400000&&String(x.unit)==='원'&&/챕터 3/.test(x.source||'')&&/긴급.*(방어|설비)|표준 긴급 방어/.test(x.name||''));
     if(total){
       total.name='긴급 설비 방어 보수 총액';
       total.financialStatus='pending';
@@ -588,7 +605,7 @@
     const input=(records||gfqStoryRecords(w)).map(x=>'['+x.source+']\n'+x.text).join('\n\n');
     return [
       '한국어 RPG 세계의 사건과 금전 출납부를 분석합니다. 입력에 없는 사실과 금액은 절대 추정하지 않습니다.',
-      '반환 JSON: {"events":[{"category":"quest|asset|item|credential|contract","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
+      '반환 JSON: {"events":[{"category":"quest|asset|item|credential|contract","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","timing":"지급·수령·완료 시점을 나타내는 원문 표현 그대로(예: 내일 이 시간, 임무 완료 시, 금일 오후 6시) 또는 빈 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
       '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다.',
       '거래의 지급 의사나 보장만으로 실제 입금(received)으로 처리하지 않습니다. 금액을 확정했지만 입금 문장이 없으면 received를 쓰지 않습니다. 총액과 그 구성 수당은 같은 transactionId를 사용하고 각각 중복 수입으로 합산하지 않습니다.',
       'C급 면허는 credential, 제작 계약은 contract, 제작 중인 물품은 완료된 아이템으로 처리하지 않습니다. 퀘스트 수락/완료도 구분합니다. 모든 항목은 입력 원문에서 확인할 수 있는 evidence가 있어야 합니다.',
@@ -754,20 +771,21 @@
       prior.state=state;prior.updatedAt=at;
       if(prior.amount===null&&amount!==null)prior.amount=amount;
       if(!prior.sourceKey&&key)prior.sourceKey=key;
-      record(w,'거래 상태 갱신: '+prior.name+' '+(changedState?'→ '+state:'(추가 근거)')+' · '+evidence);
+      if(!prior.timing)prior.timing=gfqTiming(x);
+      record(w,'거래 상태 갱신: '+prior.name+' '+(changedState?'→ '+gfqLabel('money',state):'(추가 근거)')+' · '+evidence);
     }else{
       const tx={id:uid(),sourceKey:key,name:String(x.name||''),state,amount,unit,
-        componentOf:'',createdAt:at,updatedAt:at,history:[{at,state,amount,evidence,source:x.source||''}]};
-      w.gfLedger.push(tx);record(w,'거래 생성: '+tx.name+' ['+state+'] · '+evidence);
+        componentOf:'',timing:gfqTiming(x),createdAt:at,updatedAt:at,history:[{at,state,amount,evidence,source:x.source||''}]};
+      w.gfLedger.push(tx);record(w,'거래 생성: '+tx.name+' ['+gfqLabel('money',state)+'] · '+evidence);
     }
     return true;
   }
   function gfqLedgerHtml(w){
     const tx=w.gfLedger||[];
     return '<h3>거래 원장 ('+tx.length+'건)</h3><p class="gfq-muted">같은 거래는 상태만 갱신합니다. 세부 수당과 총액은 자동 합산하지 않으며 실제 계좌 잔액도 변경하지 않습니다.</p>'+
-      (tx.map(t=>'<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">'+esc(t.name)+'</b><span>'+esc(t.state)+'</span></div>'+
-        '<div>'+esc(t.amount??'금액 미확인')+' '+esc(t.unit)+'</div><small>거래 ID: '+esc(t.id)+'</small>'+
-        '<details><summary>상태 변경 이력 ('+(t.history||[]).length+')</summary>'+(t.history||[]).map(h=>'<p class="gfq-muted">'+esc(h.at)+' · '+esc(h.state)+' · '+esc(h.evidence)+'</p>').join('')+'</details>'+
+      (tx.map(t=>'<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">'+esc(t.name)+'</b><span>'+esc(gfqLabel('money',t.state))+'</span></div>'+
+        '<div>'+esc(gfqAmount(t.amount,t.unit))+(t.timing?' · 지급 시점: '+esc(gfqTimingText(t.timing)):'')+'</div><small>거래 ID: '+esc(t.id)+'</small>'+
+        '<details><summary>상태 변경 이력 ('+(t.history||[]).length+')</summary>'+(t.history||[]).map(h=>'<p class="gfq-muted">'+esc(h.at)+' · '+esc(gfqLabel('money',h.state))+' · '+esc(h.evidence)+'</p>').join('')+'</details>'+
         '<div class="gfq-row"><button data-action="ledger-update" data-id="'+esc(t.id)+'">상태 수동 갱신</button></div></div>').join('')||'<p class="gfq-muted">기록된 거래가 없습니다.</p>');
   }
   function approveAiProposal(id,bulk=false){
@@ -840,7 +858,7 @@
     const target=new Set(ids);w.aiProposals=(w.aiProposals||[]).filter(x=>!target.has(x.id));save();render();return;
   }if(act==='ledger-update'){
     const t=(w.gfLedger||[]).find(x=>x.id===id);if(!t)return;
-    const state=ask('거래 상태: pending(예정), receivable(미수), received(입금), paid(지출), waived(면제), ownership(지분)',t.state);
+    const state=ask('거래 상태 코드를 입력해 주세요.\npending: 지급 예정 / receivable: 미수금 / received: 입금 확인 / paid: 지출 / waived: 면제 / ownership: 지분·소유',t.state);
     if(state===null)return;if(!GFQ_MONEY_STATES.includes(state))return alert('올바른 상태를 입력해 주세요.');
     const evidence=ask('상태 변경의 근거를 입력해 주세요.','');
     if(!evidence?.trim())return alert('변경 근거가 필요합니다.');
