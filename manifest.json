@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.5.0",
-    "description": "로어북을 통한 스토리 반영(퀘스트 현황 자동 갱신)",
+    "version": "0.5.1",
+    "description": "가챠 포지 로어북 자동 연결·원격 접속 지원",
     "runtime": "client",
     "enabled": false,
     "capabilities": [

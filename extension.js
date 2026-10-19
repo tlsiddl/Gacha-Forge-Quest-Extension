@@ -1,4 +1,4 @@
-/* 퀘스트 v0.5.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.5.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -270,6 +270,24 @@
     return '<h3>스토리 분석 후보 ('+candidates.length+'개)</h3><p class="gfq-muted">키워드 기반 1차 추출이며 실제 발생 사실은 확정되지 않았습니다. 근거를 확인하고 기록으로 채택해 주세요. 자산과 소지품은 자동 변경하지 않습니다.</p>'+
       (items.map(c=>'<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">'+esc(c.type)+'</b><small>'+esc(c.source)+'</small></div><p>'+esc(c.quote)+'</p><div class="gfq-row"><button data-action="review-candidate" data-id="'+esc(c.id)+'">검토 기록으로 채택</button><button data-action="dismiss-candidate" data-id="'+esc(c.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토할 후보가 없습니다. 기존 줄거리에서 탐지된 사건이 없거나 장면 본문을 아직 수집하지 못했을 수 있습니다.</p>');
   }
+  // v0.5.1: the game's /state lists each run with its lorebook settings; keep a copy (no extra request).
+  function gfqRememberLore(runId,v){
+    const run=(Array.isArray(v?.runs)?v.runs.find(x=>x&&x.runId===runId):null)||(v?.run?.runId===runId?v.run:null)||(v?.activeRun?.runId===runId?v.activeRun:null);
+    if(!run||!run.lore||typeof run.lore!=='object')return;
+    const key=Object.keys(data.worlds).find(k=>data.worlds[k]?.gfRunId===runId);if(!key)return;
+    const lore=gfqCleanLore(run.lore),w=data.worlds[key];
+    if(JSON.stringify(w.gfRunLore)!==JSON.stringify(lore)){w.gfRunLore=lore;save();}
+  }
+  function gfqCleanLore(l){
+    const ids=v=>[...new Set((Array.isArray(v)?v:[]).map(x=>String(x||'').trim()).filter(Boolean))].slice(0,24);
+    const num=v=>v===null||v===undefined||v===''?null:(Number.isFinite(Number(v))?Number(v):null);
+    return {worldIds:ids(l?.worldIds),castIds:ids(l?.castIds),worldBudget:num(l?.worldBudget),castBudget:num(l?.castBudget),beat:l?.beat===true||l?.beat==='true'};
+  }
+  // Pure: our lorebook first (so a tight budget never drops it), every other setting kept.
+  function gfqMergeLore(lore,lorebookId,connect){
+    const l=gfqCleanLore(lore),rest=l.worldIds.filter(id=>id!==lorebookId);
+    return connect?{...l,worldIds:[lorebookId,...rest].slice(0,24),beat:true}:{...l,worldIds:rest};
+  }
   function nameOfRun(x){return String(x?.name||x?.title||x?.worldName||x?.world?.name||'').trim().slice(0,100);}
   function absorbGameReply(req,response){
     const type=response?.headers?.get?.('content-type')||'';
@@ -283,7 +301,7 @@
       let name=nameOfRun(active)||nameOfRun(v.run);
       if(!name&&Array.isArray(v.runs)){const match=v.runs.find(x=>x?.runId===runId);name=nameOfRun(match);}
       if(!name&&Array.isArray(v.worlds)){const match=v.worlds.find(x=>x?.runId===runId);name=nameOfRun(match);}
-      if(runId){attachObservedRun(runId,name);rememberChapters(runId,v,req.url||'');intakeStory(runId,v,req.url||'',req);}
+      if(runId){attachObservedRun(runId,name);rememberChapters(runId,v,req.url||'');intakeStory(runId,v,req.url||'',req);gfqRememberLore(runId,v);}
     }).catch(()=>{});
   }
   const observedFetch=function(input,options){
@@ -1633,7 +1651,10 @@
   }
   async function gfqApi(path,method,body){
     const host=typeof marinara==='object'&&marinara?marinara:globalThis.marinara||{};
-    const opts={method,credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-marinara-csrf':'1'},...(body!==undefined?{body:JSON.stringify(body)}:{})};
+    // v0.5.1: when Marinara is opened remotely it requires Admin Access; send the same X-Admin-Secret header Marinara's
+    // own client and Gacha Forge send (read from the same storage key), and only to same-origin /api paths.
+    let admin='';try{admin=String(localStorage.getItem('marinara_admin_secret')||'').trim();}catch{}
+    const opts={method,credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-marinara-csrf':'1',...(admin?{'X-Admin-Secret':admin}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{})};
     const r=typeof host.apiFetch==='function'?await host.apiFetch(path.replace(/^\/api\//,''),opts):await fetch(path,opts);
     const j=await r.json().catch(()=>null);
     if(!r.ok)throw Object.assign(Error(String(j?.error||j?.message||('HTTP '+r.status))),{status:r.status});
@@ -1646,6 +1667,20 @@
     w.gfInject={...(w.gfInject||{}),enabled:true,lorebookId:book.id,lorebookName:name,entryId:entry.id,lastHash:'',error:''};
     record(w,'스토리 반영용 로어북 생성: '+name);
     return book;
+  }
+  async function gfqInjectConnect(w,connect){
+    const g=w.gfInject||{};if(!g.lorebookId||!w.gfRunId)throw Error('로어북 또는 게임 월드 연결 정보가 없습니다.');
+    let lore=w.gfRunLore;
+    if(!lore){const st=await gfqApi('/api/gacha-forge/state','GET');gfqRememberLore(w.gfRunId,st);lore=w.gfRunLore;}
+    if(!lore)throw Error('게임에서 이 월드의 로어북 설정을 읽지 못했습니다.');
+    let next;
+    if(connect){if(!g.prevLore)g.prevLore=gfqCleanLore(lore);next=gfqMergeLore(lore,g.lorebookId,true);}
+    else{const prev=g.prevLore?gfqCleanLore(g.prevLore):null;next={...gfqMergeLore(lore,g.lorebookId,false),beat:prev?prev.beat:gfqCleanLore(lore).beat};}
+    const r=await gfqApi('/api/gacha-forge/run/lorebooks','POST',{runId:w.gfRunId,lore:next});
+    if(r&&r.ok===false)throw Error(String(r.error||'게임이 설정 변경을 거부했습니다.'));
+    w.gfRunLore=gfqCleanLore(r?.lore||next);g.connected=connect;if(!connect)delete g.prevLore;w.gfInject=g;
+    record(w,connect?'가챠 포지 월드 로어북에 연결: '+(g.lorebookName||g.lorebookId)+' (맨 앞, 스토리 장면에도 사용)':'가챠 포지 월드 로어북 연결 해제: '+(g.lorebookName||g.lorebookId));
+    save();return w.gfRunLore;
   }
   var injectTimer=0,injectBusy=false;
   function gfqInjectSchedule(){
@@ -1670,15 +1705,17 @@
     if(panel&&currentTab==='settings')render();
     return !w.gfInject.error;
   }
+  function gfqTokens(t){try{const h=typeof marinara==='object'&&marinara?marinara:globalThis.marinara;if(h&&typeof h.estimateTextTokens==='function')return h.estimateTextTokens(t);}catch{}return Math.ceil(String(t).length*0.9);}
   function gfqInjectHtml(w){
     const g=w.gfInject||{},text=gfqInjectText(w,g.limit);
     return '<div class="gfq-card"><b>스토리 반영 (로어북)</b><p class="gfq-muted">퀘스트·돈·물품·날짜 현황을 전용 로어북의 상시 항목 하나로 계속 갱신합니다. 가챠 포지가 장면을 쓸 때마다 이 로어북을 새로 읽어, 다음 장면부터 이야기에 반영됩니다. 게임 저장 데이터와 직접 쓰신 지침은 바꾸지 않습니다.</p>'+
       (g.lorebookId?'<p class="gfq-muted">연결된 로어북: <b>'+esc(g.lorebookName||g.lorebookId)+'</b>'+(g.lastAt?' · 마지막 갱신 '+esc(g.lastAt):'')+(g.error?' · <span class="gfq-danger">'+esc(g.error)+'</span>':'')+'</p>':'')+
       '<label><input type="checkbox" id="gfq-inject-on" style="width:auto" '+(g.enabled&&g.lorebookId?'checked':'')+'> 현황을 로어북에 자동 반영</label>'+
       '<label for="gfq-inject-limit">최대 글자 수 (중요한 항목부터 채웁니다)</label><input id="gfq-inject-limit" type="number" min="150" max="4000" step="50" value="'+esc(g.limit||600)+'">'+
-      '<label>현재 반영 내용 ('+text.length+'자)</label><textarea readonly rows="7">'+esc(text)+'</textarea>'+
-      '<div class="gfq-row">'+(g.lorebookId?btn('지금 반영','inject-now')+btn('로어북 다시 만들기','inject-create'):btn('스토리 반영용 로어북 만들기','inject-create','class="primary"'))+'</div>'+
-      '<p class="gfq-muted"><b>처음 한 번만:</b> 가챠 포지 설정의 <b>월드 로어북</b>에 위 로어북을 추가하고, <b>로어북을 스토리 장면에도 사용</b>하는 설정을 켜 주세요. 다른 로어북과 토큰 예산을 함께 쓰므로 글자 수를 너무 크게 잡으면 다른 항목이 잘릴 수 있습니다.</p></div>';
+      '<label>현재 반영 내용 ('+text.length+'자 · 약 '+gfqTokens(text).toLocaleString('ko-KR')+'토큰'+(w.gfRunLore?' / 월드 로어북 예산 '+(w.gfRunLore.worldBudget||6000).toLocaleString('ko-KR')+'토큰':'')+')</label><textarea readonly rows="7">'+esc(text)+'</textarea>'+
+      (g.lorebookId?'<p class="gfq-muted">가챠 포지 연결: '+(w.gfRunLore?(w.gfRunLore.worldIds.includes(g.lorebookId)?'<b>연결됨</b>'+(w.gfRunLore.worldIds[0]===g.lorebookId?' (월드 로어북 맨 앞)':'')+(w.gfRunLore.beat?' · 스토리 장면에도 사용':' · <span class="gfq-danger">스토리 장면 사용 꺼짐</span>'):'<span class="gfq-danger">연결 안 됨</span>'):'게임 설정을 아직 읽지 못했습니다 (가챠 포지 화면을 한 번 열어 주세요)')+'</p>':'')+
+      '<div class="gfq-row">'+(g.lorebookId?btn('지금 반영','inject-now')+(w.gfRunLore&&w.gfRunLore.worldIds.includes(g.lorebookId)?btn('가챠 포지 연결 해제','inject-disconnect'):btn('가챠 포지에 연결','inject-connect','class="primary"'))+btn('로어북 다시 만들기','inject-create'):btn('스토리 반영용 로어북 만들기','inject-create','class="primary"'))+'</div>'+
+      '<p class="gfq-muted">[가챠 포지에 연결]은 이 월드의 로어북 설정에서 기존 로어북과 예산을 그대로 두고, 이 로어북을 월드 로어북 <b>맨 앞</b>에 추가한 뒤 스토리 장면에도 쓰도록 켭니다. 맨 앞에 두면 예산이 모자랄 때도 이 항목은 빠지지 않고, 뒤쪽 기록이 먼저 빠집니다. 연결 전 설정은 저장해 두며 [연결 해제]로 되돌립니다. 자동 연결이 안 되면 가챠 포지 설정에서 직접 추가해 주세요.</p></div>';
   }
   function gfqKnownKeys(w){
     return new Set([...(w.aiProposals||[]).map(x=>x.category+'|'+x.evidence),...(w.aiAcceptedKeys||[])]);
@@ -1944,7 +1981,7 @@
   }
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
   function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(data.worlds[w]?.gfDisplayName||w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
-  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.5.0</span></footer></div>`;}
+  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.5.1</span></footer></div>`;}
   function content(w){switch(currentTab){case 'quests':return `<div class="gfq-row"><select id="gfq-filter">${['전체','일일','주간','의뢰','업적'].map(t=>`<option ${activeFilter===t?'selected':''}>${t}</option>`).join('')}</select>${btn('＋ 퀘스트','add-quest','class="primary"')}</div>${w.quests.filter(q=>activeFilter==='전체'||q.type===activeFilter).map(q=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(q.title)}</b><small>${esc(q.type)}</small></div><div class="gfq-muted">${esc(q.detail)}</div>${Array.isArray(q.steps)&&q.steps.length?`<div class="gfq-muted">세부 목표</div><div class="gfq-row">${q.steps.map((t,i)=>btn((q.stepDone?.[i]?'✓ ':'○ ')+esc(t),'toggle-step',`data-id="${esc(q.id)}" data-step="${i}" aria-pressed="${q.stepDone?.[i]?'true':'false'}"`)).join("")}</div>`:""}${gfqQuestDatesHtml(q)}${gfqQuestProgressHtml(q)}${btn('＋1','increment',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn(q.claimed?'완료됨':'완료','complete',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn('삭제','delete-quest',`data-id="${esc(q.id)}"`)}</div><div class="gfq-muted">보상(기록용): ${esc(gfqQuestRewardLabel(q))}</div>${(q.rewardDetails||[]).map((r,i)=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?btn('원장에 기록: '+esc(r.name),'reward-to-ledger',`data-id="${esc(q.id)}" data-idx="${i}"`):'').join('')}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">▤</div><strong>진행 중인 퀘스트가 없습니다</strong><span class="gfq-muted">새 퀘스트를 등록하면 여기에 표시됩니다.</span></div>'}`;
   case 'assets':return `${gfqCalendarHtml(w)}${gfqLedgerHtml(w)}${btn('＋ 필드 추가','add-field','class="primary"')}<p class="gfq-muted">소지금, 은행, 평판, 직업 등 월드별 자유 필드</p>${w.fields.map(f=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(f.name)}</b><span>${esc(f.value)} ${esc(f.unit)}</span>${btn('수정','edit-field',`data-id="${esc(f.id)}"`)}${btn('삭제','delete-field',`data-id="${esc(f.id)}"`)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◈</div><strong>등록된 자산이 없습니다</strong><span class="gfq-muted">소지금, 직업, 평판 등 원하는 항목을 추가해 주세요.</span></div>'}`;
   case 'items':return `${btn('＋ 소지품','add-item','class="primary"')}${w.items.filter(i=>i.state==='pending').length?'<h3>수령 예정</h3><p class="gfq-muted">아직 받지 않은 물품입니다. 소지품 목록과 스토리 문맥에는 보유품으로 포함되지 않습니다.</p>':''}${w.items.filter(i=>i.state==='pending').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><small>수령 예정</small></div>${i.timing?`<div class="gfq-muted">수령 시점: ${esc(gfqTimingText(i.timing))}${gfqResolveTiming(w,i.timing)?' → '+esc(gfqResolveTiming(w,i.timing)):''}</div>`:''}${i.value?`<div class="gfq-muted">가치: ${esc(gfqAmount(i.value,'원'))}</div>`:''}<div class="gfq-row">${btn('수령 확인','receive-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.kind==='voucher')?'<h3>혜택·이용권</h3><p class="gfq-muted">퀘스트 보상이나 계약으로 받은 할인·감면 혜택입니다. 사용하면 횟수가 줄어들고 변경 기록에 남습니다.</p>':''}${w.items.filter(i=>i.kind==='voucher').map(i=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>${i.qty>0?'남은 횟수 '+i.qty:'사용 완료'}</span></div>${i.detail?`<div class="gfq-muted">${esc(i.detail)}</div>`:''}<div class="gfq-row">${btn('사용','use-voucher',`data-id="${esc(i.id)}" ${i.qty>0?'':'disabled'}`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div></div>`).join('')}${w.items.some(i=>i.state==='pending'||i.kind==='voucher')?'<h3>보유 소지품</h3>':''}${w.items.filter(i=>i.state!=='pending'&&i.kind!=='voucher').map(i=>`<div class="gfq-card gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>× ${i.qty}</span>${btn('수정','edit-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>소지품 목록이 비어 있습니다</strong><span class="gfq-muted">스토리에서 얻은 아이템을 기록할 수 있습니다.</span></div>'}`;
@@ -1963,7 +2000,15 @@
   if(act==='add-quest'){const title=ask('퀘스트 이름');if(!title?.trim())return;const type=ask('종류: 일일 / 주간 / 의뢰 / 업적','의뢰');if(!['일일','주간','의뢰','업적'].includes(type))return alert('올바른 퀘스트 종류가 아닙니다.');const detail=ask('조건 및 설명','');if(detail===null)return;const count=Number(ask('목표 횟수 (1 이상)','1'));if(!Number.isSafeInteger(count)||count<1)return alert('목표 횟수를 확인해 주세요.');const reward=ask('보상 메모 (게임 재화로 자동 지급되지 않습니다)','');if(reward===null)return;return update(w=>{w.quests.push({id:uid(),title:title.trim(),type,detail,target:count,progress:0,reward,claimed:false});record(w,'퀘스트 등록: '+title);});}
   if(act==='inject-create'){
     if(w.gfInject?.lorebookId&&!confirm('새 로어북을 만들어 연결합니다. 가챠 포지 설정의 월드 로어북도 새 로어북으로 바꿔 주셔야 합니다. 계속하시겠습니까?'))return;
-    (async()=>{try{await gfqInjectCreate(w);save();render();alert('로어북을 만들었습니다: '+w.gfInject.lorebookName+'\n\n가챠 포지 설정 → 월드 로어북에 이 로어북을 추가하고, 로어북을 스토리 장면에도 사용하는 설정을 켜 주세요.');}catch(e){alert('로어북을 만들지 못했습니다: '+(e.message||e));}})();
+    (async()=>{try{await gfqInjectCreate(w);save();render();
+      if(confirm('로어북을 만들었습니다: '+w.gfInject.lorebookName+'\n\n이어서 이 월드의 가챠 포지 로어북 설정에 자동으로 연결할까요? (기존 로어북은 그대로 두고 맨 앞에 추가, 스토리 장면에도 사용)')){try{await gfqInjectConnect(w,true);render();gfqToast('가챠 포지 연결','다음 챕터·장면부터 퀘스트 현황이 반영됩니다','info');}catch(e){alert('자동 연결에 실패했습니다: '+(e.message||e)+'\n가챠 포지 설정 → 월드 로어북에 직접 추가하고, 로어북을 스토리 장면에도 사용하는 설정을 켜 주세요.');}}
+    }catch(e){alert('로어북을 만들지 못했습니다: '+(e.message||e)+(e.status===403?'\n\n원격 접속에서는 마리나라 설정 → 고급 → Admin Access가 필요합니다.':''));}})();
+    return;
+  }
+  if(act==='inject-connect'||act==='inject-disconnect'){
+    const on=act==='inject-connect';
+    if(on&&!confirm('이 월드의 가챠 포지 로어북 설정에 \''+(w.gfInject?.lorebookName||'')+'\'을(를) 맨 앞에 추가하고, 로어북을 스토리 장면에도 사용하도록 켭니다. 기존 로어북과 예산은 그대로 둡니다. 진행하시겠습니까?'))return;
+    (async()=>{try{await gfqInjectConnect(w,on);render();gfqToast(on?'가챠 포지 연결':'연결 해제',on?'다음 챕터·장면부터 퀘스트 현황이 반영됩니다':'로어북 설정을 연결 전으로 되돌렸습니다','info');}catch(e){alert((on?'자동 연결':'연결 해제')+'에 실패했습니다: '+(e.message||e)+(e.status===403?'\n\n원격 접속에서는 마리나라 설정 → 고급 → Admin Access가 필요합니다.':'')+'\n\n가챠 포지 설정의 월드 로어북에서 직접 '+(on?'추가':'제거')+'해 주세요.');}})();
     return;
   }
   if(act==='inject-now'){(async()=>{const ok=await gfqInjectSync(true);alert(ok?'로어북에 현재 현황을 반영했습니다.':'반영하지 못했습니다: '+(w.gfInject?.error||''));})();return;}

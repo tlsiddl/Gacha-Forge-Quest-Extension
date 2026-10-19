@@ -4,30 +4,38 @@ const src=fs.readFileSync(process.argv[2]||require('path').join(__dirname,'..','
 const dom=new JSDOM('<!doctype html><body></body>',{url:'https://local.test/gacha-forge',runScripts:'outside-only'});
 const win=dom.window,doc=win.document;
 win.HTMLDialogElement.prototype.showModal=function(){this.open=true};win.HTMLDialogElement.prototype.close=function(){this.open=false};
-const alerts=[];win.alert=m=>alerts.push(m);win.confirm=()=>true;let answer='2033-04-10';win.prompt=()=>answer;
+const alerts=[];win.alert=m=>alerts.push(m);win.confirm=()=>true;win.localStorage.setItem('marinara_admin_secret','s3cret');let answer='2033-04-10';win.prompt=()=>answer;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const calls=[];
 const reply=(body,status=200)=>({ok:status<400,status,headers:{get:()=> 'application/json'},clone(){return this},json:async()=>body});
 win.fetch=async(url,opts={})=>{
   const u=String(url),m=String(opts.method||'GET');
-  if(u.includes('/api/lorebooks')){calls.push({m,u,body:opts.body?JSON.parse(opts.body):null,csrf:opts.headers?.['x-marinara-csrf']});
+  if(u.includes('/api/gacha-forge/state'))return reply({activeRun:{runId:'run-x',name:'서울 각성자 월드'},runs:[{runId:'run-x',name:'서울 각성자 월드',lore:{worldIds:['wb1','wb2'],castIds:['cb'],worldBudget:6000,castBudget:20000,beat:false}}]});
+  if(u.includes('/api/gacha-forge/run/lorebooks')){const b=JSON.parse(opts.body);calls.push({m,u,body:b,admin:opts.headers?.['X-Admin-Secret']});return reply({ok:true,lore:b.lore});}
+  if(u.includes('/api/lorebooks')){calls.push({m,u,body:opts.body?JSON.parse(opts.body):null,csrf:opts.headers?.['x-marinara-csrf'],admin:opts.headers?.['X-Admin-Secret']});
     if(m==='POST'&&u.endsWith('/api/lorebooks'))return reply({id:'lb1',name:JSON.parse(opts.body).name});
     if(m==='POST'&&u.endsWith('/entries'))return reply({id:'en1'});
     if(m==='PATCH')return reply({id:'en1'});}
   return reply({});
 };
-win.localStorage.setItem('gf-quest-v1',JSON.stringify({v:1,world:'w',worlds:{w:{quests:[{id:'q',title:'제1공방 긴급 방어 작전',claimed:false,steps:['게이트 파편 파괴'],stepDone:[false],target:1,progress:0}],fields:[],items:[],history:[],gfDisplayName:'서울 각성자 월드',protagonist:'홍길동'}}}));
+win.localStorage.setItem('gf-quest-v1',JSON.stringify({v:1,world:'w',worlds:{w:{quests:[{id:'q',title:'제1공방 긴급 방어 작전',claimed:false,steps:['게이트 파편 파괴'],stepDone:[false],target:1,progress:0}],fields:[],items:[],history:[],gfDisplayName:'서울 각성자 월드',protagonist:'홍길동',gfRunId:'run-x'}}}));
 const host=doc.createElement('marinara-capability-gacha-forge');doc.body.append(host);
 host.attachShadow({mode:'open'}).innerHTML='<div><button class="gf-fs-bar icon-button">⛶</button></div>';
 win.eval(src);
 (async()=>{
+  // The game's own /state call is observed; the world's lorebook settings are remembered from it.
+  await win.fetch('/api/gacha-forge/state');await sleep(50);
   host.shadowRoot.querySelector('button[data-gfq="top"]').click();
   const panel=doc.getElementById('gfq-01-panel');
   const click=sel=>panel.querySelector(sel).dispatchEvent(new win.MouseEvent('click',{bubbles:true}));
   click('[data-tab="settings"]');
   assert.ok(panel.innerHTML.includes('스토리 반영 (로어북)'));
   click('[data-action="inject-create"]');await sleep(100);
-  assert.strictEqual(calls[0].m,'POST');assert.strictEqual(calls[0].body.name,'퀘스트 확장 · 서울 각성자 월드');assert.strictEqual(calls[0].body.isGlobal,false);assert.strictEqual(calls[0].csrf,'1');
+  assert.strictEqual(calls[0].m,'POST');assert.strictEqual(calls[0].body.name,'퀘스트 확장 · 서울 각성자 월드');assert.strictEqual(calls[0].body.isGlobal,false);assert.strictEqual(calls[0].csrf,'1');assert.strictEqual(calls[0].admin,'s3cret');
+  const conn=calls.find(c=>c.u.includes('/run/lorebooks'));
+  assert.ok(conn,'auto-connected after creation');assert.strictEqual(conn.admin,'s3cret');
+  assert.deepStrictEqual(conn.body,{runId:'run-x',lore:{worldIds:['lb1','wb1','wb2'],castIds:['cb'],worldBudget:6000,castBudget:20000,beat:true}});
+  assert.match(panel.innerHTML,/<b>연결됨<\/b> \(월드 로어북 맨 앞\) · 스토리 장면에도 사용/);
   assert.strictEqual(calls[1].body.constant,true);assert.match(calls[1].body.content,/진행 중: 제1공방 긴급 방어 작전 — 다음 목표: 게이트 파편 파괴/);
   let w=JSON.parse(win.localStorage.getItem('gf-quest-v1')).worlds.w;
   assert.deepStrictEqual([w.gfInject.lorebookId,w.gfInject.entryId,w.gfInject.enabled],['lb1','en1',true]);
@@ -41,5 +49,9 @@ win.eval(src);
   // Saving again without any change sends nothing.
   click('[data-tab="settings"]');await sleep(3400);
   assert.strictEqual(calls.filter(c=>c.m==='PATCH').length,1,'unchanged text is not re-sent');
+  // Disconnect restores the previous list and story-scene switch.
+  click('[data-action="inject-disconnect"]');await sleep(100);
+  const off=calls.filter(c=>c.u.includes('/run/lorebooks')).at(-1);
+  assert.deepStrictEqual(off.body.lore,{worldIds:['wb1','wb2'],castIds:['cb'],worldBudget:6000,castBudget:20000,beat:false});
   console.log('UI inject OK');process.exit(0);
 })().catch(e=>{console.error(e);process.exit(1);});
