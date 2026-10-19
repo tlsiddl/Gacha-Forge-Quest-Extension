@@ -23,6 +23,28 @@
 #${ID}-panel::backdrop{background:rgba(0,0,0,.45)}#${ID}-panel *{box-sizing:border-box}#${ID}-panel .gfq-head{display:flex;align-items:center;justify-content:space-between;gap:8px}#${ID}-panel h2{font-size:19px;margin:0}#${ID}-panel h3{font-size:15px;margin:12px 0 8px}#${ID}-panel button,#${ID}-panel select,#${ID}-panel input,#${ID}-panel textarea{font:inherit;border-radius:9px;border:1px solid #8992a580;padding:7px;color:inherit;background:transparent;max-width:100%}#${ID}-panel button{cursor:pointer}#${ID}-panel button.primary{background:#476a96;color:white;border-color:#476a96}#${ID}-panel button:disabled{opacity:.5;cursor:default}#${ID}-panel input,#${ID}-panel textarea{width:100%}#${ID}-panel .gfq-tabs,#${ID}-panel .gfq-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#${ID}-panel .gfq-tabs{margin:12px 0}#${ID}-panel .gfq-card{border:1px solid #8992a550;border-radius:12px;padding:11px;margin:8px 0;overflow-wrap:anywhere}#${ID}-panel .gfq-muted{font-size:12px;opacity:.7}#${ID}-panel .gfq-fill{flex:1;min-width:0}#${ID}-panel label{display:block;font-size:12px;margin-top:7px;opacity:.8}#${ID}-panel .gfq-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}#${ID}-panel progress{width:100%;height:8px}#${ID}-panel textarea{min-height:60px;resize:vertical}#${ID}-panel .gfq-danger{color:#bc4545}#${ID}-panel [hidden]{display:none!important}
 @media(prefers-color-scheme:dark){#${ID}-panel{--gfq-bg:#20262f;--gfq-fg:#f1f4f8}}@media(max-width:600px){#${ID}-panel{inset:8px;width:auto;max-height:calc(100dvh - 16px);transform:none;margin:auto}#${ID}-launcher{bottom:18px}}
 `;
+
+  /* Vanguard-inspired quest UI — scoped to Quest extension only. */
+  style.textContent += \`
+#gfq-01-panel{--gfq-bg:#101925;--gfq-fg:#eef3fa;background:radial-gradient(circle at 85% 8%,#2c3d53 0,transparent 33%),linear-gradient(150deg,#101722,#1b273a);color:#eef3fa;width:min(1050px,calc(100vw - 32px));height:min(82dvh,720px);max-height:82dvh;margin:auto;inset:0;transform:none;right:0;left:0;top:0;bottom:0;border:1px solid #6c8cad66;border-radius:4px;box-shadow:0 28px 80px #000b;padding:24px 28px 24px 250px;scrollbar-color:#7186a5 transparent;overflow:auto}
+#gfq-01-panel::before{content:"QUEST / MISSION ARCHIVE";position:fixed;letter-spacing:.35em;color:#97acbf;font:9px system-ui;top:calc(50% - min(41dvh,360px) + 28px);left:calc(50% - min(525px,50vw - 16px) + 28px);pointer-events:none}
+#gfq-01-panel .gfq-head{border-bottom:1px solid #7894ac66;padding:6px 0 15px;margin-bottom:16px}
+#gfq-01-panel .gfq-head h2{font-size:22px;font-weight:800;letter-spacing:.09em}
+#gfq-01-panel .gfq-tabs{position:fixed;left:calc(50% - min(525px,50vw - 16px) + 22px);top:calc(50% - min(41dvh,360px) + 105px);display:flex;flex-direction:column;align-items:stretch;gap:9px;width:192px;z-index:1;margin:0}
+#gfq-01-panel .gfq-tabs button{background:none;border:0;border-left:2px solid #5f748e;border-radius:0;text-align:left;padding:14px 11px;color:#c1d0de;font-weight:700;letter-spacing:.04em;transition:background .15s}
+#gfq-01-panel .gfq-tabs button.primary{background:linear-gradient(90deg,#456ba5,#5288da);border-left:3px solid #e5f2ff;color:#fff;box-shadow:0 3px 18px #1d4a8e80}
+#gfq-01-panel #gfq-world{max-width:330px;border-color:#57728a;background:#192638;color:#eff5ff}
+#gfq-01-panel .gfq-card{background:linear-gradient(115deg,#f7f9fd,#e9edf4);color:#202c3c;border:1px solid #d2e1ef;border-left:5px solid #618bce;border-radius:2px;box-shadow:0 3px 0 #131f30,0 5px 15px #0003;padding:15px 17px;margin:12px 0;position:relative}
+#gfq-01-panel .gfq-card::after{content:"✦";position:absolute;right:8px;top:5px;color:#aec1dc70;font-size:20px;pointer-events:none}
+#gfq-01-panel .gfq-card b{font-size:15px;letter-spacing:.02em}
+#gfq-01-panel .gfq-card .gfq-muted{color:#57687c;opacity:1}
+#gfq-01-panel .gfq-card button{border:1px solid #c6d5e9;background:#eff5ff;color:#1c3554;border-radius:2px}
+#gfq-01-panel .gfq-card progress{accent-color:#5386dc}
+#gfq-01-panel button.primary{background:#315eab;color:#fff;border-color:#6d9eea;border-radius:2px}
+#gfq-01-panel input,#gfq-01-panel select,#gfq-01-panel textarea{border-radius:2px}
+#gfq-01-panel .gfq-head button{background:none;border:1px solid #6f8ca1;border-radius:2px}
+@media(max-width:760px){#gfq-01-panel{padding:14px;inset:4px;width:calc(100vw - 8px);height:calc(100dvh - 8px);max-height:none;margin:auto;overflow:auto}#gfq-01-panel::before{display:none}#gfq-01-panel .gfq-tabs{position:static;flex-direction:row;width:auto;gap:4px;margin:12px 0;overflow-x:auto}#gfq-01-panel .gfq-tabs button{white-space:nowrap;font-size:11px;padding:9px 10px;border-left:0;border-bottom:2px solid #5f748e}#gfq-01-panel .gfq-card{padding:10px}}
+\`;
   document.head.append(style);
   function allowed(){return !!document.querySelector('[data-agent-id="gacha-forge"], [data-package-id="gacha-forge"], [class*="gacha-forge"], [id*="gacha-forge"], [class*="gf-shell"], [class*="gf-app"]') || /gacha.forge/i.test(document.title) || /gacha-forge/i.test(location.pathname+location.hash);}
   const HOST_TAG = 'marinara-capability-gacha-forge';
