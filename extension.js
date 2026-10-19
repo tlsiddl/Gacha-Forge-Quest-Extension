@@ -25,7 +25,7 @@
 `;
 
   /* Vanguard-inspired quest UI — scoped to Quest extension only. */
-  style.textContent += \`
+  style.textContent += `
 #gfq-01-panel{--gfq-bg:#101925;--gfq-fg:#eef3fa;background:radial-gradient(circle at 85% 8%,#2c3d53 0,transparent 33%),linear-gradient(150deg,#101722,#1b273a);color:#eef3fa;width:min(1050px,calc(100vw - 32px));height:min(82dvh,720px);max-height:82dvh;margin:auto;inset:0;transform:none;right:0;left:0;top:0;bottom:0;border:1px solid #6c8cad66;border-radius:4px;box-shadow:0 28px 80px #000b;padding:24px 28px 24px 250px;scrollbar-color:#7186a5 transparent;overflow:auto}
 #gfq-01-panel::before{content:"QUEST / MISSION ARCHIVE";position:fixed;letter-spacing:.35em;color:#97acbf;font:9px system-ui;top:calc(50% - min(41dvh,360px) + 28px);left:calc(50% - min(525px,50vw - 16px) + 28px);pointer-events:none}
 #gfq-01-panel .gfq-head{border-bottom:1px solid #7894ac66;padding:6px 0 15px;margin-bottom:16px}
@@ -44,7 +44,7 @@
 #gfq-01-panel input,#gfq-01-panel select,#gfq-01-panel textarea{border-radius:2px}
 #gfq-01-panel .gfq-head button{background:none;border:1px solid #6f8ca1;border-radius:2px}
 @media(max-width:760px){#gfq-01-panel{padding:14px;inset:4px;width:calc(100vw - 8px);height:calc(100dvh - 8px);max-height:none;margin:auto;overflow:auto}#gfq-01-panel::before{display:none}#gfq-01-panel .gfq-tabs{position:static;flex-direction:row;width:auto;gap:4px;margin:12px 0;overflow-x:auto}#gfq-01-panel .gfq-tabs button{white-space:nowrap;font-size:11px;padding:9px 10px;border-left:0;border-bottom:2px solid #5f748e}#gfq-01-panel .gfq-card{padding:10px}}
-\`;
+`;
   document.head.append(style);
   function allowed(){return !!document.querySelector('[data-agent-id="gacha-forge"], [data-package-id="gacha-forge"], [class*="gacha-forge"], [id*="gacha-forge"], [class*="gf-shell"], [class*="gf-app"]') || /gacha.forge/i.test(document.title) || /gacha-forge/i.test(location.pathname+location.hash);}
   const HOST_TAG = 'marinara-capability-gacha-forge';
