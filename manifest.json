@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.1",
-    "description": "퀘스트 제목·완료 목표 정리, 스토리 보상 연결 및 명성 보상 제안",
+    "version": "0.3.2",
+    "description": "퀘스트 명성 보상을 기존 자산 탭 명성 필드에 누적",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
