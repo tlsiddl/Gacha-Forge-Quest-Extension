@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.2.7",
-    "description": "AI 후보 선택 승인·선택 삭제·전체 삭제 및 관련 없는 사건 필터",
+    "version": "0.2.8",
+    "description": "스토리 분석 중복 퀘스트·면허 방지 및 입금 근거 검증",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
