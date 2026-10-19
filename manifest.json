@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.7",
-    "description": "AI 기반 범용 퀘스트 통합·세부 목표 완료 관리",
+    "version": "0.3.8",
+    "description": "맥락 연결형 거래·보상·수령 예정 물품 관리",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
