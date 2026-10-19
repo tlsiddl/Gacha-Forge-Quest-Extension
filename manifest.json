@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.1.8",
-    "description": "가챠 포지 기존 게임 통신으로 월드 자동 인식(관리자 키 직접 취급 없음)",
+    "version": "0.1.9",
+    "description": "월드 표시 이름 개선 및 권한 없는 챕터 조회 방지",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
