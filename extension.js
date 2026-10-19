@@ -1,4 +1,4 @@
-/* 퀘스트 v0.1.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.3.5 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -213,7 +213,11 @@
       if(w.gfStorySamples.some(e=>e.id===id))continue;
       w.gfStorySamples.push({id,chapter,index,text,at:now()});changed=true;
     }
-    if(changed){w.gfStorySamples=w.gfStorySamples.slice(-180);save();if(panel&&currentTab==='history'&&data.world===key)render();}
+    if(changed){
+      // v0.3.5: record scenes dropped by the 180-scene cap so missing payments can be diagnosed.
+      const over=w.gfStorySamples.length-180;
+      if(over>0){w.gfEvicted||={};for(const e of w.gfStorySamples.slice(0,over)){const c=String(e.chapter);w.gfEvicted[c]=(w.gfEvicted[c]||0)+1;}}
+      w.gfStorySamples=w.gfStorySamples.slice(-180);save();if(panel&&currentTab==='history'&&data.world===key)render();}
   }
   function storyCandidates(w){
     const sources=[
@@ -378,8 +382,77 @@
     }
     if(result.category==='asset'&&result.financialStatus==='pending'&&result.unit==='원'&&/(기본 수당|위험 수당)/.test(name))result.auditNote='동일 용역 보수 총액의 구성 항목일 수 있습니다. 합계에 중복 포함하지 마세요.';
     if(result.category==='asset'&&result.financialStatus==='pending'&&result.amount===1400000&&/총액|정산/.test(name))result.auditNote='95만 원과 45만 원을 포함한 총액일 수 있습니다. 중복 합산하지 마세요.';
-    if(result.category==='credential'&&/면허/.test(name)&&/면허/.test(q))result.name='물리계 C급 정식 면허';
+    // v0.3.5: only the evidenced Physical-class C license is normalised; other licenses keep their own names.
+    if(result.category==='credential'&&/면허/.test(name)&&/물리계/.test(name+' '+q)&&/C\s*급/.test(name+' '+q))result.name='물리계 C급 정식 면허';
     return result;
+  }
+  // v0.3.5: tolerant evidence lookup. Ignores spacing, quote style and light punctuation,
+  // then returns the exact original span so stored evidence always matches the saved story.
+  const GFQ_SKIP=/[\s.,!?~…·:;'"“”‘’「」『』()\[\]<>\-—–_*]/u;
+  function gfqNormMap(text){
+    const s=String(text||'').normalize('NFC');let out='';const map=[];
+    for(let i=0;i<s.length;i++){if(GFQ_SKIP.test(s[i]))continue;out+=s[i];map.push(i);}
+    return {s,out,map};
+  }
+  function gfqLocateEvidence(evidence,texts){
+    const needle=gfqNormMap(evidence).out;
+    if(needle.length<6)return null;
+    for(const t of texts){
+      const raw=String(t||'');
+      if(raw.includes(evidence))return evidence;
+      const m=gfqNormMap(raw),at=m.out.indexOf(needle);
+      if(at<0)continue;
+      return m.s.slice(m.map[at],m.map[at+needle.length-1]+1);
+    }
+    return null;
+  }
+  // v0.3.5: chronological story records (chapter premise first, then scenes in order).
+  function gfqStoryRecords(w){
+    const num=v=>{const n=Number(v);return Number.isFinite(n)?n:Number.MAX_SAFE_INTEGER;};
+    const rows=[
+      ...(w.gfChapterIndex||[]).map((c,i)=>({source:'챕터 '+c.chapter+' · 줄거리',text:String(c.premise||''),ch:num(c.chapter),ix:-1,order:i})),
+      ...(w.gfStorySamples||[]).map((x,i)=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:String(x.text||''),ch:num(x.chapter),ix:num(x.index),order:i}))
+    ].filter(x=>x.text.trim());
+    rows.sort((a,b)=>a.ch-b.ch||a.ix-b.ix||a.order-b.order);
+    return rows.map(x=>({source:x.source,text:x.text,ch:x.ch}));
+  }
+  // v0.3.5: parse model output; if the reply was cut off, recover every complete event object.
+  function gfqParseEvents(raw){
+    const text=String(raw||'').trim().replace(/^\x60\x60\x60(?:json)?\s*/i,'').replace(/\s*\x60\x60\x60$/,'');
+    try{const v=JSON.parse(text);const ev=Array.isArray(v)?v:v?.events;if(Array.isArray(ev))return {events:ev,partial:false};}catch{}
+    const whole=text.match(/\{[\s\S]*\}/);
+    if(whole){try{const v=JSON.parse(whole[0]);if(Array.isArray(v?.events))return {events:v.events,partial:false};}catch{}}
+    const key=text.search(/"events"\s*:\s*\[/),start=key>=0?text.indexOf('[',key):text.indexOf('[');
+    if(start<0)return null;
+    const events=[];let depth=0,inStr=false,esc=false,objStart=-1;
+    for(let i=start+1;i<text.length;i++){
+      const c=text[i];
+      if(inStr){if(esc)esc=false;else if(c==='\\')esc=true;else if(c==='"')inStr=false;continue;}
+      if(c==='"'){inStr=true;continue;}
+      if(c==='{'){if(depth===0)objStart=i;depth++;}
+      else if(c==='}'){depth--;if(depth===0&&objStart>=0){try{events.push(JSON.parse(text.slice(objStart,i+1)));}catch{}objStart=-1;}}
+      else if(c===']'&&depth===0)break;
+    }
+    return events.length?{events,partial:true}:null;
+  }
+  // v0.3.5: one validation path shared by AI analysis and JSON import.
+  function gfqBuildProposal(x,evidence){
+    const safe=gfqSafeProposal({...x,evidence});
+    return {id:uid(),category:safe.category,name:String(safe.name).slice(0,100),status:safe.status,evidence:String(evidence).slice(0,600),
+      questTitle:String(x.questTitle||'').slice(0,90),questObjective:String(x.questObjective||'').slice(0,350),questRewards:Array.isArray(x.questRewards)?x.questRewards.slice(0,8):[],
+      source:String(x.source||'').slice(0,120),amount:typeof x.amount==='number'&&Number.isFinite(x.amount)?x.amount:null,
+      unit:String(x.unit||'').slice(0,30),owner:String(x.owner||'unknown'),eventKind:String(x.eventKind||''),
+      financialStatus:safe.financialStatus,auditNote:safe.auditNote||'',
+      transactionId:String(x.transactionId||'').slice(0,100)};
+  }
+  // Returns {proposal} or {reason} so callers can report why candidates were dropped.
+  function gfqScreenEvent(x,texts){
+    if(!x||typeof x!=='object')return {reason:'format'};
+    if(typeof x.name!=='string'||!x.name.trim()||typeof x.evidence!=='string'||x.evidence.trim().length<8)return {reason:'format'};
+    if(!gfqEventEligible(x)||!['completed','active','confirmed','uncertain'].includes(x.status))return {reason:'filtered'};
+    const evidence=gfqLocateEvidence(x.evidence.trim(),texts);
+    if(!evidence)return {reason:'evidence'};
+    return {proposal:gfqBuildProposal(x,evidence)};
   }
   function gfqDuplicate(a,b){
     if(a.category!==b.category)return false;
@@ -391,10 +464,17 @@
   function aiReviewHtml(w){
     const rows=Array.isArray(w.aiProposals)?w.aiProposals:[];
     return '<h3>AI 분석 결과 검토 ('+rows.length+'개)</h3>'+
-      '<p class="gfq-muted">설정에서 선택한 AI 연결로 분석합니다. 원문을 확인한 후보만 승인할 수 있으며, 분석만으로 자산은 변경되지 않습니다.</p>'+
+      '<p class="gfq-muted">설정에서 선택한 AI 연결로 분석합니다. 원문을 확인한 후보만 승인할 수 있으며, 분석만으로 자산은 변경되지 않습니다.</p>'+gfqDiagnosticsHtml(w)+
       '<button data-action="invoke-quest-bridge">AI 분석 실행</button> <button data-action="prepare-ai-prompt">분석 지침 복사</button> <button data-action="import-ai-result">AI 분석 JSON 가져오기</button>'+
       (rows.length?'<div class="gfq-row"><button data-action="select-all-ai">전체 선택</button><button data-action="unselect-all-ai">선택 해제</button><button data-action="approve-selected-ai">선택 승인</button><button data-action="delete-selected-ai">선택 삭제</button><button data-action="delete-all-ai" class="gfq-danger">전체 삭제</button></div>':'')+
       (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(x.category)+' · '+esc(x.name)+'</b><small>'+esc(x.status)+' · '+esc(x.financialStatus||'구분 전')+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(x.amount??'미확인')+' '+esc(x.unit||'')+' · 출처: '+esc(x.source||'미확인')+'</div>'+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(x).objective)+'</div><div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(x).rewardList.map(r=>r.name+' ('+r.certainty+')').join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
+  }
+  function gfqDiagnosticsHtml(w){
+    const a=w.gfLastAnalysis,ev=w.gfEvicted&&Object.entries(w.gfEvicted);
+    const parts=[];
+    if(a)parts.push('<div class="gfq-muted">최근 분석 ('+esc(a.at)+'): '+esc(gfqAnalysisSummary(a)).replace(/\n/g,'<br>')+'</div>');
+    if(ev&&ev.length)parts.push('<div class="gfq-muted">보관 한도(장면 180개)를 넘어 삭제된 오래된 장면: '+ev.map(([c,n])=>'챕터 '+esc(c)+' '+n+'개').join(', ')+'. 이 장면에 있던 거래는 분석 대상에 포함되지 않습니다.</div>');
+    return parts.length?'<div class="gfq-card">'+parts.join('')+'</div>':'';
   }
   function gfqQuestGroup(x){
     const t=[x.name,x.questTitle,x.questObjective,x.evidence].join(' '),source=String(x.source||'');
@@ -490,10 +570,7 @@
     return x.reward||'보상 미기록';
   }
   function aiAnalysisPrompt(w, records){
-    const input=(records||[
-      ...(w.gfChapterIndex||[]).map(c=>({source:'챕터 '+c.chapter+' · 줄거리',text:String(c.premise||'')})),
-      ...(w.gfStorySamples||[]).map(x=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:x.text}))
-    ]).map(x=>'['+x.source+']\n'+x.text).join('\n\n');
+    const input=(records||gfqStoryRecords(w)).map(x=>'['+x.source+']\n'+x.text).join('\n\n');
     return [
       '한국어 RPG 세계의 사건과 금전 출납부를 분석합니다. 입력에 없는 사실과 금액은 절대 추정하지 않습니다.',
       '반환 JSON: {"events":[{"category":"quest|asset|item|credential|contract","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
@@ -517,7 +594,7 @@
   async function prepareAiPrompt(){
     const w=current();if(!w)return;
     const txt=aiAnalysisPrompt(w);
-    try{await navigator.clipboard.writeText(txt);alert('분석 지침을 복사했습니다. 선택하신 AI 연결에서 분석한 후 JSON 결과를 가져올 수 있습니다. 자동 AI 호출은 아직 지원하지 않습니다.');}
+    try{await navigator.clipboard.writeText(txt);alert('분석 지침을 복사했습니다. 다른 AI에서 직접 분석하신 경우 [AI 분석 JSON 가져오기]로 결과를 불러오실 수 있습니다. 설정에서 연결을 선택하셨다면 [AI 분석 실행]으로 바로 분석하실 수도 있습니다.');}
     catch{prompt('아래 지침을 복사해 주세요.',txt);}
   }
 
@@ -535,17 +612,17 @@
     const w=current();if(!w)return;
     const currentWorldKey=data.world,connectionId=String(data.aiConnectionId||'').trim();
     if(!connectionId)return alert('설정에서 분석용 AI 연결을 먼저 선택해 주세요.');
-    const allRecords=[
-      ...(w.gfChapterIndex||[]).map(c=>({source:'챕터 '+c.chapter+' · 줄거리',text:String(c.premise||'')})),
-      ...(w.gfStorySamples||[]).map(x=>({source:'챕터 '+x.chapter+' · 장면 '+x.index,text:x.text}))
-    ].filter(x=>x.text.trim());
+    const allRecords=gfqStoryRecords(w);
     if(!allRecords.length)return alert('분석할 스토리 기록이 없습니다.');
     // Bounded chronological batches prevent old payments from being excluded by a recent-only slice.
-    const batches=[];let batch=[],chars=0;
+    // v0.3.5: prefer to start a new batch at a chapter boundary once the current batch is mostly full.
+    const batches=[];let batch=[],chars=0,lastCh=null;
     for(const record of allRecords){
       const item={source:record.source,text:record.text.slice(0,3500)};
-      if(batch.length && (batch.length>=12||chars+item.text.length>10500)){batches.push(batch);batch=[];chars=0;}
-      batch.push(item);chars+=item.text.length;
+      const full=batch.length>=12||chars+item.text.length>10500;
+      const boundary=lastCh!==null&&record.ch!==lastCh&&(batch.length>=8||chars>7000);
+      if(batch.length&&(full||boundary)){batches.push(batch);batch=[];chars=0;}
+      batch.push(item);chars+=item.text.length;lastCh=record.ch;
     }
     if(batch.length)batches.push(batch);
     if(!confirm('저장된 스토리 '+allRecords.length+'개를 '+batches.length+'회로 나눠 분석하시겠습니까? 기존보다 AI 호출 비용이 증가할 수 있습니다.'))return;
@@ -554,72 +631,85 @@
     const host=typeof marinara==='object'&&marinara?marinara:globalThis.marinara||{};
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),Math.min(900000,120000*Math.max(1,batches.length)));
+    const stats={format:0,filtered:0,evidence:0,duplicate:0};
+    const failures=[];let partialBatches=0,processed=0;
     try{
-      const existing=new Set((w.aiProposals||[]).map(x=>x.category+'|'+x.evidence));
-      const approved=new Set(w.aiAcceptedKeys||[]);
+      const known=gfqKnownKeys(w);
       const eventsToAdd=[];
       for(let batchIndex=0;batchIndex<batches.length;batchIndex++){
-        const segment=batches[batchIndex],promptText=aiAnalysisPrompt(w,segment);
-        const opts={method:'POST',credentials:'same-origin',cache:'no-store',signal:controller.signal,
-          headers:{'content-type':'application/json','x-marinara-csrf':'1'},
-          body:JSON.stringify({connectionId,runId:requestRun+'-'+batchIndex,streaming:false,
-            messages:[{role:'system',content:'Extract exhaustive story events and all actual or promised financial transactions. Return only a JSON object with events array.'},{role:'user',content:promptText}],
-            parameters:{maxTokens:4000,temperature:0.1}})
-        };
-        const response=typeof host.apiFetch==='function'?await host.apiFetch('generate/raw',opts):
-          typeof host.fetch==='function'?await host.fetch('/api/generate/raw',opts):await fetch('/api/generate/raw',opts);
-        const body=await response.json().catch(()=>null);
-        if(!response.ok)throw Error('묶음 '+(batchIndex+1)+'/'+batches.length+': '+String(body?.error||body?.message||('HTTP '+response.status)));
-        const raw=questModelText(body).trim().replace(/^\x60\x60\x60(?:json)?\s*/i,'').replace(/\s*\x60\x60\x60$/,'');
-        let parsed;try{parsed=JSON.parse(raw);}catch{const match=raw.match(/\{[\s\S]*\}/);if(!match)throw Error('묶음 '+(batchIndex+1)+': AI JSON 응답 없음');parsed=JSON.parse(match[0]);}
-        const events=Array.isArray(parsed)?parsed:parsed?.events;
-        if(!Array.isArray(events))throw Error('묶음 '+(batchIndex+1)+': events 배열 없음');
-        for(const x of events.slice(0,75)){
-          if(!gfqEventEligible(x)||!['completed','active','confirmed','uncertain'].includes(x.status))continue;
-          const safe=gfqSafeProposal(x);
-          if(eventsToAdd.some(y=>gfqDuplicate(y,safe))||(w.aiProposals||[]).some(y=>gfqDuplicate(y,safe)))continue;
-          if(typeof x.name!=='string'||!x.name.trim()||typeof x.evidence!=='string'||x.evidence.length<8||!segment.some(t=>t.text.includes(x.evidence)))continue;
-          const identity=x.category+'|'+x.evidence;
-          if(existing.has(identity)||approved.has(identity))continue;
-          eventsToAdd.push({id:uid(),category:safe.category,name:safe.name.slice(0,100),status:safe.status,evidence:safe.evidence.slice(0,600),
-            questTitle:String(x.questTitle||'').slice(0,90),questObjective:String(x.questObjective||'').slice(0,350),questRewards:Array.isArray(x.questRewards)?x.questRewards.slice(0,8):[],
-            source:String(x.source||'').slice(0,120),amount:typeof x.amount==='number'&&Number.isFinite(x.amount)?x.amount:null,
-            unit:String(x.unit||'').slice(0,30),owner:String(x.owner||'unknown'),eventKind:String(x.eventKind||''),
-            financialStatus:safe.financialStatus, auditNote:safe.auditNote||'',
-            transactionId:String(x.transactionId||'').slice(0,100)});
-          existing.add(identity);
+        if(controller.signal.aborted){failures.push('묶음 '+(batchIndex+1)+'~'+batches.length+': 제한 시간 초과로 실행하지 않았습니다');break;}
+        const segment=batches[batchIndex],promptText=aiAnalysisPrompt(w,segment),label='묶음 '+(batchIndex+1)+'/'+batches.length;
+        // v0.3.5: one failed batch no longer discards the results of the others.
+        try{
+          const opts={method:'POST',credentials:'same-origin',cache:'no-store',signal:controller.signal,
+            headers:{'content-type':'application/json','x-marinara-csrf':'1'},
+            body:JSON.stringify({connectionId,runId:requestRun+'-'+batchIndex,streaming:false,
+              messages:[{role:'system',content:'Extract exhaustive story events and all actual or promised financial transactions. Return only a JSON object with events array.'},{role:'user',content:promptText}],
+              parameters:{maxTokens:4000,temperature:0.1}})
+          };
+          const response=typeof host.apiFetch==='function'?await host.apiFetch('generate/raw',opts):
+            typeof host.fetch==='function'?await host.fetch('/api/generate/raw',opts):await fetch('/api/generate/raw',opts);
+          const body=await response.json().catch(()=>null);
+          if(!response.ok)throw Error(String(body?.error||body?.message||('HTTP '+response.status)));
+          const parsed=gfqParseEvents(questModelText(body));
+          if(!parsed)throw Error('AI 응답에서 JSON 사건 목록을 찾지 못했습니다');
+          if(parsed.partial)partialBatches++;
+          gfqCollectEvents(parsed.events.slice(0,75),segment.map(t=>t.text),w,known,eventsToAdd,stats);
+          processed++;
+        }catch(e){
+          if(controller.signal.aborted)failures.push(label+': 제한 시간 초과');
+          else failures.push(label+': '+String(e?.message||e));
         }
       }
       if(data.world!==currentWorldKey||current()!==w)throw Error('분석 중 월드가 변경되어 결과를 적용하지 않았습니다.');
+      if(!processed)throw Error('모든 묶음의 분석에 실패했습니다.\n'+failures.slice(0,6).join('\n'));
       w.aiProposals||=[];const merged=gfqIntegrateQuests(eventsToAdd);w.aiProposals.push(...merged);
-      const n=merged.length;
-      save();render();alert('AI 분석이 완료되었습니다. '+n+'개의 새 후보를 검토 목록에 추가했습니다.');
+      w.gfLastAnalysis={at:now(),batches:batches.length,processed,partial:partialBatches,failures:failures.slice(0,12),added:merged.length,...stats};
+      save();render();
+      alert('AI 분석이 완료되었습니다. '+merged.length+'개의 새 후보를 검토 목록에 추가했습니다.\n\n'+gfqAnalysisSummary(w.gfLastAnalysis));
     }catch(e){
       alert('AI 분석에 실패했습니다: '+String(e?.message||e));
     }finally{clearTimeout(timer);}
   }
+  function gfqKnownKeys(w){
+    return new Set([...(w.aiProposals||[]).map(x=>x.category+'|'+x.evidence),...(w.aiAcceptedKeys||[])]);
+  }
+  function gfqCollectEvents(events,texts,w,known,out,stats){
+    for(const x of events){
+      const r=gfqScreenEvent(x,texts);
+      if(!r.proposal){stats[r.reason]=(stats[r.reason]||0)+1;continue;}
+      const p=r.proposal,identity=p.category+'|'+p.evidence;
+      if(known.has(identity)||out.some(y=>gfqDuplicate(y,p))||(w.aiProposals||[]).some(y=>gfqDuplicate(y,p))){stats.duplicate++;continue;}
+      out.push(p);known.add(identity);
+    }
+  }
+  function gfqAnalysisSummary(a){
+    if(!a)return '';
+    const lines=['처리한 묶음: '+a.processed+'/'+a.batches+(a.partial?' (응답이 잘려 부분 복구한 묶음 '+a.partial+'개)':'')];
+    const dropped=[];
+    if(a.evidence)dropped.push('원문 근거 불일치 '+a.evidence+'개');
+    if(a.filtered)dropped.push('주인공 무관·유형 제외 '+a.filtered+'개');
+    if(a.duplicate)dropped.push('중복 '+a.duplicate+'개');
+    if(a.format)dropped.push('형식 오류 '+a.format+'개');
+    if(dropped.length)lines.push('제외된 후보: '+dropped.join(', '));
+    if(a.failures?.length)lines.push('실패한 묶음:\n'+a.failures.join('\n'));
+    return lines.join('\n');
+  }
   function importAiResult(){
     const w=current();if(!w)return;
-    const raw=prompt('AI가 반환한 JSON 배열을 붙여넣어 주세요. 불확실한 결과는 상태 변경 없이 검토 목록에만 추가됩니다.');
+    const raw=prompt('AI가 반환한 JSON을 붙여넣어 주세요. 배열 또는 {"events":[...]} 형식을 지원합니다. 원문에서 근거가 확인되는 항목만 검토 목록에 추가됩니다.');
     if(!raw)return;
     try{
-      const parsed=JSON.parse(raw.replace(/^\x60\x60\x60(?:json)?\s*/i,'').replace(/\s*\x60\x60\x60$/,''));
-      if(!Array.isArray(parsed)||parsed.length>60)throw Error('60개 이하 JSON 배열만 지원합니다.');
-      w.aiProposals ||= [];const known=new Set(w.aiProposals.map(x=>x.category+'|'+x.evidence));
-      let added=0;
-      for(const x of parsed){
-        if(!x||!['quest','asset','item'].includes(x.category)||typeof x.name!=='string'||!x.name.trim()||typeof x.evidence!=='string'||x.evidence.trim().length<8)continue;
-        if(!['completed','active','confirmed','uncertain'].includes(x.status))continue;
-        const source=String(x.source||'').slice(0,100),evidence=x.evidence.slice(0,600),name=x.name.slice(0,100),token=x.category+'|'+evidence;
-        if(known.has(token))continue;
-        // Evidence must be present in at least one stored story text.
-        const all=(w.gfChapterIndex||[]).map(c=>c.premise||'').concat((w.gfStorySamples||[]).map(c=>c.text));
-        if(!all.some(t=>t.includes(evidence)))continue;
-        const amount=x.amount===null||x.amount===undefined?null:Number(x.amount);
-        w.aiProposals.push({id:uid(),category:x.category,name,status:x.status,evidence,source,amount:Number.isFinite(amount)?amount:null,unit:String(x.unit||'').slice(0,30)});
-        known.add(token);added++;
-      }
-      save();render();alert(added+'개의 검증된 분석 후보를 추가했습니다. 나머지는 중복이거나 저장된 원문과 일치하지 않아 제외되었습니다.');
+      const parsed=gfqParseEvents(raw);
+      if(!parsed)throw Error('JSON 사건 목록을 찾지 못했습니다.');
+      if(parsed.events.length>150)throw Error('한 번에 150개 이하의 항목만 가져올 수 있습니다.');
+      // Numeric strings from external tools are accepted as amounts.
+      const events=parsed.events.map(x=>x&&typeof x==='object'&&typeof x.amount==='string'&&x.amount.trim()&&Number.isFinite(Number(x.amount.replace(/,/g,'')))?{...x,amount:Number(x.amount.replace(/,/g,''))}:x);
+      const stats={format:0,filtered:0,evidence:0,duplicate:0},added=[];
+      gfqCollectEvents(events,gfqStoryRecords(w).map(r=>r.text),w,gfqKnownKeys(w),added,stats);
+      w.aiProposals||=[];const merged=gfqIntegrateQuests(added);w.aiProposals.push(...merged);
+      save();render();
+      alert(merged.length+'개의 검증된 분석 후보를 추가했습니다.'+(parsed.partial?' 입력이 중간에 잘려 있어 완전한 항목만 복구했습니다.':'')+'\n\n'+gfqAnalysisSummary({processed:1,batches:1,partial:0,failures:[],...stats}));
     }catch(e){alert('JSON을 가져오지 못했습니다: '+String(e.message||e));}
   }
   const GFQ_MONEY_STATES=['pending','receivable','received','paid','waived','ownership'];
@@ -698,17 +788,17 @@
   }
   const btn=(label,action,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
   function worldSelect(){return `<div class="gfq-row"><select id="gfq-world" class="gfq-fill"><option value="">월드 선택</option>${Object.keys(data.worlds).map(w=>`<option value="${esc(w)}" ${data.world===w?'selected':''}>${esc(data.worlds[w]?.gfDisplayName||w)}</option>`).join('')}</select>${btn('＋ 월드','new-world')}</div>`;}
-  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.3.4</span></footer></div>`;}
+  function render(){if(!panel)return;let w=current();const tabs=[['quests','퀘스트','▤'],['assets','자산','◈'],['items','소지품','◇'],['history','기록','≡'],['settings','설정','⚙']];const empty='<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>아직 등록된 내용이 없습니다</strong><span class="gfq-muted">월드의 퀘스트와 자산을 여기에서 관리할 수 있습니다.</span></div>';panel.innerHTML=`<div class="gfq-frame"><header class="gfq-head"><div class="gfq-mark">✦</div><div><h2>퀘스트</h2><div class="gfq-en">GACHA FORGE / QUEST ARCHIVE</div></div>${btn('✕','close','aria-label="닫기"')}</header><aside class="gfq-side"><div class="gfq-side-head">NAVIGATION / 01</div><nav class="gfq-tabs">${tabs.map(([key,label,icon])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}"><span class="gfq-nav-icon">${icon}</span>${label}</button>`).join('')}</nav><div class="gfq-side-foot">MISSION CONTROL<br>GF / EXTENSION</div></aside><main class="gfq-main"><div class="gfq-context"><div><b>${tabs.find(t=>t[0]===currentTab)?.[1]||'퀘스트'}</b><div class="gfq-muted">WORLD RECORD / ${esc(current()?.gfDisplayName||data.world||'월드를 선택해 주세요')}</div></div><span class="gfq-muted">◈　ARCHIVE 01</span></div><div class="gfq-worldbar">${worldSelect()}</div><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main><footer class="gfq-footer"><span>GACHA FORGE / PERSONAL QUEST SYSTEM</span><span>LOCAL DATA · v0.3.5</span></footer></div>`;}
   function content(w){switch(currentTab){case 'quests':return `<div class="gfq-row"><select id="gfq-filter">${['전체','일일','주간','의뢰','업적'].map(t=>`<option ${activeFilter===t?'selected':''}>${t}</option>`).join('')}</select>${btn('＋ 퀘스트','add-quest','class="primary"')}</div>${w.quests.filter(q=>activeFilter==='전체'||q.type===activeFilter).map(q=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(q.title)}</b><small>${esc(q.type)}</small></div><div class="gfq-muted">${esc(q.detail)}</div>${Array.isArray(q.steps)&&q.steps.length?`<div class="gfq-muted">세부 목표: ${q.steps.map(esc).join(" · ")}</div>`:""}<progress value="${Math.max(0,Math.min(q.progress,q.target))}" max="${q.target}"></progress><div class="gfq-row"><span class="gfq-fill">${q.progress} / ${q.target} ${q.claimed?'· 완료':''}</span>${btn('＋1','increment',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn(q.claimed?'완료됨':'완료','complete',`data-id="${esc(q.id)}" ${q.claimed?'disabled':''}`)}${btn('삭제','delete-quest',`data-id="${esc(q.id)}"`)}</div><div class="gfq-muted">보상(기록용): ${esc(gfqQuestRewardLabel(q))}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">▤</div><strong>진행 중인 퀘스트가 없습니다</strong><span class="gfq-muted">새 퀘스트를 등록하면 여기에 표시됩니다.</span></div>'}`;
   case 'assets':return `${gfqLedgerHtml(w)}${btn('＋ 필드 추가','add-field','class="primary"')}<p class="gfq-muted">소지금, 은행, 평판, 직업 등 월드별 자유 필드</p>${w.fields.map(f=>`<div class="gfq-card"><div class="gfq-row"><b class="gfq-fill">${esc(f.name)}</b><span>${esc(f.value)} ${esc(f.unit)}</span>${btn('수정','edit-field',`data-id="${esc(f.id)}"`)}${btn('삭제','delete-field',`data-id="${esc(f.id)}"`)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◈</div><strong>등록된 자산이 없습니다</strong><span class="gfq-muted">소지금, 직업, 평판 등 원하는 항목을 추가해 주세요.</span></div>'}`;
   case 'items':return `${btn('＋ 소지품','add-item','class="primary"')}${w.items.map(i=>`<div class="gfq-card gfq-row"><b class="gfq-fill">${esc(i.name)}</b><span>× ${i.qty}</span>${btn('수정','edit-item',`data-id="${esc(i.id)}"`)}${btn('삭제','delete-item',`data-id="${esc(i.id)}"`)}</div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">◇</div><strong>소지품 목록이 비어 있습니다</strong><span class="gfq-muted">스토리에서 얻은 아이템을 기록할 수 있습니다.</span></div>'}`;
   case 'history':return `${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}${candidateHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
-  case 'settings':return `${aiSettingsHTML()}<p>현재 월드: <b>${esc(data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관돼. 기기 간 자동 동기화나 AI 분석은 이 버전에서 지원하지 않습니다.</p>`;}}
+  case 'settings':return `${aiSettingsHTML()}<p>현재 월드: <b>${esc(data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
   const ask=(message,def='')=>prompt(message,def);
   const update=fn=>{const w=current();if(!w)return;fn(w);save();render();};
   const record=(w,text)=>{w.history.unshift({at:now(),text});w.history=w.history.slice(0,500);};
   function exportData(){const file=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');const url=URL.createObjectURL(file);a.href=url;a.download='quest-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-  function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=async()=>{const f=inp.files?.[0];if(!f||f.size>2e6)return alert('2MB 이하의 JSON 파일만 지원합니다.');try{const d=JSON.parse(await f.text());if(d.v!==1||typeof d.worlds!=='object'||!d.worlds||Array.isArray(d.worlds))throw Error('백업 형식이 맞지 않아.');for(const w of Object.values(d.worlds)){if(!Array.isArray(w.quests)||!Array.isArray(w.fields)||!Array.isArray(w.items)||!Array.isArray(w.history))throw Error('월드 데이터가 올바르지 않아.');}if(!confirm('현재 퀘스트 데이터를 백업 파일로 교체하시겠습니까?'))return;const previous=data;data=d;if(!save()){data=previous;return;}render();}catch(e){alert('가져오지 못했습니다: '+e.message);}};inp.click();}
+  function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=async()=>{const f=inp.files?.[0];if(!f||f.size>2e6)return alert('2MB 이하의 JSON 파일만 지원합니다.');try{const d=JSON.parse(await f.text());if(d.v!==1||typeof d.worlds!=='object'||!d.worlds||Array.isArray(d.worlds))throw Error('백업 형식이 올바르지 않습니다.');for(const w of Object.values(d.worlds)){if(!Array.isArray(w.quests)||!Array.isArray(w.fields)||!Array.isArray(w.items)||!Array.isArray(w.history))throw Error('월드 데이터가 올바르지 않습니다.');}if(!confirm('현재 퀘스트 데이터를 백업 파일로 교체하시겠습니까?'))return;const previous=data;data=d;if(!save()){data=previous;return;}render();}catch(e){alert('가져오지 못했습니다: '+e.message);}};inp.click();}
   document.addEventListener('change',e=>{if(!panel||!panel.contains(e.target))return;if(e.target.id==='gfq-world'){data.world=e.target.value;save();render();}if(e.target.id==='gfq-filter'){activeFilter=e.target.value;render();}if(e.target.id==='gfq-ai-connection'){data.aiConnectionId=e.target.value;save();render();}if(e.target.id==='gfq-ai-mode'){data.aiMode=e.target.value;save();render();}if(e.target.id==='gfq-ai-scope'){data.aiScope=e.target.value;save();render();}});
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='close')return openPanel();if(act==='resync-world')return syncWorld();if(act==='new-world'){const name=ask('새 월드 이름');if(name===null)return;const key=name.trim();if(!key||key.length>100)return alert('1~100자로 입력해 주세요.');if(data.worlds[key])return alert('이미 존재하는 월드입니다.');data.worlds[key]=blank();data.world=key;save();return render();}if(!w)return;
