@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.3",
-    "description": "관련 퀘스트 통합, 세부 목표 표시, 계약 보수 연결",
+    "version": "0.3.4",
+    "description": "계약 보수 구성금액 중복 방지·면허 자산 기록",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
