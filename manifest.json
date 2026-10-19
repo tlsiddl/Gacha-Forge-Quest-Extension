@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.3.0",
-    "description": "거래별 고유 ID, 지급 상태 이력 및 기존 거래 갱신",
+    "version": "0.3.1",
+    "description": "퀘스트 제목·완료 목표 정리, 스토리 보상 연결 및 명성 보상 제안",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
