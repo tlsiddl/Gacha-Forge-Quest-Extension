@@ -36,5 +36,6 @@ assert.strictEqual(w.quests[0].claimed,true);
 assert.strictEqual(w.fields.find(f=>f.name==='명성')?.value,'1','reputation once (no other reward)');
 assert.strictEqual(w.aiProposals.length,0);
 assert.strictEqual(w.protagonist,'채서래');assert.strictEqual(w.gfRulePack,'legacy-0.3.4');
+click('[data-tab="profile"]');assert.ok(panel.querySelector('.gfq-id')&&panel.innerHTML.includes('거래 내역')&&panel.innerHTML.includes('소지품'),'profile tab merges assets and items');assert.ok(!panel.innerHTML.includes('원장'),'no 원장 wording');
 click('[data-tab="settings"]');assert.ok(panel.innerHTML.includes('현재 월드: <b>서울 각성자 월드</b>'));
 console.log('UI smoke OK; alerts:',alerts.length?alerts:'none');process.exit(0);

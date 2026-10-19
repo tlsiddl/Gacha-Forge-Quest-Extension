@@ -40,7 +40,7 @@ win.eval(src);
   let w=JSON.parse(win.localStorage.getItem('gf-quest-v1')).worlds.w;
   assert.deepStrictEqual([w.gfInject.lorebookId,w.gfInject.entryId,w.gfInject.enabled],['lb1','en1',true]);
   // A change in state is pushed to the entry after the 3 s debounce, once.
-  click('[data-tab="assets"]');click('[data-action="date-set"]');
+  click('[data-tab="profile"]');click('[data-action="date-set"]');
   await sleep(3400);
   const patches=calls.filter(c=>c.m==='PATCH');
   assert.strictEqual(patches.length,1,'one update per change');

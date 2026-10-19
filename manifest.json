@@ -1,6 +1,6 @@
 {
   "kind": "marinara.personal-extension",
-  "version": 1,
+  "version": "0.5.2",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
     "version": "0.5.1",
@@ -11,5 +11,6 @@
       "full_page_access"
     ],
     "jsPath": "extension.js"
-  }
+  },
+  "description": "가챠 포지 로어북 자동 연결·프로필 화면"
 }
