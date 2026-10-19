@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.2.5",
-    "description": "가챠 포지 퀘스트 — 백그라운드 점검·중복 저장 최적화",
+    "version": "0.2.6",
+    "description": "AI 스토리 전량 분할 분석 및 입금·미수금·지급예정 구분",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
