@@ -3,7 +3,7 @@ const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
 const consts=['gfqWeekday','GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqVNDate','gfqDayDiff','gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const names=['gfqInjectText','gfqVNDate','gfqDayDiff','gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -506,5 +506,24 @@ t('읽은 날짜 줄이 현재 날짜: 미리 분석된 챕터의 마지막 날�
   const root=lines=>({querySelector:()=>({querySelectorAll:()=>lines.map(leaf)})});
   assert.strictEqual(F.gfqVNDate(root(['3챕터 · 공방','2033-04-10','05 / 58'])),'2033-04-10');
   assert.strictEqual(F.gfqVNDate(root(['면허증 교부일: 2033-04-08이라고 적혀 있었다'])),null);
+});
+t('스토리 반영 글: 중요한 순서로 채우고 글자 수 상한을 지킴',()=>{
+  const w={protagonist:'채서래',gfReadingDate:{date:'2033-04-10',chapter:'4',ms:1},
+    quests:[{title:'협회 격리동 긴급 수습',claimed:true,doneDate:'2033-04-08'},{title:'제1공방 긴급 방어 작전',claimed:false,steps:['오염 원인 조사','게이트 파편 파괴'],stepDone:[true,false]}],
+    gfLedger:[{name:'긴급 설비 방어 보수',amount:1400000,unit:'원',state:'pending',timing:{text:'임무 완료 시'}},{name:'1차 방어 소집 기본급',amount:500000,unit:'원',state:'receivable'}],
+    items:[{name:'맞춤 경량 건틀릿',state:'pending',qty:1,timing:{text:'내일 이 시간',base:'2033-04-09'}},{name:'굴착충 소재 공임 50퍼센트 감면권',kind:'voucher',qty:1},{name:'회복 포션',qty:3}],
+    fields:[{name:'명성',value:'3',unit:'점'},{name:'보유 자격 · 물리계 C급 정식 면허',value:'취득 · 2033-04-08'}]};
+  const full=F.gfqInjectText(w,2000);
+  assert.match(full,/^\[퀘스트 현황 · 퀘스트 확장 자동 기록\] 채서래의/);
+  assert.match(full,/\n날짜: 2033-04-10 \(일\)/);
+  assert.match(full,/\n진행 중: 제1공방 긴급 방어 작전 — 다음 목표: 게이트 파편 파괴/);
+  assert.match(full,/\n받을 돈: 긴급 설비 방어 보수 1,400,000원 \(지급 예정 · 임무 완료 시\) · 1차 방어 소집 기본급 500,000원 \(확정·미입금\)/);
+  assert.match(full,/\n수령 예정: 맞춤 경량 건틀릿 \(2033-04-10\)/);
+  assert.match(full,/\n이용권: 굴착충 소재 공임 50퍼센트 감면권 ×1/);
+  assert.match(full,/\n보유 자격: 물리계 C급 정식 면허 \(취득 · 2033-04-08\)/);
+  assert.match(full,/\n명성: 3점/);assert.match(full,/\n완료: 협회 격리동 긴급 수습 \(2033-04-08\)/);assert.match(full,/\n소지품: 회복 포션 ×3/);
+  const short=F.gfqInjectText(w,260);
+  assert.ok(short.length<=260,short.length);
+  assert.match(short,/날짜: 2033-04-10/);assert.match(short,/진행 중: 제1공방/);assert.ok(!/소지품/.test(short),'low priority lines dropped first');
 });
 console.log('\n'+pass+'개 통과');

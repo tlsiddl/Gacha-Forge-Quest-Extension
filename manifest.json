@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.4.6",
-    "description": "날짜 줄 도달 시 날짜 변경·팝업",
+    "version": "0.5.0",
+    "description": "로어북을 통한 스토리 반영(퀘스트 현황 자동 갱신)",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
