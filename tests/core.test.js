@@ -2,8 +2,8 @@ const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const consts=['GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc'].map(c=>src.match(new RegExp('  const '+c+'=.*\\n'))[0]).join('');
-const names=['gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
-const code="let n=0;const uid=()=>'id'+(n++);"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
+const names=['gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
 let pass=0;const t=(name,fn)=>{fn();pass++;console.log('✓',name);};
@@ -97,5 +97,56 @@ t('기존 월드: v0.3.4 필터 유지',()=>{
   assert.strictEqual(F.gfqEventEligible({category:'quest',owner:'player',name:'보수 정산'},L),false);
   assert.strictEqual(F.gfqEventEligible({category:'item',owner:'player',name:'앰플',evidence:'한도윤이 앰플을 추가 장전했다'},L),false);
   assert.strictEqual(F.gfqDuplicate({category:'credential',name:'물리계 면허',evidence:'a'},{category:'credential',name:'물리계 C급 면허',evidence:'b'},L),true);
+});
+const Q=(id,o)=>({id,category:'quest',name:o.t,questTitle:o.t,status:o.s||'active',source:o.src||'챕터 1',evidence:o.e||('근거 '+id),questRewards:o.r||[],questObjective:''});
+t('퀘스트 통합: 같은 임무 후보를 하나로 묶고 원문 근거 보존',()=>{
+  const pool=[Q('a',{t:'오염 원인 조사',s:'completed',e:'오염원을 찾았다'}),Q('b',{t:'냉각 밸브 개방',r:[{name:'보수',kind:'money',amount:100,certainty:'pending'}]}),{id:'m',category:'asset',name:'돈',evidence:'x'},Q('c',{t:'별개 의뢰'})];
+  const inp=F.gfqConsolidationInput({quests:[]},pool);
+  assert.strictEqual(inp.candidates.length,3);
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1','c2'],title:'공방 방어 작전',objective:'공방을 지킨다',steps:[{text:'오염 원인 조사',done:true},{text:'냉각 밸브 개방',done:false}],status:'completed'},{memberIds:['c3']}],inp.candMap,inp.questMap);
+  assert.deepStrictEqual(r.list.map(p=>p.name),['공방 방어 작전','돈','별개 의뢰']);
+  const m=r.list[0];
+  assert.strictEqual(m.status,'active'); // 미완료 단계가 있으면 AI가 completed라 해도 진행 중
+  assert.strictEqual(m.evidence,'근거 b'); // 보상 있는 후보를 기준으로 근거 유지
+  assert.deepStrictEqual(m.sourceEvidence,['오염원을 찾았다','근거 b']);
+  assert.deepStrictEqual(m.questStepDone,[true,false]);
+  assert.strictEqual(m.mergedCount,2);assert.strictEqual(r.mergedGroups,1);
+});
+t('퀘스트 통합: 잘못된 ID·중복 배정·단독 후보 처리',()=>{
+  const pool=[Q('a',{t:'A'}),Q('b',{t:'B'}),Q('c',{t:'C'})];
+  const inp=F.gfqConsolidationInput({quests:[]},pool);
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1','c9','x'],title:''},{memberIds:['c1','c2'],title:'AB'},{memberIds:['c3']},null,'bad'],inp.candMap,inp.questMap);
+  // c1은 첫 그룹(유효 멤버 1개, 기존 퀘스트 없음)이라 그대로 두고, 두 번째 그룹에서 c1+c2가 묶임
+  assert.deepStrictEqual(r.list.map(p=>p.name),['AB','C']);
+  const bad=F.gfqApplyConsolidation(pool,'not array',inp.candMap,inp.questMap);
+  assert.deepStrictEqual(bad.list,pool);
+});
+t('퀘스트 통합: 모든 단계 완료가 뒷받침될 때만 완료',()=>{
+  const pool=[Q('a',{t:'A',s:'completed'}),Q('b',{t:'B'})];
+  const inp=F.gfqConsolidationInput({quests:[]},pool);
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1','c2'],title:'AB',steps:[{text:'1',done:true},{text:'2',done:true}],status:'completed'}],inp.candMap,inp.questMap);
+  assert.strictEqual(r.list[0].status,'completed');
+});
+t('기존 퀘스트 갱신: 새 퀘스트 대신 단계·완료·보상 갱신, 명성 제안 대체',()=>{
+  const q={id:'q1',title:'공방 방어',detail:'d',target:1,progress:0,claimed:false,steps:['오염 원인 조사'],stepDone:[false],rewardDetails:[{name:'명성 상승',kind:'reputation',certainty:'suggested',amount:1,unit:'점'}]};
+  const w={quests:[q],fields:[],history:[]};
+  const pool=[Q('a',{t:'공방 방어 완료',s:'completed',r:[{name:'방어 보수',kind:'money',amount:500000,unit:'원',certainty:'confirmed'}]})];
+  const inp=F.gfqConsolidationInput(w,pool);
+  assert.strictEqual(inp.existing[0].id,'e1');
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1'],existingQuestId:'e1',title:'공방 방어',steps:[{text:'오염 원인 조사',done:true},{text:'게이트 파편 파괴',done:true}],status:'completed'}],inp.candMap,inp.questMap);
+  const x=r.list[0];assert.strictEqual(x.updateOf,'q1');assert.strictEqual(r.updates,1);
+  F.gfqUpdateQuest(w,q,x,F.gfqQuestPresentation(x));
+  assert.deepStrictEqual(q.steps,['오염 원인 조사','게이트 파편 파괴']);
+  assert.deepStrictEqual(q.stepDone,[true,true]);
+  assert.strictEqual(q.claimed,true);
+  assert.deepStrictEqual(q.rewardDetails.map(r=>r.name),['방어 보수']);
+  assert.ok(!w.fields.some(f=>f.name==='명성'),'금전 보상이 있으면 기본 명성을 주지 않음');
+  assert.strictEqual(w.quests.length,1);
+});
+t('기존 퀘스트 갱신: 갱신 대상 ID가 엉터리면 연결하지 않음',()=>{
+  const pool=[Q('a',{t:'A'})];
+  const inp=F.gfqConsolidationInput({quests:[{id:'q1',title:'X'}]},pool);
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1'],existingQuestId:'q1'}],inp.candMap,inp.questMap);
+  assert.deepStrictEqual(r.list,pool);
 });
 console.log('\n'+pass+'개 통과');
