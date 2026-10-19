@@ -3,7 +3,7 @@ const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
 const consts=['GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const names=['gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqEventEligible','gfqSafeProposal','gfqNormMap','gfqLocateEvidence','gfqStoryRecords','gfqParseEvents','gfqBuildProposal','gfqScreenEvent','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -265,5 +265,55 @@ t('챕터 클리어 참고 표시',()=>{
   assert.match(F.gfqClearedHint(w,{category:'quest',status:'active',source:'챕터 1'}),/클리어/);
   assert.strictEqual(F.gfqClearedHint(w,{category:'quest',status:'active',source:'챕터 3 · 장면 1'}),'');
   assert.strictEqual(F.gfqClearedHint(w,{category:'quest',status:'completed',source:'챕터 1'}),'');
+});
+t('혜택: 50% 감면은 1회 이용권, 이미 적용된 면제는 기록만, 상시 혜택은 자산 필드',()=>{
+  const b=F.gfqSafeProposal({category:'asset',name:'굴착충 소재 공임 50퍼센트 감면',financialStatus:'waived',amount:50,unit:'%',evidence:'공임 50퍼센트 감면 혜택은 그대로 보장됩니다'});
+  assert.strictEqual(b.category,'benefit');assert.strictEqual(b.benefitUses,1);
+  const w={items:[],fields:[],history:[]};
+  assert.strictEqual(F.gfqApplyBenefit(w,{...b,id:'b1'}),'voucher');
+  assert.deepStrictEqual([w.items[0].name,w.items[0].qty,w.items[0].kind,w.items[0].detail],['굴착충 소재 공임 50퍼센트 감면권',1,'voucher','50 %']);
+  F.gfqApplyBenefit(w,{...b,id:'b1',evidence:'다른 장면'});assert.strictEqual(w.items[0].qty,1,'same chain is not a second voucher');
+  F.gfqApplyBenefit(w,{...b,id:'b2'});assert.strictEqual(w.items[0].qty,2,'a new grant adds a use');
+  assert.strictEqual(F.gfqApplyBenefit(w,{name:'공임비 면제',benefitConsumed:true,evidence:'e'}),'consumed');assert.strictEqual(w.items.length,1);
+  F.gfqApplyBenefit(w,{name:'공방 우선 이용',benefitPermanent:true,evidence:'e'});assert.strictEqual(w.fields[0].name,'보유 혜택 · 공방 우선 이용');
+  assert.strictEqual(F.gfqSafeProposal({category:'contract',name:'공임비 면제',financialStatus:'waived',amount:400000,unit:'원',evidence:'공임비 400,000원을 면제합니다'}).category,'contract','a waived won amount stays a contract record');
+});
+t('명성: 공적 평가 제안(1~5)은 금전 보상과 함께 유지, 기본 +1은 금전 보상과 함께 붙지 않음',()=>{
+  const pool=[Q('q',{t:'공방 방어',r:[{name:'보수',kind:'money',amount:1400000,unit:'원',certainty:'pending'}]})];
+  const inp=F.gfqConsolidationInput({quests:[]},pool);
+  const r=F.gfqApplyConsolidation(pool,[{memberIds:['c1'],reputation:{amount:9,reason:'공방 폭발을 막아 다수 인명을 구함'}}],inp.candMap,inp.questMap,inp.rewardMap);
+  const rl=F.gfqQuestPresentation(r.list[0]).rewardList;
+  assert.deepStrictEqual(rl.map(x=>[x.kind,x.amount]),[['money',1400000],['reputation',5]],'clamped to 5');
+  const plain=F.gfqQuestPresentation({name:'x',questRewards:[{name:'보수',kind:'money',amount:1,unit:'원'},{name:'명성 상승',kind:'reputation',amount:1,certainty:'suggested'}]}).rewardList;
+  assert.ok(!plain.some(x=>x.kind==='reputation'));
+  const w={fields:[{id:'f',name:'명성',value:'4',unit:'점'}],history:[]},q={title:'공방 방어',rewardDetails:rl};
+  F.gfqAwardQuestReputation(w,q);assert.strictEqual(w.fields[0].value,'9');assert.match(w.history[0].text,/명성 \+5점 \(확장 명성 규칙 제안: 공방 폭발을/);
+});
+t('구매: 지출은 원장, 산 물품은 소지품(받기 전이면 수령 예정)',()=>{
+  const w={items:[{id:'i',name:'회복 포션',qty:2}],history:[]};
+  F.gfqApplyPurchase(w,{id:'p',name:'잡화점 구매',purchasedItems:[{name:'회복 포션',qty:3,received:true},{name:'맞춤 방패',qty:1,received:false}],evidence:'e',source:'s'});
+  assert.strictEqual(w.items[0].qty,5);assert.strictEqual(w.items[1].state,'pending');
+});
+t('원장 요약: 승인된 원화 거래만 상태별 합산',()=>{
+  const s=F.gfqLedgerSummary({gfLedger:[{unit:'원',amount:1400000,state:'received'},{unit:'원',amount:300000,state:'paid'},{unit:'원',amount:500000,state:'pending'},{unit:'원',amount:null,state:'receivable'},{unit:'%',amount:50,state:'waived'}]});
+  assert.deepStrictEqual(s,{received:1400000,paid:300000,receivable:0,pending:500000,unknown:1,other:1});
+});
+t('판매: 대금은 원장, 판 물품은 소지품에서 차감 · 현금으로 받은 대금은 입금으로 인정',()=>{
+  const w={items:[{id:'i',name:'마석 조각',qty:5}],history:[]};
+  F.gfqApplySale(w,{name:'마석 판매',soldItems:[{name:'마석 조각',qty:3},{name:'없는 물건',qty:1}]});
+  assert.strictEqual(w.items[0].qty,2);assert.match(w.history[0].text,/찾지 못했습니다: 없는 물건/);
+  const r=F.gfqSafeProposal({category:'asset',name:'마석 판매 대금',financialStatus:'received',amount:300000,unit:'원',evidence:'상인에게서 판매 대금 300,000원을 현금으로 건네받았다'});
+  assert.strictEqual(r.financialStatus,'received');
+  const r2=F.gfqSafeProposal({category:'asset',name:'보수',financialStatus:'received',amount:1,unit:'원',evidence:'보수 정산을 완료했다'});
+  assert.strictEqual(r2.financialStatus,'receivable','정산 완료만으로는 여전히 입금 아님');
+});
+t('분석 범위: 챕터 지문과 범위 입력 해석',()=>{
+  const b=F.gfqChapterBatches([{source:'챕터 1 · 장면 1',text:'a'},{source:'챕터 2 · 장면 1',text:'b'}]);
+  const h1=F.gfqChapterHashes(b);
+  const h2=F.gfqChapterHashes(F.gfqChapterBatches([{source:'챕터 1 · 장면 1',text:'a'},{source:'챕터 2 · 장면 1',text:'b'},{source:'챕터 2 · 장면 2',text:'c'}]));
+  assert.strictEqual(h1['1'],h2['1']);assert.notStrictEqual(h1['2'],h2['2'],'a new scene changes only that chapter');
+  assert.deepStrictEqual([...F.gfqParseChapterRange('2-4',['1','2','3','4','5'])],['2','3','4']);
+  assert.deepStrictEqual([...F.gfqParseChapterRange('5, 1',['1','2','5'])].sort(),['1','5']);
+  assert.strictEqual(F.gfqParseChapterRange('9',['1']).size,0);
 });
 console.log('\n'+pass+'개 통과');

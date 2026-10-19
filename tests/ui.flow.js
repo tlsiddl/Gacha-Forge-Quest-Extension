@@ -50,5 +50,10 @@ win.eval(src);
   assert.strictEqual(w.gfLedger[0].state,'received');assert.strictEqual(w.gfLedger[0].history.length,2);
   assert.strictEqual(w.items.length,1);assert.strictEqual(w.items[0].state,undefined,'gauntlet now owned');
   assert.strictEqual(w.aiProposals.length,0);
+  assert.deepStrictEqual(Object.keys(w.gfAnalyzed).sort(),['3','4'],'chapters fingerprinted after success');
+  // Second run with the default range: nothing new, so no AI call is made.
+  const calls=prompts.length;click('[data-tab="history"]');click('[data-action="invoke-quest-bridge"]');
+  await new Promise(r=>setTimeout(r,50));
+  assert.strictEqual(prompts.length,calls);assert.match(alerts.at(-1),/새로 추가되거나 바뀐 챕터가 없습니다/);
   console.log('UI flow OK');process.exit(0);
 })().catch(e=>{console.error(e);process.exit(1);});
