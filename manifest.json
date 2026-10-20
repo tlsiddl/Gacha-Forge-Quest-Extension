@@ -1,9 +1,9 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "description": "AI 근거 기반 퀘스트 연결 검토·관계 유형·수동 승인",
     "runtime": "client",
     "enabled": false,
