@@ -1,4 +1,4 @@
-/* 퀘스트 v0.8.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.8.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -3325,7 +3325,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<div class="gfq-qmeta">'+[done?'완료':'진행 중',sel.startDate?'시작 '+esc(sel.startDate):'',sel.doneDate?'완료 '+esc(sel.doneDate):'',sel.source?esc(sel.source):''].filter(Boolean).join('<i></i>')+'</div></div></div>'+
       '<div class="gfq-qbody"><div class="gfq-objs"><div class="gfq-objs-h"><span>세부 목표</span><span class="gfq-num">'+s.done+' / '+s.total+'</span></div>'+steps+'</div>'+
         (sel.detail?'<p class="gfq-qdesc">'+esc(sel.detail)+'</p>':'')+
-        '${family}<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
+        family+'<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
       '</div><footer class="gfq-qfoot">'+btn('삭제','delete-quest',`data-id="${esc(sel.id)}" class="gfq-ghost"`)+btn('고치기','quest-edit',`data-id="${esc(sel.id)}"`)+(Array.isArray(sel.steps)&&sel.steps.length?'':btn('＋1 진행','increment',`data-id="${esc(sel.id)}" ${done?'disabled':''}`))+btn(done?'완료됨':'완료 처리','complete',`data-id="${esc(sel.id)}" class="primary" ${done?'disabled':''}`)+'</footer></article>';
     return '<div class="gfq-quests">'+side+detail+'</div>';
   }
