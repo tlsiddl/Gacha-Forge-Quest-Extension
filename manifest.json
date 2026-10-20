@@ -1,10 +1,10 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.5.1",
-    "description": "가챠 포지 로어북 자동 연결·원격 접속 지원",
+    "version": "0.7.8",
+    "description": "퀘스트 자동 완료 안전장치 및 로어북 충돌 보호",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
