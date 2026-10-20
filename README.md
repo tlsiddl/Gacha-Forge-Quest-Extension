@@ -1,6 +1,6 @@
 # 가챠 포지 퀘스트 확장
 
-**Gacha Forge Quest Extension** · Marinara Engine 개인 확장 · v0.10.3
+**Gacha Forge Quest Extension** · Marinara Engine 개인 확장 · v0.10.4
 
 가챠 포지에서 진행하는 이야기를 **퀘스트, 보상, 자산, 장비, 인물, 장소, 일정**으로 정리하는 기록 보조 확장입니다. 스토리에서 확인된 사건을 AI로 분석하고, 원문 근거를 검토해 각 월드의 기록에 반영할 수 있습니다.
 
