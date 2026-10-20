@@ -1,9 +1,9 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.10.4",
+    "version": "0.10.5",
     "description": "모바일 가로 화면 메뉴 버튼 색상 대비 개선",
     "runtime": "client",
     "enabled": false,

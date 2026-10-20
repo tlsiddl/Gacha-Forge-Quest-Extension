@@ -1,4 +1,4 @@
-/* 퀘스트 v0.10.4 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.10.5 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -232,7 +232,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-pinbox.on .gfq-pin-text{background:var(--ind);border-color:var(--ind)}#gfq-01-panel .gfq-pinbox.on .gfq-pin-text b,#gfq-01-panel .gfq-pinbox.on .gfq-pin-text small{color:#fff}
 #gfq-01-panel .gfq-halo{position:absolute;left:-38px;top:50%;width:120px;height:120px;margin-top:-60px;border-radius:50%;background:radial-gradient(#3b3f7a40 1px,transparent 1.5px) 0 0/6px 6px,#4c519633;border:1.5px solid #4c5196aa;z-index:-1}
 #gfq-01-panel .gfq-board-foot{margin-top:12px;gap:10px}
-@media(max-width:760px){#gfq-01-panel{inset:0;width:100vw;height:100dvh}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel{inset:0;width:100vw;height:100dvh}
 #gfq-01-panel .gfq-frame{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
 #gfq-01-panel .gfq-side{flex-direction:row;align-items:center;padding:8px 8px 8px 12px;background:var(--ind);border:0;gap:8px}
 #gfq-01-panel .gfq-brand{padding:0;grid-template-columns:auto}#gfq-01-panel .gfq-brand h2,#gfq-01-panel .gfq-brand small{display:none}
@@ -370,7 +370,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-placeinfo h5::before{content:"";width:12px;height:12px;border:1.5px solid var(--ink);box-shadow:inset 0 0 0 2px var(--card),inset 0 0 0 6px var(--ind)}
 #gfq-01-panel .gfq-placeinfo .gfq-facts{margin:0 16px}#gfq-01-panel .gfq-pad{padding:0 16px}
 #gfq-01-panel .gfq-placeinfo .gfq-here{margin:12px 16px 0}
-@media(max-width:760px){#gfq-01-panel .gfq-ticket{grid-template-columns:1fr}#gfq-01-panel .gfq-photo{width:150px;height:190px}#gfq-01-panel .gfq-quests,#gfq-01-panel .gfq-rw,#gfq-01-panel .gfq-placecard{grid-template-columns:1fr}#gfq-01-panel .gfq-qside{position:static}#gfq-01-panel .gfq-qlist{max-height:240px}#gfq-01-panel .gfq-qhead{padding:16px}#gfq-01-panel .gfq-qcrest{width:54px;height:68px}#gfq-01-panel .gfq-qhead h3{font-size:21px}#gfq-01-panel .gfq-qbody{padding:16px}#gfq-01-panel .gfq-qfoot{padding:12px 16px}#gfq-01-panel .gfq-pinbox{width:auto!important}#gfq-01-panel .gfq-drop{max-width:none}}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel .gfq-ticket{grid-template-columns:1fr}#gfq-01-panel .gfq-photo{width:150px;height:190px}#gfq-01-panel .gfq-quests,#gfq-01-panel .gfq-rw,#gfq-01-panel .gfq-placecard{grid-template-columns:1fr}#gfq-01-panel .gfq-qside{position:static}#gfq-01-panel .gfq-qlist{max-height:240px}#gfq-01-panel .gfq-qhead{padding:16px}#gfq-01-panel .gfq-qcrest{width:54px;height:68px}#gfq-01-panel .gfq-qhead h3{font-size:21px}#gfq-01-panel .gfq-qbody{padding:16px}#gfq-01-panel .gfq-qfoot{padding:12px 16px}#gfq-01-panel .gfq-pinbox{width:auto!important}#gfq-01-panel .gfq-drop{max-width:none}}
 
 /* v0.6.2 */
 #gfq-01-panel .gfq-tk-rows dd.gfq-cash{flex-direction:column;align-items:flex-start;gap:2px}
@@ -463,7 +463,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-stamp2-in em{font-style:normal;font-size:12px;font-weight:700;color:var(--ind)}
 #gfq-01-panel .gfq-stamp2.got .gfq-stamp2-in{border:3px double var(--ind);color:var(--ind);background:radial-gradient(circle,transparent 58%,#3b3f7a12 59%);transform:rotate(var(--r));box-shadow:inset 0 0 0 5px var(--card),inset 0 0 0 6px #3b3f7a66}
 #gfq-01-panel .gfq-stamp2.got .gfq-stamp2-in small{color:var(--ind);opacity:.85}
-@media(max-width:760px){#gfq-01-panel .gfq-faces{grid-template-columns:repeat(3,minmax(0,1fr))}#gfq-01-panel .gfq-cal{padding:10px}#gfq-01-panel .gfq-cal-day{min-height:52px;padding:3px}#gfq-01-panel .gfq-cal-day i{font-size:0;height:5px;padding:0}#gfq-01-panel .gfq-cal-pad{min-height:52px}#gfq-01-panel .gfq-chbody{padding:12px 14px}#gfq-01-panel .gfq-chrow{grid-template-columns:1fr}#gfq-01-panel .gfq-stamps{grid-template-columns:repeat(3,minmax(0,1fr))}#gfq-01-panel .gfq-tabs{flex-wrap:nowrap}#gfq-01-panel .gfq-tabs button{flex:1 1 0;min-width:0}#gfq-01-panel .gfq-tab-l{font-size:11px;white-space:nowrap}#gfq-01-panel .gfq-brand{display:none}}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel .gfq-faces{grid-template-columns:repeat(3,minmax(0,1fr))}#gfq-01-panel .gfq-cal{padding:10px}#gfq-01-panel .gfq-cal-day{min-height:52px;padding:3px}#gfq-01-panel .gfq-cal-day i{font-size:0;height:5px;padding:0}#gfq-01-panel .gfq-cal-pad{min-height:52px}#gfq-01-panel .gfq-chbody{padding:12px 14px}#gfq-01-panel .gfq-chrow{grid-template-columns:1fr}#gfq-01-panel .gfq-stamps{grid-template-columns:repeat(3,minmax(0,1fr))}#gfq-01-panel .gfq-tabs{flex-wrap:nowrap}#gfq-01-panel .gfq-tabs button{flex:1 1 0;min-width:0}#gfq-01-panel .gfq-tab-l{font-size:11px;white-space:nowrap}#gfq-01-panel .gfq-brand{display:none}}
 
 /* v0.7.1 */
 #gfq-01-panel .gfq-outfits{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:0 14px}
@@ -586,9 +586,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel[data-theme=fantasy] .gfq-route polyline{stroke:#9b3b2a}
 #gfq-01-panel[data-theme=fantasy] .gfq-board::before,#gfq-01-panel[data-theme=fantasy] .gfq-board::after{border-color:#8a6f4a}
 #gfq-01-panel[data-theme=fantasy] .gfq-chno{background:#6b4f2e;font-family:var(--serif)}
-@media(max-width:760px){#gfq-01-panel[data-theme=sf] .gfq-side{background:var(--indd)}#gfq-01-panel[data-theme=school] .gfq-side{background:var(--ind)}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tab-l{background:none;border:0;clip-path:none;box-shadow:none;color:#e8eef6}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tabs button.primary .gfq-tab-l{background:none;color:#fff;box-shadow:none}#gfq-01-panel[data-theme=school] .gfq-tab-ic{border-color:#fff;background:transparent;color:#fff}#gfq-01-panel[data-theme=school] .gfq-tabs button.primary .gfq-tab-ic{background:var(--mark);transform:none}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs{padding:0;gap:3px}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button.primary,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button:hover{flex:1 1 0;min-width:0;flex-direction:column;margin:0;padding:2px 0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-ic{width:28px;height:26px;border:0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-l{padding:0 0 3px;letter-spacing:0;font-size:11px;text-align:center}#gfq-01-panel[data-theme=fantasy] .gfq-main{margin:0;border-radius:0}#gfq-01-panel[data-theme=fantasy] .gfq-side{background:#2b2119}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button,#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary{margin:0;border-radius:10px 10px 0 0;border:1px solid #a68b5f;border-bottom:0;padding:0}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary::before{display:none}#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0}#gfq-01-panel[data-theme=east] .gfq-tab-ic{border-right:0}}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel[data-theme=sf] .gfq-side{background:var(--indd)}#gfq-01-panel[data-theme=school] .gfq-side{background:var(--ind)}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tab-l{background:none;border:0;clip-path:none;box-shadow:none;color:#e8eef6}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tabs button.primary .gfq-tab-l{background:none;color:#fff;box-shadow:none}#gfq-01-panel[data-theme=school] .gfq-tab-ic{border-color:#fff;background:transparent;color:#fff}#gfq-01-panel[data-theme=school] .gfq-tabs button.primary .gfq-tab-ic{background:var(--mark);transform:none}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs{padding:0;gap:3px}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button.primary,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button:hover{flex:1 1 0;min-width:0;flex-direction:column;margin:0;padding:2px 0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-ic{width:28px;height:26px;border:0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-l{padding:0 0 3px;letter-spacing:0;font-size:11px;text-align:center}#gfq-01-panel[data-theme=fantasy] .gfq-main{margin:0;border-radius:0}#gfq-01-panel[data-theme=fantasy] .gfq-side{background:#2b2119}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button,#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary{margin:0;border-radius:10px 10px 0 0;border:1px solid #a68b5f;border-bottom:0;padding:0}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary::before{display:none}#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0}#gfq-01-panel[data-theme=east] .gfq-tab-ic{border-right:0}}
 /* v0.7.5 동양: 두루마리. 본문은 좌우 나무 축에 감긴 가로 두루마리, 큰 카드는 위아래 축이 달린 족자 */
-@media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-main{padding:0 26px 28px;background-size:10px 100%,10px 100%,6px 100%,6px 100%,auto,auto,100% 160px,auto}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -12px 14px;padding:10px 12px 19px}#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{left:-8px;right:-8px}}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel[data-theme=east] .gfq-main{padding:0 26px 28px;background-size:10px 100%,10px 100%,6px 100%,6px 100%,auto,auto,100% 160px,auto}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -12px 14px;padding:10px 12px 19px}#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{left:-8px;right:-8px}}
 /* v0.7.6 동양: 절제된 두루마리. 종이와 먹이 바탕, 금선은 가늘게, 붉은색은 낙관에만. 색조 3가지(수묵·청화백자·청자) */
 #gfq-01-panel[data-theme=east]{--paper:#efece6;--paper2:#f4f1ea;--card:#faf8f4;--card2:#fcfbf8;--hi:#fffefc;--ink:#262523;--sub:#76716a;--line:#dbd4c7;--ind:#2b2a28;--ind2:#45433f;--indd:#1b1a19;--deep:#1b1a19;--acc:#a8392c;--gold:#b39c6e;--mark:#a8392c;--onacc:#e8e3d9;--board:#f3f0ea;--hatch1:#e2ddd2;--hatch2:#ece8df;--red:#a8392c;--side:#f4f1ea;--side-fg:#2b2a28;--wood:linear-gradient(90deg,#0b0b0b,#2e2c29 35%,#4a4640 50%,#24221f 70%,#0b0b0b);--woodv:linear-gradient(180deg,#0b0b0b,#2e2c29 35%,#4a4640 50%,#24221f 70%,#0b0b0b);--mist:%23262523}
 #gfq-01-panel[data-theme=east][data-tone=porcelain]{--paper:#eef0ef;--paper2:#f5f6f5;--card:#fbfcfb;--card2:#fdfefd;--ink:#1d2330;--sub:#6b7280;--line:#d3d8df;--ind:#1f3f6e;--ind2:#2f5a94;--indd:#142b4d;--deep:#142b4d;--gold:#a7adb8;--side:#f5f6f5;--side-fg:#1f3f6e;--onacc:#dbe4f2;--board:#f3f5f6;--wood:linear-gradient(90deg,#0b1424,#203556 35%,#3b5580 50%,#1a2c49 70%,#0b1424);--woodv:linear-gradient(180deg,#0b1424,#203556 35%,#3b5580 50%,#1a2c49 70%,#0b1424)}
@@ -671,7 +671,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel[data-theme=east] .gfq-cal-day.today{box-shadow:inset 0 0 0 1px var(--ind)}
 #gfq-01-panel[data-theme=east] .gfq-cal-day i.k-chapter{background:var(--ind)}
 #gfq-01-panel[data-theme=east] .gfq-face.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--ind)}
-@media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-side{background:var(--side);border-bottom:1px solid var(--line)}#gfq-01-panel[data-theme=east] .gfq-tabs button{border-bottom:0}#gfq-01-panel[data-theme=east] .gfq-tabs button.primary::after{display:none}#gfq-01-panel[data-theme=east] .gfq-main{padding:0 22px 28px;background-size:8px 100%,8px 100%,5px 100%,5px 100%,auto,100% 160px,auto}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -10px 14px;padding:10px 10px 14px}#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{left:-6px;right:-6px}}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel[data-theme=east] .gfq-side{background:var(--side);border-bottom:1px solid var(--line)}#gfq-01-panel[data-theme=east] .gfq-tabs button{border-bottom:0}#gfq-01-panel[data-theme=east] .gfq-tabs button.primary::after{display:none}#gfq-01-panel[data-theme=east] .gfq-main{padding:0 22px 28px;background-size:8px 100%,8px 100%,5px 100%,5px 100%,auto,100% 160px,auto}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -10px 14px;padding:10px 10px 14px}#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{left:-6px;right:-6px}}
 /* v0.7.6 두루마리 장식(참고: 칠일 출석 두루마리). 수묵 색조는 먹회색·살구빛 종이·금 */
 #gfq-01-panel[data-theme=east][data-tone=ink]{--paper:#efe8e1;--paper2:#f4efe9;--card:#f8f3ed;--card2:#fbf8f4;--hi:#fffdfb;--ink:#2a2b30;--sub:#7d7570;--line:#ddd0c4;--ind:#3a3d44;--ind2:#50545d;--indd:#25272c;--deep:#25272c;--gold:#c4a26a;--acc:#b0473a;--side:#f4efe9;--side-fg:#3a3d44;--onacc:#efe3cf;--board:#f4eee8;--wood:linear-gradient(90deg,#16171a,#3a3d44 35%,#5d616b 50%,#33363c 70%,#16171a);--woodv:linear-gradient(180deg,#16171a,#3a3d44 35%,#5d616b 50%,#33363c 70%,#16171a)}
 #gfq-01-panel[data-theme=east] .gfq-main{padding:0 52px 40px;background:
@@ -710,9 +710,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel[data-theme=east] .gfq-face .gfq-face-img{margin-top:11px}
 #gfq-01-panel[data-theme=east] .gfq-seg button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--ind),inset 0 0 0 3px color-mix(in srgb,var(--gold) 60%,transparent)}
 #gfq-01-panel[data-theme=east] .gfq-rc-total{box-shadow:inset 0 0 0 3px var(--ind),inset 0 0 0 4px color-mix(in srgb,var(--gold) 60%,transparent)}
-@media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-main{padding:0 24px 28px;background-size:9px 6px,9px 6px,9px 6px,9px 6px,1px 100%,1px 100%,9px 100%,9px 100%,5px 100%,5px 100%,auto,auto,auto,auto,auto,100% 150px,auto}#gfq-01-panel[data-theme=east] .gfq-main{background-position:0 0,0 100%,100% 0,100% 100%,9px 0,calc(100% - 9px) 0,left top,right top,10px 0,calc(100% - 10px) 0}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -10px 16px;padding:10px 10px 22px}}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel[data-theme=east] .gfq-main{padding:0 24px 28px;background-size:9px 6px,9px 6px,9px 6px,9px 6px,1px 100%,1px 100%,9px 100%,9px 100%,5px 100%,5px 100%,auto,auto,auto,auto,auto,100% 150px,auto}#gfq-01-panel[data-theme=east] .gfq-main{background-position:0 0,0 100%,100% 0,100% 100%,9px 0,calc(100% - 9px) 0,left top,right top,10px 0,calc(100% - 10px) 0}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -10px 16px;padding:10px 10px 22px}}
 #gfq-01-panel[data-theme=east] :is(.gfq-link,.gfq-qplace),#gfq-01-panel[data-theme=east] :is(.gfq-link,.gfq-qplace):hover:not(:disabled){background:none;border:0}
-@media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0;gap:3px}#gfq-01-panel[data-theme=east] .gfq-tabs button{flex:1 1 0;min-width:0}#gfq-01-panel[data-theme=east] .gfq-tab-ic{width:28px;height:26px}#gfq-01-panel[data-theme=east] .gfq-tab-l{padding:0 0 3px;letter-spacing:0;font-size:11px}#gfq-01-panel[data-theme=east] .gfq-top h2{letter-spacing:.12em}}
+@media(max-width:760px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0;gap:3px}#gfq-01-panel[data-theme=east] .gfq-tabs button{flex:1 1 0;min-width:0}#gfq-01-panel[data-theme=east] .gfq-tab-ic{width:28px;height:26px}#gfq-01-panel[data-theme=east] .gfq-tab-l{padding:0 0 3px;letter-spacing:0;font-size:11px}#gfq-01-panel[data-theme=east] .gfq-top h2{letter-spacing:.12em}}
 #gfq-01-panel .gfq-aka{font-size:11px;color:var(--sub);font-weight:500;border-bottom:1px dotted var(--line);cursor:help}
 #gfq-01-panel .gfq-meter{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:8px 0 4px}
 #gfq-01-panel .gfq-meter i{display:block;height:100%;background:var(--acc)}
@@ -889,57 +889,40 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   #gfq-01-panel .gfq-qfoot {display:flex;flex-wrap:wrap;gap:6px;padding:10px;}
 }
 `;
-  // v0.10.3: landscape phones have wide viewports but very little vertical space.
+  // v0.10.5: landscape phones (Gacha Forge runs landscape only). The themed mobile tab bar above now applies here too,
+  // so each theme keeps its own look; this block only trims height and restores the two-column quest view.
   style.textContent+=`
-@media (max-height:480px) and (pointer:coarse) and (orientation:landscape) {
- #gfq-01-panel .gfq-frame{grid-template-rows:auto minmax(0,1fr)!important;}
- #gfq-01-panel .gfq-side{
-   display:flex!important;flex-direction:row!important;align-items:center!important;
-   gap:8px!important;padding:5px 10px!important;
-   min-height:0!important;max-height:76px!important;
-   overflow:hidden!important;border-right:0!important;border-bottom:1px solid var(--line)!important;
- }
- #gfq-01-panel .gfq-brand{
-   display:flex!important;align-items:center!important;gap:5px!important;
-   padding:0!important;flex:none!important;min-width:0!important;
- }
- #gfq-01-panel .gfq-brand h2,#gfq-01-panel .gfq-brand small{display:none!important;}
- #gfq-01-panel .gfq-brand-mark{width:22px!important;height:22px!important;flex:none!important;}
- #gfq-01-panel .gfq-tabs{
-   display:flex!important;flex-direction:row!important;align-items:center!important;
-   flex:1 1 auto!important;min-width:0!important;max-width:100%!important;
-   margin:0!important;padding:0!important;gap:3px!important;
-   overflow-x:auto!important;overflow-y:hidden!important;
-   -webkit-overflow-scrolling:touch;touch-action:pan-x;
- }
- #gfq-01-panel .gfq-tabs button{
-   display:flex!important;flex:0 0 auto!important;flex-direction:column!important;
-   align-items:center!important;gap:1px!important;min-width:48px!important;
-   padding:0 2px!important;color:var(--ind)!important;
- }
- #gfq-01-panel .gfq-tab-ic{
-   width:26px!important;height:26px!important;box-shadow:none!important;
-   border:0!important;background:transparent!important;
- }
- #gfq-01-panel .gfq-tab-ic svg{width:18px!important;height:18px!important;}
- #gfq-01-panel .gfq-tab-l{
-   display:block!important;flex:none!important;margin:0!important;
-   padding:0!important;border:0!important;clip-path:none!important;
-   background:transparent!important;font-size:11px!important;line-height:1.1!important;
- }
- #gfq-01-panel .gfq-tabs button{background:var(--card)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:4px!important;padding:3px 7px!important;}
- #gfq-01-panel .gfq-tabs button.primary{background:var(--ind)!important;color:#fff!important;border-color:var(--ind)!important;}
- #gfq-01-panel .gfq-tabs button .gfq-tab-ic,#gfq-01-panel .gfq-tabs button .gfq-tab-l{color:inherit!important;}
- #gfq-01-panel .gfq-tabs button.primary .gfq-tab-ic,#gfq-01-panel .gfq-tabs button.primary .gfq-tab-l{color:#fff!important;}
+@media (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
+ #gfq-01-panel .gfq-frame{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr)!important;}
+ #gfq-01-panel .gfq-side{padding:3px 8px 3px 10px!important;gap:6px!important;max-height:none!important;overflow:hidden!important;}
+ #gfq-01-panel .gfq-brand-mark{width:22px;height:22px;flex:none;}
+ #gfq-01-panel .gfq-tabs{overflow-x:auto!important;overflow-y:hidden!important;touch-action:pan-x;}
+ #gfq-01-panel .gfq-tabs button{flex:1 0 auto;min-width:56px;padding-top:1px;padding-bottom:1px;gap:1px;}
+ #gfq-01-panel .gfq-tab-ic{width:24px;height:22px;}
+ #gfq-01-panel .gfq-tab-ic svg{width:17px;height:17px;}
+ #gfq-01-panel .gfq-tab-l{font-size:11px;line-height:1.15;white-space:nowrap;}
  #gfq-01-panel .gfq-side-foot{display:none!important;}
- #gfq-01-panel .gfq-main{
-   min-height:0!important;max-height:100%!important;
-   overflow-y:auto!important;-webkit-overflow-scrolling:touch;
-   padding:0 12px max(16px,env(safe-area-inset-bottom))!important;
- }
- #gfq-01-panel .gfq-top{position:relative!important;margin:0 -12px 8px!important;padding:6px 12px!important;}
- #gfq-01-panel .gfq-top h2{font-size:20px!important;}
- #gfq-01-panel .gfq-qlist{max-height:90px!important;}
+ #gfq-01-panel .gfq-main{padding:0 14px max(16px,env(safe-area-inset-bottom))!important;padding-left:max(14px,env(safe-area-inset-left))!important;padding-right:max(14px,env(safe-area-inset-right))!important;}
+ #gfq-01-panel .gfq-top{flex-wrap:nowrap!important;gap:10px;margin:0 -14px 10px!important;padding:6px 14px!important;}
+ #gfq-01-panel .gfq-top h2{font-size:20px!important;flex:none;}
+ #gfq-01-panel .gfq-worldbar{order:0!important;flex:1 1 auto!important;flex-basis:auto!important;min-width:0;display:flex;justify-content:flex-end;}
+ #gfq-01-panel #gfq-world,#gfq-01-panel .gfq-drop{max-width:320px!important;}
+ #gfq-01-panel .gfq-close{width:34px;height:34px;margin-left:0;}
+ #gfq-01-panel .gfq-quests{grid-template-columns:minmax(200px,32%) minmax(0,1fr)!important;align-items:start!important;}
+ #gfq-01-panel .gfq-qlist{max-height:none!important;}
+ #gfq-01-panel .gfq-qhead{padding:12px 16px;}
+ #gfq-01-panel .gfq-qcrest{width:46px;height:56px;}
+ #gfq-01-panel .gfq-qhead h3{font-size:19px;}
+ #gfq-01-panel .gfq-ticket{grid-template-columns:auto minmax(0,1fr)!important;}
+ #gfq-01-panel .gfq-tk-stub{display:none;}
+ #gfq-01-panel .gfq-photo{width:130px;height:166px;}
+ #gfq-01-panel .gfq-tk-photo{justify-content:flex-start!important;align-self:start!important;padding:22px 12px 14px!important;}
+ #gfq-01-panel .gfq-photo span{font-size:64px!important;}
+ #gfq-01-panel .gfq-faces{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))!important;}
+ #gfq-01-panel .gfq-stamps{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))!important;}
+ #gfq-01-panel .gfq-placecard{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;}
+ #gfq-01-panel .gfq-cal-day{min-height:44px;}
+ #gfq-01-panel .gfq-cal-pad{min-height:44px;}
 }
 `;
   style.textContent+=`
@@ -3786,7 +3769,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
     // v0.7.7: a background re-render (new story data) must not wipe what the player is typing in the quest form.
     const f0=questEdit&&panel.querySelector('.gfq-qform'),draft=f0?{id:f0.dataset.id,v:[...f0.querySelectorAll('[data-f]')].map(e=>e.type==='checkbox'?e.checked:e.value)}:null;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.10.4</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.10.5</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
   function content(w){switch(currentTab){case 'quests':return gfqLinkAuditHtml(w)+gfqRewardInbox(w)+gfqQuestsHtml(w);
   case 'profile':return gfqChangeCompareHtml(w)+gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
