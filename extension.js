@@ -1,4 +1,4 @@
-/* 퀘스트 v0.8.3 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.9.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -3406,6 +3406,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<div class="gfq-qmeta">'+[done?'완료':'진행 중',sel.startDate?'시작 '+esc(sel.startDate):'',sel.doneDate?'완료 '+esc(sel.doneDate):'',sel.source?esc(sel.source):''].filter(Boolean).join('<i></i>')+'</div></div></div>'+
       '<div class="gfq-qbody"><div class="gfq-objs"><div class="gfq-objs-h"><span>세부 목표</span><span class="gfq-num">'+s.done+' / '+s.total+'</span></div>'+steps+'</div>'+
         (sel.detail?'<p class="gfq-qdesc">'+esc(sel.detail)+'</p>':'')+
+        '<section class="gfq-card"><h4>스토리 선택·분기 이력</h4>'+
+        '<p class="gfq-muted">플레이어가 실제로 선택한 행동만 기록합니다. 선택하지 않은 분기는 완료 처리하지 않습니다.</p>'+
+        (Array.isArray(sel.branchHistory)?sel.branchHistory.slice(-12).map(h=>'<p>'+esc(h.at)+' · '+esc(h.choice)+(h.note?' — '+esc(h.note):'')+'</p>').join(''):'')+
+        btn('선택 기록 추가','quest-branch-add','data-id="'+esc(sel.id)+'"')+'</section>'+
         family+'<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
       '</div><footer class="gfq-qfoot">'+btn('삭제','delete-quest',`data-id="${esc(sel.id)}" class="gfq-ghost"`)+btn('고치기','quest-edit',`data-id="${esc(sel.id)}"`)+(Array.isArray(sel.steps)&&sel.steps.length?'':btn('＋1 진행','increment',`data-id="${esc(sel.id)}" ${done?'disabled':''}`))+btn(done?'완료됨':'완료 처리','complete',`data-id="${esc(sel.id)}" class="primary" ${done?'disabled':''}`)+'</footer></article>';
     return '<div class="gfq-quests">'+side+detail+'</div>';
@@ -3491,6 +3495,19 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
   if(act==='quest-review-links'){const q=w.quests.find(x=>x.id===id);if(q)return gfqReviewQuestLinks(w,q);return;}
+  if(act==='quest-branch-add'){
+    const q=w.quests.find(x=>x.id===id);if(!q)return;
+    const choice=ask('스토리에서 실제로 선택한 행동을 적어 주세요.','');
+    if(!choice?.trim())return;
+    const note=ask('이 선택에 따른 목표 변경·새 의뢰 내용을 적어 주세요. (없으면 비워 주세요)','');
+    if(note===null)return;
+    return update(w=>{
+      q.branchHistory||=[];
+      q.branchHistory.push({at:now(),choice:choice.trim().slice(0,200),note:note.trim().slice(0,400)});
+      q.branchHistory=q.branchHistory.slice(-40);
+      record(w,'스토리 선택 기록: '+q.title+' · '+choice.trim().slice(0,100));
+    });
+  }
   if(act==='quest-parent'){
     const q=w.quests.find(x=>x.id===id);if(!q)return;
     const options=gfqQuestParentOptions(w,q);
