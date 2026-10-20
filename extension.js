@@ -1,4 +1,4 @@
-/* 퀘스트 v0.9.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.9.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -1494,6 +1494,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       ...(safe.category==='benefit'?{benefitUses:safe.benefitUses||1,benefitMode:safe.benefitMode||'record',benefitPermanent:safe.benefitMode==='permanent',benefitConsumed:safe.benefitMode==='record'}:{}),
       ...(Array.isArray(x.soldItems)&&x.soldItems.length&&['received','receivable','pending'].includes(safe.financialStatus)?{soldItems:x.soldItems.slice(0,5).filter(v=>v&&typeof v.name==='string'&&v.name.trim()).map(v=>({name:v.name.trim().slice(0,80),qty:Number.isSafeInteger(Number(v.qty))&&Number(v.qty)>0?Math.min(999,Number(v.qty)):1}))}:{}),
       ...(Array.isArray(x.purchasedItems)&&x.purchasedItems.length&&safe.financialStatus==='paid'?{purchasedItems:x.purchasedItems.slice(0,5).filter(v=>v&&typeof v.name==='string'&&v.name.trim()).map(v=>({name:v.name.trim().slice(0,80),qty:Number.isSafeInteger(Number(v.qty))&&Number(v.qty)>0?Math.min(999,Number(v.qty)):1,received:v.received!==false}))}:{}),
+      equipType:String(x.equipType||'').slice(0,30),equipSlot:String(x.equipSlot||'').slice(0,50),equipOptions:String(x.equipOptions||'').slice(0,500),equipEvidence:String(x.equipEvidence||'').slice(0,500),
       transactionId:String(x.transactionId||'').slice(0,100),timing:String(x.timing||'').slice(0,80),linkTo:String(x.linkTo||'').slice(0,12)};
   }
   // Returns {proposal} or {reason} so callers can report why candidates were dropped.
@@ -1508,6 +1509,14 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(p.category==='quest'){p.amount=null;p.unit='';}
     else if(typeof p.amount==='number'&&(gfqIsMoneyUnit(p.unit)||p.unit==='%')&&!gfqAmountsIn(evidence).has(p.amount)){
       p.auditNote=[p.auditNote,'AI가 제시한 금액 '+gfqAmount(p.amount,p.unit)+'이(가) 원문 근거에 없어 금액을 비웠습니다.'].filter(Boolean).join(' ');p.amount=null;
+    }
+    // Equipment stats must have a separate verbatim evidence quote; guesses are dropped.
+    if(p.category==='item'){
+      const raw=typeof x.equipEvidence==='string'&&x.equipEvidence.trim().length>=8?gfqLocateEvidence(x.equipEvidence.trim(),texts):null;
+      if(!raw||!p.equipOptions||!raw.includes(p.equipOptions.trim())){
+        p.equipOptions='';p.equipEvidence='';
+      }else p.equipEvidence=raw.slice(0,500);
+      if(!['무기','방어구','장신구','도구'].includes(p.equipType))p.equipType='';
     }
     // Rewards written inside a quest are kept only when their own evidence is found in this chapter's text.
     if(p.category==='quest'&&p.questRewards.length){
@@ -1794,6 +1803,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(today)contextText=('[세계관 날짜] '+today.date+' ('+today.basis+(today.source?' · '+today.source:'')+')')+(contextText?'\n'+contextText:'');
     const input=(records||gfqStoryRecords(w)).map(x=>'['+x.source+']\n'+x.text).join('\n\n');
     return [
+      '아이템 장비 옵션은 원문에 명시된 경우에만 equipType(무기|방어구|장신구|도구), equipSlot(장착 부위), equipOptions(원문에 그대로 적힌 옵션 내용), equipEvidence(원문 연속 인용)를 JSON 사건 필드에 추가합니다. 추측 옵션이나 실제 착용 여부는 만들지 마세요.',
       '한국어 RPG 세계의 사건과 금전 출납부를 분석합니다. 입력에 없는 사실과 금액은 절대 추정하지 않습니다. 줄거리 출처에 \'게임 기록: 클리어\'가 있으면 그 챕터의 임무가 게임에서 마무리됐다는 참고 정보입니다.',
       '반환 JSON: {"timeline":{"currentDate":"분석 대상 마지막 장면 시점의 세계관 날짜 YYYY-MM-DD, 원문에 날짜가 적혀 있을 때만","dateEvidence":"그 날짜가 적힌 원문 인용","daysPassed":"[세계관 날짜] 이후 마지막 장면까지 지난 날 수(원문에 다음 날·이틀 뒤처럼 적힌 경우만) 또는 null","daysEvidence":"날이 바뀐 원문 인용"},"events":[{"category":"quest|asset|item|credential|contract|benefit","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|conditional|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원문의 화폐 단위 그대로(원·골드·냥·전·금화·크레딧 등)|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","linkTo":"이전 맥락 목록의 ID(t1, i2 등) 또는 빈 문자열","benefitUses":"혜택일 때 사용 가능 횟수(명시 없으면 1) 또는 null","benefitPermanent":false,"benefitConsumed":false,"purchasedItems":[{"name":"구매한 물품","qty":1,"received":true}],"soldItems":[{"name":"판매한 물품","qty":1}],"timing":"지급·수령·완료 시점을 나타내는 원문 표현 그대로(예: 내일 이 시간, 임무 완료 시, 금일 오후 6시) 또는 빈 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
       '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다. 화폐는 세계관마다 다릅니다(원, 골드, 냥, 전, 푼, 금화, 은화, 크레딧 등). unit에는 원문 단위를 그대로 적고, "닷 냥", "은화 서른 닢"처럼 글자로 쓴 수도 amount에 숫자로 넣습니다. 철수·실패처럼 어떤 조건이 생길 때만 보장되는 최소 금액(예: 중도 철수 시 기본급 50% 보장)은 conditional로 분류하며, 다른 보수에 더해지는 돈이 아닙니다.',
@@ -2722,6 +2732,16 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
   }
   // v0.3.8: items promised for later are kept as '수령 예정' and become owned when a linked receipt is approved.
+  function gfqApplyEquipmentCandidate(w,x,item){
+    if(!item||!x.equipOptions||!x.equipEvidence)return;
+    const kind=['무기','방어구','장신구','도구'].includes(x.equipType)?x.equipType:'';
+    if(!kind)return;
+    item.equipType=item.equipType||kind;
+    if(!item.equipSlot&&x.equipSlot)item.equipSlot=x.equipSlot;
+    // Explicitly confirmed story evidence only; never equip or alter game statistics automatically.
+    if(!item.equipOptions)item.equipOptions=x.equipOptions;
+    item.equipEvidence=x.equipEvidence;
+  }
   function gfqApplyItem(w,x){
     const chain=String(x.chainKey||'').trim();
     let waiting=chain?(w.items||[]).find(i=>i.state==='pending'&&(i.chainKey===chain||i.id===chain)):null;
@@ -2733,6 +2753,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const receiving=x.financialStatus!=='pending'&&['confirmed','completed'].includes(x.status);
     if(waiting&&receiving){
       delete waiting.state;waiting.receivedAt=now();if(qtyOk)waiting.qty=x.amount;
+      gfqApplyEquipmentCandidate(w,x,waiting);
       record(w,'물품 수령 확인: '+waiting.name+' · '+x.evidence);return true;
     }
     if(!receiving){
@@ -2740,11 +2761,13 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       const value=typeof x.value==='number'?x.value:(gfqIsMoneyUnit(x.unit)&&typeof x.amount==='number'?x.amount:null);
       w.items.push({id:uid(),name:String(x.name||'').slice(0,100),qty:qtyOk?x.amount:1,state:'pending',chainKey:chain||x.id,timing:gfqTiming(x),
         ...(value!==null?{value,valueUnit:x.valueUnit||(gfqIsMoneyUnit(x.unit)?gfqUnit(x.unit):'')}:{})});
+      gfqApplyEquipmentCandidate(w,x,w.items[w.items.length-1]);
       record(w,'수령 예정 물품 등록: '+x.name+(gfqTiming(x)?' · '+gfqTimingText(gfqTiming(x)):''));return true;
     }
     // Never add an owned item from a mention without a confirmed quantity.
     if(x.status!=='confirmed'||!qtyOk)return false;
     const item=w.items.find(i=>i.name===x.name&&i.state!=='pending'&&i.kind!=='voucher');if(item)item.qty+=x.amount;else w.items.push({id:uid(),name:x.name,qty:x.amount});
+    gfqApplyEquipmentCandidate(w,x,item||w.items[w.items.length-1]);
     return true;
   }
   // v0.3.11: benefits. One-off discounts become vouchers in the inventory; lasting ones are an asset field.
