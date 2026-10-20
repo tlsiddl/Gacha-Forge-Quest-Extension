@@ -1,4 +1,4 @@
-/* 퀘스트 v0.7.9 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.8.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -3276,6 +3276,16 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   const gfqQuestDone=q=>!!q.claimed;
   function gfqQuestSteps(q){const n=Array.isArray(q.steps)?q.steps.length:0;return n?{done:q.steps.filter((_,i)=>q.stepDone?.[i]===true).length,total:n}:{done:Math.min(q.progress||0,q.target||1),total:q.target||1};}
   function gfqQuestPlace(w,q){const text=q.title+' '+(q.detail||'')+' '+[].concat(q.sourceEvidence||[]).join(' ');return gfqPlaceList(w).filter(p=>text.includes(p.name)).sort((a,b)=>b.name.length-a.name.length)[0]||null;}
+  function gfqQuestParentOptions(w,q){
+    const blocked=new Set([q.id]),stack=[q.id];
+    while(stack.length){const id=stack.pop();for(const child of (w.quests||[]).filter(x=>x.parentQuestId===id)){if(!blocked.has(child.id)){blocked.add(child.id);stack.push(child.id);}}}
+    return (w.quests||[]).filter(x=>!blocked.has(x.id));
+  }
+  function gfqQuestSuggestions(w,q){
+    const words=t=>new Set(String(t||'').toLowerCase().match(/[\p{L}\p{N}]{2,}/gu)||[]);
+    const base=words(q.title+' '+String(q.detail||'').slice(0,100));
+    return gfqQuestParentOptions(w,q).map(p=>({p,n:[...words(p.title+' '+String(p.detail||'').slice(0,100))].filter(t=>base.has(t)).length})).filter(x=>x.n>=2).sort((a,b)=>b.n-a.n).slice(0,4);
+  }
   function gfqQuestsHtml(w){
     const groups={'진행 중':q=>!gfqQuestDone(q),'완료':gfqQuestDone,'전체':()=>true};
     if(!groups[questFilter])questFilter='진행 중';
@@ -3287,6 +3297,17 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       btn('＋ 퀘스트 직접 추가','add-quest','class="gfq-qadd"')+'</div>';
     if(!sel)return '<div class="gfq-quests">'+side+'<div class="gfq-qdetail empty"><strong>표시할 퀘스트가 없습니다</strong><span class="gfq-sub">AI 분석이 스토리에서 의뢰를 찾으면 여기에 나타납니다.</span></div></div>';
     const s=gfqQuestSteps(sel),place=gfqQuestPlace(w,sel),done=gfqQuestDone(sel);
+    const parent=(w.quests||[]).find(q=>q.id===sel.parentQuestId);
+    const children=(w.quests||[]).filter(q=>q.parentQuestId===sel.id);
+    const suggestions=parent?[]:gfqQuestSuggestions(w,sel);
+    const family='<section class="gfq-card"><b>퀘스트 연결</b>'+
+      (parent?'<p>상위: <button class="gfq-link" data-action="open-quest" data-id="'+esc(parent.id)+'">'+esc(parent.title)+'</button></p>':'<p class="gfq-muted">독립 퀘스트입니다.</p>')+
+      (children.length?'<p>하위 퀘스트: '+children.map(q=>'<button class="gfq-link" data-action="open-quest" data-id="'+esc(q.id)+'">'+esc(q.title)+'</button>').join(' · ')+'</p>':'')+
+      (suggestions.length?'<p class="gfq-muted">연결 후보(확인 필요): '+suggestions.map(x=>'<button class="gfq-link" data-action="quest-parent" data-id="'+esc(sel.id)+'" data-parent="'+esc(x.p.id)+'">'+esc(x.p.title)+'</button>').join(' · ')+'</p>':'')+
+      btn('상위 퀘스트 지정','quest-parent','data-id="'+esc(sel.id)+'"')+
+      (parent?btn('연결 해제','quest-unlink','data-id="'+esc(sel.id)+'"'):'')+
+      '<p class="gfq-muted">동일 월드 안에서만 연결합니다. 완료·보상은 각각 독립적으로 유지됩니다.</p></section>';
+
     const steps=Array.isArray(sel.steps)&&sel.steps.length?sel.steps.map((t,i)=>{const on=sel.stepDone?.[i]===true;return '<button class="gfq-obj'+(on?' on':'')+'" data-action="toggle-step" data-id="'+esc(sel.id)+'" data-step="'+i+'" aria-pressed="'+on+'"><span class="gfq-obj-mark" aria-hidden="true"></span><span class="gfq-obj-t">'+esc(t)+'</span><span class="gfq-num">'+(on?1:0)+' / 1</span></button>';}).join(''):
       '<div class="gfq-obj"><span class="gfq-obj-mark" aria-hidden="true"></span><span class="gfq-obj-t">목표 진행</span><span class="gfq-num">'+esc(sel.progress)+' / '+esc(sel.target)+'</span></div>';
     const rewards=gfqMergeMoneyRewards((sel.rewardDetails||[]).map((r,i)=>({...r,_i:i}))).map(r=>({r,i:r._i}));
@@ -3304,7 +3325,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<div class="gfq-qmeta">'+[done?'완료':'진행 중',sel.startDate?'시작 '+esc(sel.startDate):'',sel.doneDate?'완료 '+esc(sel.doneDate):'',sel.source?esc(sel.source):''].filter(Boolean).join('<i></i>')+'</div></div></div>'+
       '<div class="gfq-qbody"><div class="gfq-objs"><div class="gfq-objs-h"><span>세부 목표</span><span class="gfq-num">'+s.done+' / '+s.total+'</span></div>'+steps+'</div>'+
         (sel.detail?'<p class="gfq-qdesc">'+esc(sel.detail)+'</p>':'')+
-        '<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
+        '${family}<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
       '</div><footer class="gfq-qfoot">'+btn('삭제','delete-quest',`data-id="${esc(sel.id)}" class="gfq-ghost"`)+btn('고치기','quest-edit',`data-id="${esc(sel.id)}"`)+(Array.isArray(sel.steps)&&sel.steps.length?'':btn('＋1 진행','increment',`data-id="${esc(sel.id)}" ${done?'disabled':''}`))+btn(done?'완료됨':'완료 처리','complete',`data-id="${esc(sel.id)}" class="primary" ${done?'disabled':''}`)+'</footer></article>';
     return '<div class="gfq-quests">'+side+detail+'</div>';
   }
@@ -3388,6 +3409,25 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   document.addEventListener('click',e=>{if(panel&&!e.target.closest?.('.gfq-drop'))panel.querySelectorAll('.gfq-drop[open]').forEach(d=>d.open=false);});
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
+  if(act==='quest-parent'){
+    const q=w.quests.find(x=>x.id===id);if(!q)return;
+    const options=gfqQuestParentOptions(w,q);
+    if(!options.length)return alert('연결할 수 있는 퀘스트가 없습니다.');
+    let parent=options.find(x=>x.id===String(e.target.closest('[data-parent]')?.dataset.parent||''));
+    if(!parent){
+      const input=ask('상위 퀘스트 번호를 선택해 주세요.\n'+options.map((x,i)=>(i+1)+'. '+x.title).join('\n'),'');
+      if(input===null)return;
+      const n=Number(input);if(!Number.isSafeInteger(n)||n<1||n>options.length)return alert('번호를 확인해 주세요.');
+      parent=options[n-1];
+    }
+    if(!confirm(q.title+'을(를) '+parent.title+'의 하위 퀘스트로 연결하시겠습니까?'))return;
+    return update(w=>{q.parentQuestId=parent.id;record(w,'퀘스트 연결: '+q.title+' → '+parent.title);});
+  }
+  if(act==='quest-unlink'){
+    const q=w.quests.find(x=>x.id===id);if(!q?.parentQuestId)return;
+    if(!confirm('상위 퀘스트 연결을 해제하시겠습니까?'))return;
+    return update(w=>{delete q.parentQuestId;record(w,'퀘스트 연결 해제: '+q.title);});
+  }
   if(act==='select-quest'){selectedQuest=id;questEdit='';return render();}
   if(act==='quest-edit'){questEdit=id;return render();}
   if(act==='quest-edit-cancel'){questEdit='';return render();}
