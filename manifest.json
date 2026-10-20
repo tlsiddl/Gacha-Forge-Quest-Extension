@@ -1,9 +1,9 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.10.0",
+    "version": "0.10.1",
     "description": "장비 강화 비교·연결 검증·자산 이력·기한 확인·장비 도감·AI 분기 검토",
     "runtime": "client",
     "enabled": false,
