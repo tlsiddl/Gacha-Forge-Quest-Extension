@@ -1,4 +1,4 @@
-/* 퀘스트 v0.7.3 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.7.4 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -444,12 +444,6 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-outfits button[aria-pressed=true]{border:2px solid var(--mark);background:var(--ind);color:#fff;box-shadow:0 0 0 1px var(--ind)}
 
 /* v0.7.2 themes: each world can pick a look. Only colours, fonts and paper texture change. */
-#gfq-01-panel[data-theme=fantasy]{--paper:#e3d3ae;--paper2:#d9c497;--card:#f3e7c9;--card2:#f8efd8;--hi:#fffaee;--ink:#2a1c10;--sub:#6c5839;--line:#b49b6c;--ind:#6a1e2b;--ind2:#8a2b3a;--indd:#3d0e16;--mark:#c9a227;--onacc:#e8cfa8;--board:#efe2c2;--hatch1:#d3bf93;--hatch2:#e2d2ad}
-#gfq-01-panel[data-theme=fantasy] .gfq-main{background:radial-gradient(ellipse at 50% 40%,transparent 55%,#7a5a2a2e),radial-gradient(circle at 15% 20%,#ffffff55,transparent 40%),var(--paper)}
-#gfq-01-panel[data-theme=fantasy] .gfq-side{background:linear-gradient(158deg,var(--ind) 0 40%,transparent 40.2%),repeating-radial-gradient(circle at 34% 88%,transparent 0 34px,#c9a2272a 35px 36px,transparent 37px 60px),var(--paper2)}
-#gfq-01-panel[data-theme=fantasy] .gfq-top{border-bottom-color:#c9a227}
-#gfq-01-panel[data-theme=fantasy] .gfq-tab-ic,#gfq-01-panel[data-theme=fantasy] .gfq-ticket,#gfq-01-panel[data-theme=fantasy] .gfq-qcrest{border-color:#8a6a2a}
-#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in{color:#8a2b3a;border-color:#8a2b3a;background:radial-gradient(circle,#8a2b3a14 55%,#8a2b3a2a 56%)}
 #gfq-01-panel[data-theme=sf]{--paper:#e1e6ea;--paper2:#d4dbe1;--card:#f3f6f8;--card2:#f9fbfc;--hi:#ffffff;--ink:#121820;--sub:#566270;--line:#a7b3be;--ind:#0f6a80;--ind2:#1488a4;--indd:#09303b;--mark:#16c6db;--onacc:#bfe6ee;--board:#eaf0f3;--hatch1:#c7d0d7;--hatch2:#d9e0e5;--serif:"Bahnschrift","DIN Alternate","Roboto Condensed","Pretendard","Noto Sans KR",sans-serif}
 #gfq-01-panel[data-theme=sf] .gfq-main{background:linear-gradient(#0f6a8012 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,#0f6a8012 1px,transparent 1px) 0 0/16px 16px,var(--paper)}
 #gfq-01-panel[data-theme=sf] .gfq-side{background:linear-gradient(158deg,var(--indd) 0 40%,transparent 40.2%),repeating-linear-gradient(135deg,transparent 0 10px,#0f6a800c 10px 11px),var(--paper2)}
@@ -471,57 +465,6 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-rc-other{display:flex;flex-direction:column;gap:2px;margin:-4px 0 10px;padding:8px 12px;border:1px dashed var(--line);font-size:12px}#gfq-01-panel .gfq-rc-other b{font-size:11px;color:var(--sub)}
 
 /* v0.7.3 theme shapes. 동양: 청록·한지·단청·낙관 / 판타지: 양피지·진홍·금 장식·밀랍 / SF: 각진 HUD / 학원: 둥근 노트·마스킹 테이프 */
-#gfq-01-panel[data-theme=east]{--paper:#e9e2d2;--paper2:#ddd4c0;--card:#f6f1e4;--card2:#fbf8ee;--hi:#fffdf6;--ink:#1c1a17;--sub:#655d51;--line:#bcae95;--ind:#1d6a64;--ind2:#28877f;--indd:#0f3d39;--mark:#c0392b;--onacc:#cfe3df;--board:#efe8d8;--hatch1:#d6ccb7;--hatch2:#e4dccb;--red:#b0301f}
-#gfq-01-panel[data-theme=east] .gfq-main{background:radial-gradient(ellipse at 20% 0,#ffffff90,transparent 60%),repeating-linear-gradient(90deg,transparent 0 33px,#1d6a640d 33px 34px),var(--paper)}
-#gfq-01-panel[data-theme=east] .gfq-side{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='70' viewBox='0 0 120 70'%3E%3Cpath d='M10 50c0-9 9-14 17-11 2-9 14-12 20-5 6-6 18-2 18 7 8-1 13 8 7 13H14c-3 0-4-2-4-4z' fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='1.4'/%3E%3Cpath d='M70 22c0-6 6-9 11-7 2-6 10-7 13-2 5-3 11 1 10 6 5 0 7 6 3 8H73c-2 0-3-2-3-5z' fill='none' stroke='%23ffffff' stroke-opacity='.12' stroke-width='1.2'/%3E%3C/svg%3E") 0 0/120px 70px,linear-gradient(180deg,var(--indd),var(--ind) 60%,#2b7a72);border-right:0;box-shadow:inset -8px 0 0 #c0392b,inset -12px 0 0 #e6b54a,inset -16px 0 0 #2f8f5b,inset -18px 0 0 #1c1a17}
-#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0 26px 0 16px}
-#gfq-01-panel[data-theme=east] .gfq-tabs button{gap:8px}
-#gfq-01-panel[data-theme=east] .gfq-tab-ic{border-radius:50%;border:1.5px solid #e6b54a;background:var(--card);color:var(--ind);box-shadow:none}
-#gfq-01-panel[data-theme=east] .gfq-tab-l{margin:0;clip-path:none;border-radius:4px;border:1px solid #e6b54a;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px #1d6a6455;text-decoration:none;text-align:center;padding:9px 12px;color:var(--indd)}
-#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-ic{background:#c0392b;color:#fff;border-color:#fff;transform:none}
-#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-l{background:var(--card);color:#c0392b;border-color:#c0392b;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px #c0392b}
-#gfq-01-panel[data-theme=east] .gfq-side-foot{border-radius:4px;border-color:#e6b54a;background:var(--card)}
-#gfq-01-panel[data-theme=east] .gfq-top{border-bottom:3px solid var(--ind);box-shadow:0 4px 0 -1px #c0392b}
-#gfq-01-panel[data-theme=east] .gfq-top h2::after{content:"";display:inline-block;width:22px;height:22px;margin-left:12px;vertical-align:middle;background:#c0392b;border-radius:3px;transform:rotate(-4deg);box-shadow:inset 0 0 0 2px #c0392b,inset 0 0 0 3px #f6f1e4,inset 0 0 0 6px #c0392b}
-#gfq-01-panel[data-theme=east] :is(.gfq-card,.gfq-qdetail,.gfq-dossier,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-qitem,.gfq-slot,.gfq-face,.gfq-rw-tile,.gfq-rw-row){border-radius:6px}
-#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-placecard,.gfq-cal){box-shadow:inset 0 0 0 4px var(--card),inset 0 0 0 5px #1d6a6440,4px 4px 0 #0000001a}
-#gfq-01-panel[data-theme=east] .gfq-card::before{background:repeating-linear-gradient(180deg,#1d6a64 0 10px,#c0392b 10px 14px,#e6b54a 14px 17px,#2f8f5b 17px 20px)}
-#gfq-01-panel[data-theme=east] .gfq-qhead{background:var(--ind);border-bottom:6px solid transparent;border-image:repeating-linear-gradient(90deg,#c0392b 0 14px,#e6b54a 14px 20px,#2f8f5b 20px 28px,#1c1a17 28px 30px) 6}
-#gfq-01-panel[data-theme=east] .gfq-qhead::after{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cpath d='M30 150c0-20 20-30 38-24 4-20 32-26 44-11 13-13 40-4 39 15 18-2 28 18 15 28H38c-5 0-8-4-8-8z' fill='none' stroke='%23ffffff' stroke-opacity='.18' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat}
-#gfq-01-panel[data-theme=east] .gfq-qcrest{clip-path:none;border-radius:50%;width:80px;height:80px;box-shadow:inset 0 0 0 4px var(--card),inset 0 0 0 6px #c0392b}
-#gfq-01-panel[data-theme=east] .gfq-qcrest span{color:#c0392b}
-#gfq-01-panel[data-theme=east] :is(button,select,input){border-radius:4px}
-#gfq-01-panel[data-theme=east] button.primary{box-shadow:inset 0 0 0 2px var(--ind),inset 0 0 0 3px #e6b54a}
-#gfq-01-panel[data-theme=east] .gfq-stamp2-in{border-radius:6px}
-#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in{border:3px solid #c0392b;color:#c0392b;background:#c0392b14;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px #c0392b}
-#gfq-01-panel[data-theme=east] .gfq-stamp{border-radius:3px;color:#c0392b;border-color:#c0392b;background:#c0392b0d}
-#gfq-01-panel[data-theme=east] .gfq-receipt{border-radius:0;border-left:0;border-right:0;border-top:10px solid #3b2a1d;border-bottom:10px solid #3b2a1d;box-shadow:0 -3px 0 #6b4e35 inset,0 3px 0 #6b4e35,4px 6px 0 #0000001a}
-#gfq-01-panel[data-theme=east] .gfq-receipt::after{display:none}
-#gfq-01-panel[data-theme=east] .gfq-rc-total{background:var(--indd)}
-#gfq-01-panel[data-theme=east] .gfq-board{background:radial-gradient(circle at 62% 46%,#1d6a6414,transparent 40%),repeating-linear-gradient(0deg,transparent 0 39px,#1d6a641a 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,#1d6a641a 39px 40px),var(--board)}
-#gfq-01-panel[data-theme=fantasy] .gfq-side{background:linear-gradient(180deg,#4b1520,var(--ind) 45%,#5a1a26);border-right:3px double #c9a227}
-#gfq-01-panel[data-theme=fantasy] .gfq-tab-ic{background:var(--card);border:1.5px solid #c9a227;transform:rotate(45deg) scale(.82);box-shadow:none}
-#gfq-01-panel[data-theme=fantasy] .gfq-tab-ic svg{transform:rotate(-45deg)}
-#gfq-01-panel[data-theme=fantasy] .gfq-tab-l{margin-left:-2px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 50%,100% 100%,0 100%);border:0;border-top:1px solid #c9a227;border-bottom:1px solid #c9a227;text-decoration:none;font-family:var(--serif);letter-spacing:.08em;background:linear-gradient(180deg,#f8efd8,#e9d9b2)}
-#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary .gfq-tab-ic{transform:rotate(45deg) scale(.9);background:#c9a227;color:var(--indd);border-color:#fff3c4}
-#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary .gfq-tab-l{background:linear-gradient(180deg,#d9b445,#b68f1f);color:#3d0e16;border-color:#fff3c4}
-#gfq-01-panel[data-theme=fantasy] .gfq-top{border-bottom:4px double #c9a227}
-#gfq-01-panel[data-theme=fantasy] .gfq-top h2::before{content:"❦ ";color:#c9a227;font-size:.8em}
-#gfq-01-panel[data-theme=fantasy] :is(.gfq-qdetail,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-dossier){border:3px double #b08a2e;position:relative}
-#gfq-01-panel[data-theme=fantasy] :is(.gfq-qdetail,.gfq-placecard,.gfq-cal,.gfq-stamps)::after{content:"❧";position:absolute;right:8px;bottom:2px;color:#b08a2e;font-size:22px;line-height:1;pointer-events:none}
-#gfq-01-panel[data-theme=fantasy] .gfq-card{border:1px solid #b08a2e}
-#gfq-01-panel[data-theme=fantasy] .gfq-card::before{background:linear-gradient(180deg,#c9a227,var(--ind) 30%,var(--ind) 70%,#c9a227)}
-#gfq-01-panel[data-theme=fantasy] h3::before{content:"✦ ";color:#c9a227}
-#gfq-01-panel[data-theme=fantasy] .gfq-qhead{background:radial-gradient(ellipse at 0 0,#8a2b3a,transparent 60%),var(--ind);border-bottom:3px double #c9a227}
-#gfq-01-panel[data-theme=fantasy] .gfq-qcrest{background:linear-gradient(180deg,#f3e2a6,#c9a227);color:var(--indd)}
-#gfq-01-panel[data-theme=fantasy] button.primary{background:linear-gradient(180deg,#8a2b3a,var(--ind));border-color:#c9a227;box-shadow:inset 0 0 0 1px #ffe39a55}
-#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in{border:0;color:#fff3c4;background:radial-gradient(circle at 35% 30%,#a8334a,#6a1e2b 70%);box-shadow:0 0 0 4px #6a1e2b55,inset 0 0 0 5px #8a2b3a,inset 0 0 0 6px #e8c46e88;transform:rotate(var(--r))}
-#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in small{color:#f3e2a6}
-#gfq-01-panel[data-theme=fantasy] .gfq-stamp{border-color:var(--ind);color:var(--ind)}
-#gfq-01-panel[data-theme=fantasy] .gfq-receipt{border:3px double #b08a2e;background:linear-gradient(180deg,#f8efd8,#efe1bf)}
-#gfq-01-panel[data-theme=fantasy] .gfq-receipt h3::before{content:"";}
-#gfq-01-panel[data-theme=fantasy] .gfq-rc-total{background:var(--indd);color:#f3e2a6;border:1px solid #c9a227}
-#gfq-01-panel[data-theme=fantasy] .gfq-board{background:radial-gradient(ellipse at 50% 50%,transparent 50%,#7a5a2a26),repeating-radial-gradient(circle at 62% 46%,transparent 0 58px,#6a1e2b1f 59px 60px,transparent 61px 118px),var(--board)}
 #gfq-01-panel[data-theme=sf]::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0f6a8008 0 1px,transparent 1px 3px)}
 #gfq-01-panel[data-theme=sf] .gfq-tab-ic{clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border:0;background:var(--ind);color:#fff;box-shadow:none}
 #gfq-01-panel[data-theme=sf] .gfq-tab-l{clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);margin-left:-4px;padding-left:20px;border:0;border-bottom:2px solid var(--ind);text-decoration:none;font-family:var(--cond);letter-spacing:.1em}
@@ -569,6 +512,124 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel[data-theme=school] .gfq-receipt::after{display:none}
 #gfq-01-panel[data-theme=school] .gfq-rc-total{border-radius:10px}
 #gfq-01-panel[data-theme=school] .gfq-chno{border-radius:14px 0 0 14px}
+/* v0.7.4 동양: 수묵 산수 · 옥빛 · 주홍 · 황토 금테 */
+#gfq-01-panel[data-theme=east]{--paper:#ebe7df;--paper2:#2f3d3b;--card:#f7f5f0;--card2:#fbfaf6;--hi:#fffefb;--ink:#26302e;--sub:#6b726e;--line:#cbc3b1;--ind:#3d5a55;--ind2:#4f736c;--indd:#24363a;--mark:#d9572e;--onacc:#d8e2de;--board:#efece5;--hatch1:#ddd8cc;--hatch2:#e9e5dc;--red:#c8472a;--gold:#c4a06a}
+#gfq-01-panel[data-theme=east] .gfq-main{background:radial-gradient(circle at 86% 120px,#fffefb 0 78px,#fffefb00 79px),radial-gradient(circle at 86% 120px,transparent 0 86px,#c4a06a44 87px 88px,transparent 89px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%233d5a55' stop-opacity='.26'/%3E%3Cstop offset='1' stop-color='%233d5a55' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 240V150c50-8 80-80 135-74s60 52 105 40 70-96 130-84 70 70 118 62 84-46 132-34 76 40 180 44V240z' fill='url(%23a)'/%3E%3Cpath d='M0 240v-52c60 0 100-36 160-30s84 30 146 24 110-50 186-38 120 36 308 30V240z' fill='%233d5a55' fill-opacity='.10'/%3E%3C/svg%3E") left bottom/100% 220px no-repeat,var(--paper)}
+#gfq-01-panel[data-theme=east] .gfq-side{background:linear-gradient(180deg,#24363a,#2f3d3b 55%,#3d5a55);border-right:1px solid #c4a06a;box-shadow:inset -4px 0 0 #24363a,inset -5px 0 0 #c4a06a66}
+#gfq-01-panel[data-theme=east] .gfq-brand-mark{border-color:#c4a06a;box-shadow:inset 0 0 0 4px #2f3d3b,inset 0 0 0 7px #d9572e}
+#gfq-01-panel[data-theme=east] .gfq-brand small{color:#c4a06a}
+#gfq-01-panel[data-theme=east] .gfq-tabs{gap:10px;padding:0 18px}
+#gfq-01-panel[data-theme=east] .gfq-tabs button{gap:0;border:1px solid #c4a06a88;background:#2f3d3b}
+#gfq-01-panel[data-theme=east] .gfq-tab-ic{width:42px;height:42px;background:transparent;border:0;border-right:1px solid #c4a06a66;color:#d8e2de;box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-tab-l{margin:0;clip-path:none;background:transparent;border:0;color:#e9e5dc;text-decoration:none;padding:9px 14px;letter-spacing:.2em;font-family:var(--serif)}
+#gfq-01-panel[data-theme=east] .gfq-tabs button:hover .gfq-tab-l{background:#ffffff10}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary{background:#d9572e;border-color:#f0b48f}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-ic{background:transparent;color:#fff;transform:none;border-right-color:#f0b48f88;box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-l{background:transparent;color:#fff;box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-side-foot{background:#f7f5f0;border:1px solid #c4a06a;box-shadow:none;border-radius:0}
+#gfq-01-panel[data-theme=east] .gfq-top{background:#ebe7dfe8;border-bottom:1px solid #c4a06a;box-shadow:0 3px 0 -2px #3d5a55}
+#gfq-01-panel[data-theme=east] .gfq-top h2{color:var(--ink);border-left:4px solid #d9572e;padding-left:12px;letter-spacing:.24em}
+#gfq-01-panel[data-theme=east] :is(.gfq-card,.gfq-qdetail,.gfq-dossier,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-receipt){border:1px solid #c4a06a;box-shadow:3px 3px 0 #3d5a5514;background-image:linear-gradient(#c4a06a,#c4a06a),linear-gradient(#c4a06a,#c4a06a),linear-gradient(#c4a06a,#c4a06a),linear-gradient(#c4a06a,#c4a06a);background-size:14px 2px,2px 14px,14px 2px,2px 14px;background-position:4px 4px,4px 4px,calc(100% - 4px) calc(100% - 4px),calc(100% - 4px) calc(100% - 4px);background-repeat:no-repeat;background-color:var(--card)}
+#gfq-01-panel[data-theme=east] .gfq-card::before{width:3px;background:#3d5a55}
+#gfq-01-panel[data-theme=east] h3{color:var(--ink);letter-spacing:.12em}
+#gfq-01-panel[data-theme=east] .gfq-sec h3::before,#gfq-01-panel[data-theme=east] .gfq-items-head h3::before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;background:#d9572e;transform:rotate(45deg) translateY(-2px)}
+#gfq-01-panel[data-theme=east] button{border-radius:2px;border-color:#c4a06a}
+#gfq-01-panel[data-theme=east] button.primary{background:#d9572e;border-color:#d9572e;color:#fff}
+#gfq-01-panel[data-theme=east] button.primary:hover:not(:disabled){background:#e86a40;border-color:#e86a40}
+#gfq-01-panel[data-theme=east] .gfq-drop summary{border-color:#c4a06a;box-shadow:none}#gfq-01-panel[data-theme=east] .gfq-drop-k{background:#3d5a55}
+#gfq-01-panel[data-theme=east] .gfq-seg{border-color:#c4a06a}#gfq-01-panel[data-theme=east] .gfq-seg button[aria-pressed=true]{background:#3d5a55}
+#gfq-01-panel[data-theme=east] .gfq-qitem{border-color:#c4a06a88}
+#gfq-01-panel[data-theme=east] .gfq-qitem.on{background:#3d5a55;border-color:#3d5a55;box-shadow:inset 4px 0 #d9572e}
+#gfq-01-panel[data-theme=east] .gfq-qhead{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120' preserveAspectRatio='none'%3E%3Cpath d='M0 120V80c40-6 60-46 100-40s40 30 80 22 50-60 100-50 50 46 90 40 70-26 110-18 70 22 120 26V120z' fill='%23ffffff' fill-opacity='.10'/%3E%3C/svg%3E") left bottom/100% 70% no-repeat,linear-gradient(100deg,#2f4440,#4f736c);border-bottom:2px solid #c4a06a}
+#gfq-01-panel[data-theme=east] .gfq-qhead::after{background:radial-gradient(circle,#fffefb22 0 60px,transparent 61px);right:20px;top:-40px;width:180px;height:180px}
+#gfq-01-panel[data-theme=east] .gfq-qhead h3{color:#fff;text-shadow:0 1px 6px #0004}
+#gfq-01-panel[data-theme=east] .gfq-qcrest{clip-path:none;border-radius:50%;width:84px;height:84px;background:#f7f5f0;box-shadow:inset 0 0 0 3px #f7f5f0,inset 0 0 0 4px #c4a06a}
+#gfq-01-panel[data-theme=east] .gfq-qcrest span{color:#d9572e;letter-spacing:.1em}
+#gfq-01-panel[data-theme=east] .gfq-ticket{border-radius:0}
+#gfq-01-panel[data-theme=east] .gfq-tk-stub{background:#2f3d3b}
+#gfq-01-panel[data-theme=east] .gfq-photo{border:1px solid #c4a06a;padding:8px;transform:none}
+#gfq-01-panel[data-theme=east] .gfq-photo::after{content:"";top:auto;bottom:-14px;left:auto;right:-14px;width:38px;height:38px;margin:0;background:#d9572e;border-radius:3px;transform:rotate(-6deg);box-shadow:inset 0 0 0 3px #d9572e,inset 0 0 0 4px #f7c9b3}
+#gfq-01-panel[data-theme=east] .gfq-stamp{border-color:#d9572e;color:#c8472a;border-radius:2px;background:#d9572e0d}
+#gfq-01-panel[data-theme=east] .gfq-stamp2-in{border-radius:4px;border:1px dashed #c4a06a}
+#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in{border:0;border-radius:6px;background:#c8472a;color:#fff6ec;box-shadow:inset 0 0 0 4px #c8472a,inset 0 0 0 5px #f7c9b399;transform:rotate(var(--r))}
+#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in small{color:#fde3d6}
+#gfq-01-panel[data-theme=east] .gfq-receipt{border-left:0;border-right:0;border-top:12px solid #3b2a1d;border-bottom:12px solid #3b2a1d;background:var(--card2);box-shadow:0 0 0 1px #c4a06a inset,4px 6px 0 #0000001a}
+#gfq-01-panel[data-theme=east] .gfq-receipt::after{display:none}
+#gfq-01-panel[data-theme=east] .gfq-rc-total{background:#2f3d3b}
+#gfq-01-panel[data-theme=east] .gfq-slot{border-color:#c4a06a88}
+#gfq-01-panel[data-theme=east] .gfq-slot.on{background:#3d5a55;border-color:#d9572e}
+#gfq-01-panel[data-theme=east] .gfq-board{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cpath d='M0 240V160c60-10 90-70 150-62s70 48 120 38 80-90 150-78 80 64 130 56 90-40 200 0V240z' fill='%233d5a55' fill-opacity='.10'/%3E%3C/svg%3E") left bottom/100% 40% no-repeat,var(--board);border-color:#c4a06a}
+#gfq-01-panel[data-theme=east] .gfq-board::before,#gfq-01-panel[data-theme=east] .gfq-board::after{border-color:#d9572e}
+#gfq-01-panel[data-theme=east] .gfq-route polyline{stroke:#d9572e}
+/* v0.7.4 판타지: 가죽 책상 위 낡은 수첩 · 세피아 · 황동 */
+#gfq-01-panel[data-theme=fantasy]{--paper:#efe5cd;--paper2:#2b2119;--card:#f7efdc;--card2:#fbf6e9;--hi:#fffaef;--ink:#3a2b1b;--sub:#7b6547;--line:#c7b28b;--ind:#6b4f2e;--ind2:#8a6a3f;--indd:#3a2a18;--mark:#c9a24a;--onacc:#efe0c0;--board:#efe4c9;--hatch1:#ddcfb0;--hatch2:#e9dec5;--red:#9b3b2a;--serif:"Cormorant Garamond","Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;background:#2b2119}
+#gfq-01-panel[data-theme=fantasy] .gfq-frame{background:radial-gradient(ellipse at 30% 20%,#4a3828,#2b2119 70%)}
+#gfq-01-panel[data-theme=fantasy] .gfq-side{background:transparent;border-right:0;padding-right:0}
+#gfq-01-panel[data-theme=fantasy] .gfq-brand{color:#e9d6a8}#gfq-01-panel[data-theme=fantasy] .gfq-brand small{color:#b49766}
+#gfq-01-panel[data-theme=fantasy] .gfq-brand-mark{border-color:#c9a24a;box-shadow:inset 0 0 0 4px #2b2119,inset 0 0 0 7px #c9a24a}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs{padding:0;gap:8px}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button{position:relative;margin-left:22px;background:linear-gradient(90deg,#e6d8b8,#efe5cd);border:1px solid #a68b5f;border-right:0;border-radius:18px 0 0 18px;box-shadow:-3px 3px 0 #0000004d;padding:0 0 0 8px;transition:margin .15s}
+#gfq-01-panel[data-theme=fantasy] .gfq-tab-ic{width:30px;height:38px;background:transparent;border:0;box-shadow:none;color:#6b4f2e}
+#gfq-01-panel[data-theme=fantasy] .gfq-tab-l{margin:0;clip-path:none;background:transparent;border:0;color:#3a2b1b;text-decoration:none;padding:8px 14px 8px 4px;font-family:var(--serif);font-weight:700;letter-spacing:.06em}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button:hover{margin-left:14px}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary{margin-left:6px;background:#fbf6e9;border-color:#c9a24a;box-shadow:-4px 4px 0 #00000059}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary:hover:not(:disabled){background:#fbf6e9;border-color:#c9a24a}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary .gfq-tab-ic{background:transparent;color:#9b3b2a;transform:none;box-shadow:none}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary .gfq-tab-l{background:transparent;color:#3a2b1b;box-shadow:none}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary::before{content:"";position:absolute;left:-4px;top:50%;width:9px;height:9px;margin-top:-5px;border-radius:50%;background:#9b3b2a;box-shadow:0 0 0 2px #fbf6e9}
+#gfq-01-panel[data-theme=fantasy] .gfq-side-foot{background:#efe5cd;border:1px solid #a68b5f;box-shadow:-3px 3px 0 #0000004d;margin-left:22px;margin-right:0;border-radius:10px 0 0 10px}
+#gfq-01-panel[data-theme=fantasy] .gfq-main{margin:16px 18px 16px 0;border-radius:6px;background:linear-gradient(90deg,#00000014,transparent 22px),repeating-linear-gradient(0deg,transparent 0 31px,#6b4f2e12 31px 32px),radial-gradient(ellipse at 50% 30%,#fbf6e9,#efe5cd 60%,#e2d3ae);box-shadow:0 0 0 1px #8a6f4a,5px 5px 0 #d9caa7,5px 5px 0 1px #8a6f4a,10px 10px 0 #cbb88f,10px 10px 0 1px #7a613f,0 24px 50px #000a}
+#gfq-01-panel[data-theme=fantasy] .gfq-top{background:#f3ead4f0;border-bottom:3px double #8a6f4a;margin-top:0}
+#gfq-01-panel[data-theme=fantasy] .gfq-top h2{color:#3a2b1b;font-family:var(--serif);letter-spacing:.12em}
+#gfq-01-panel[data-theme=fantasy] h3{color:#3a2b1b;font-family:var(--serif);letter-spacing:.06em}
+#gfq-01-panel[data-theme=fantasy] :is(.gfq-card,.gfq-qdetail,.gfq-dossier,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-qitem,.gfq-rw-row,.gfq-rw-tile,.gfq-face){border:1px solid #a68b5f;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px #c7b28b,2px 3px 0 #00000014;background-color:var(--card)}
+#gfq-01-panel[data-theme=fantasy] .gfq-card::before{width:4px;background:#8a6a3f}
+#gfq-01-panel[data-theme=fantasy] button{border-color:#8a6f4a;background:#f7efdc;color:#3a2b1b;border-radius:3px}
+#gfq-01-panel[data-theme=fantasy] button.primary{background:linear-gradient(180deg,#d8b65e,#b38a35);border-color:#7a5c22;color:#2b1d0e;box-shadow:inset 0 1px 0 #fff3c4}
+#gfq-01-panel[data-theme=fantasy] button.primary:hover:not(:disabled){background:linear-gradient(180deg,#e4c470,#c09640);border-color:#7a5c22}
+#gfq-01-panel[data-theme=fantasy] .gfq-drop summary{border-color:#8a6f4a;box-shadow:none}#gfq-01-panel[data-theme=fantasy] .gfq-drop-k{background:#6b4f2e}
+#gfq-01-panel[data-theme=fantasy] .gfq-seg{border-color:#8a6f4a;background:#f7efdc}#gfq-01-panel[data-theme=fantasy] .gfq-seg button[aria-pressed=true]{background:#6b4f2e;color:#fbf6e9}
+#gfq-01-panel[data-theme=fantasy] .gfq-qitem{gap:14px}
+#gfq-01-panel[data-theme=fantasy] .gfq-qemb{border-radius:50%;width:42px;height:42px;font-family:var(--serif);color:#6b4f2e}
+#gfq-01-panel[data-theme=fantasy] .gfq-qemb::before{transform:none;border-radius:50%;inset:2px;border:1px solid #8a6f4a;box-shadow:inset 0 0 0 3px #f7efdc,inset 0 0 0 4px #c7b28b}
+#gfq-01-panel[data-theme=fantasy] .gfq-qitem.on{background:#fbf6e9;color:#3a2b1b;border-color:#c9a24a;box-shadow:inset 4px 0 #9b3b2a,inset 0 0 0 3px #fbf6e9,inset 0 0 0 4px #c9a24a,3px 4px 0 #0000001f}
+#gfq-01-panel[data-theme=fantasy] .gfq-qitem.on .gfq-qemb{color:#9b3b2a;border-color:#9b3b2a}
+#gfq-01-panel[data-theme=fantasy] .gfq-pips{position:relative;gap:10px;padding:2px 0}
+#gfq-01-panel[data-theme=fantasy] .gfq-pips::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#a68b5f}
+#gfq-01-panel[data-theme=fantasy] .gfq-pips i{position:relative;width:8px;height:8px;border-radius:50%;background:#efe5cd;border:1px solid #8a6f4a}
+#gfq-01-panel[data-theme=fantasy] .gfq-pips i.on,#gfq-01-panel[data-theme=fantasy] .gfq-qitem.on .gfq-pips i.on{background:#c9a24a;border-color:#7a5c22}
+#gfq-01-panel[data-theme=fantasy] .gfq-qitem.on .gfq-pips i{background:#efe5cd}
+#gfq-01-panel[data-theme=fantasy] .gfq-qhead{background:linear-gradient(180deg,#fbf6e9,#efe4c8);color:var(--ink);border-bottom:3px double #8a6f4a}
+#gfq-01-panel[data-theme=fantasy] .gfq-qhead::after{background:radial-gradient(circle,transparent 0 40px,#8a6f4a22 41px 42px,transparent 43px 58px,#8a6f4a22 59px 60px,transparent 61px)}
+#gfq-01-panel[data-theme=fantasy] .gfq-qhead h3{color:#3a2b1b;font-family:var(--serif);font-size:28px}
+#gfq-01-panel[data-theme=fantasy] .gfq-qplace{color:#6b4f2e}#gfq-01-panel[data-theme=fantasy] .gfq-qplace:hover:not(:disabled){color:#9b3b2a}
+#gfq-01-panel[data-theme=fantasy] .gfq-qmeta{color:#7b6547}#gfq-01-panel[data-theme=fantasy] .gfq-qmeta i{background:#a68b5f}
+#gfq-01-panel[data-theme=fantasy] .gfq-qcrest{clip-path:none;border-radius:50%;width:84px;height:84px;background:radial-gradient(circle,#fbf6e9 0 30px,#efe0c0 31px);color:#6b4f2e;box-shadow:inset 0 0 0 2px #8a6f4a,inset 0 0 0 6px #efe0c0,inset 0 0 0 7px #8a6f4a,2px 3px 0 #00000026}
+#gfq-01-panel[data-theme=fantasy] .gfq-qcrest span{font-family:var(--serif)}
+#gfq-01-panel[data-theme=fantasy] .gfq-obj-mark{border-color:#8a6f4a;transform:none;border-radius:50%}#gfq-01-panel[data-theme=fantasy] .gfq-obj.on .gfq-obj-mark{background:#9b3b2a;border-color:#9b3b2a}
+#gfq-01-panel[data-theme=fantasy] .gfq-obj .gfq-num{font-family:var(--serif);font-size:18px}
+#gfq-01-panel[data-theme=fantasy] .gfq-rw-row{border-left:1px solid #a68b5f}
+#gfq-01-panel[data-theme=fantasy] .gfq-chip{border:1px solid currentColor;background:transparent}
+#gfq-01-panel[data-theme=fantasy] .gfq-chip.t-ok{background:#e8d9a8;color:#5b4310;border-color:#a68b5f}
+#gfq-01-panel[data-theme=fantasy] .gfq-ticket{border:1px solid #8a6f4a;background:var(--card);box-shadow:inset 0 0 0 4px var(--card),inset 0 0 0 5px #c7b28b,5px 6px 0 #00000026}
+#gfq-01-panel[data-theme=fantasy] .gfq-tk-stub{background:#6b4f2e}
+#gfq-01-panel[data-theme=fantasy] .gfq-photo{transform:rotate(-2deg);background:#fbf6e9;box-shadow:0 3px 10px #0004;filter:sepia(.25)}
+#gfq-01-panel[data-theme=fantasy] .gfq-photo::after{top:-14px;left:auto;right:22px;width:14px;height:44px;margin:0;background:transparent;border:2px solid #9aa0a6;border-radius:8px;transform:rotate(8deg);box-shadow:inset 0 0 0 3px transparent}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp{border-color:#9b3b2a;color:#9b3b2a;background:transparent}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp2-in{border-radius:0;border:7px solid transparent;background:linear-gradient(#f7efdc,#f7efdc) padding-box,radial-gradient(circle,transparent 3px,#f7efdc 3.6px) -5px -5px/10px 10px border-box;box-shadow:inset 0 0 0 3px #f7efdc,inset 0 0 0 4px #c7b28b;filter:drop-shadow(1px 2px 0 #0000001f)}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in{background:linear-gradient(#ead9ad,#ead9ad) padding-box,radial-gradient(circle,transparent 3px,#ead9ad 3.6px) -5px -5px/10px 10px border-box;color:#3a2b1b;box-shadow:inset 0 0 0 3px #ead9ad,inset 0 0 0 4px #8a6f4a;transform:rotate(var(--r))}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in small{color:#6b4f2e}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamps{background:#efe5cd}
+#gfq-01-panel[data-theme=fantasy] .gfq-receipt{border:1px solid #8a6f4a;background:repeating-linear-gradient(0deg,transparent 0 27px,#6b4f2e14 27px 28px),#fbf6e9}
+#gfq-01-panel[data-theme=fantasy] .gfq-receipt::after{display:none}
+#gfq-01-panel[data-theme=fantasy] .gfq-rc-total{background:#3a2a18;color:#efe0c0}
+#gfq-01-panel[data-theme=fantasy] .gfq-slot{background:#f7efdc;border-color:#a68b5f}
+#gfq-01-panel[data-theme=fantasy] .gfq-slot.on{background:#6b4f2e;border-color:#c9a24a}
+#gfq-01-panel[data-theme=fantasy] .gfq-board{background:radial-gradient(ellipse at 50% 50%,transparent 45%,#6b4f2e33),repeating-linear-gradient(0deg,transparent 0 47px,#6b4f2e1a 47px 48px),repeating-linear-gradient(90deg,transparent 0 47px,#6b4f2e1a 47px 48px),#efe4c9;border-color:#8a6f4a}
+#gfq-01-panel[data-theme=fantasy] .gfq-route polyline{stroke:#9b3b2a}
+#gfq-01-panel[data-theme=fantasy] .gfq-board::before,#gfq-01-panel[data-theme=fantasy] .gfq-board::after{border-color:#8a6f4a}
+#gfq-01-panel[data-theme=fantasy] .gfq-chno{background:#6b4f2e;font-family:var(--serif)}
+@media(max-width:760px){#gfq-01-panel[data-theme=sf] .gfq-side{background:var(--indd)}#gfq-01-panel[data-theme=school] .gfq-side{background:var(--ind)}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tab-l{background:none;border:0;clip-path:none;box-shadow:none;color:#e8eef6}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tabs button.primary .gfq-tab-l{background:none;color:#fff;box-shadow:none}#gfq-01-panel[data-theme=school] .gfq-tab-ic{border-color:#fff;background:transparent;color:#fff}#gfq-01-panel[data-theme=school] .gfq-tabs button.primary .gfq-tab-ic{background:var(--mark);transform:none}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs{padding:0;gap:3px}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button.primary,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button:hover{flex:1 1 0;min-width:0;flex-direction:column;margin:0;padding:2px 0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-ic{width:28px;height:26px;border:0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-l{padding:0 0 3px;letter-spacing:0;font-size:11px;text-align:center}#gfq-01-panel[data-theme=fantasy] .gfq-main{margin:0;border-radius:0}#gfq-01-panel[data-theme=fantasy] .gfq-side{background:#2b2119}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button,#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary{margin:0;border-radius:10px 10px 0 0;border:1px solid #a68b5f;border-bottom:0;padding:0}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary::before{display:none}#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0}#gfq-01-panel[data-theme=east] .gfq-tab-ic{border-right:0}}
 `;
   style.textContent+=`
 #${ID}-toasts,#${ID}-qtoasts{position:fixed;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:stretch;gap:10px;z-index:2147483002;pointer-events:none;--paper:#f1efea;--ink:#202229;--sub:#67655f;--k:#3b3f7a;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;--sans:"Pretendard","Noto Sans KR",system-ui,sans-serif}
@@ -595,8 +656,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button{font:700 13px var(--sans);padding:8px 18px;border-radius:0;border:1.5px solid var(--ink);background:var(--k);color:#fff;cursor:pointer}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button[data-o=later]{background:transparent;color:var(--ink)}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button:focus-visible{outline:3px solid #f0c02f;outline-offset:2px}
-:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east]{--paper:#f6f1e5;--ink:#1d1a17}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] :is(.gfq-toast-quest,.gfq-toast-step){--k:#1d6a64}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-toast{border-radius:6px;overflow:hidden}
-:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy]{--paper:#f3e7c9;--ink:#2a1c10}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] .gfq-toast{border:3px double #b08a2e}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] :is(.gfq-toast-quest,.gfq-toast-step){--k:#6a1e2b}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east]{--paper:#f7f5f0;--ink:#26302e}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] :is(.gfq-toast-quest,.gfq-toast-step){--k:#3d5a55}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-toast{border:1px solid #c4a06a}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-offer-row button[data-o=yes]{background:#d9572e;border-color:#d9572e}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy]{--paper:#fbf6e9;--ink:#3a2b1b}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] .gfq-toast{border:1px solid #8a6f4a;box-shadow:inset 0 0 0 3px #fbf6e9,inset 0 0 0 4px #c7b28b,0 14px 34px #0009}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] :is(.gfq-toast-quest,.gfq-toast-step){--k:#6b4f2e}
 :is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] .gfq-toast{clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf]{--paper:#f3f6f8;--ink:#121820;--serif:"Bahnschrift","DIN Alternate","Roboto Condensed","Pretendard","Noto Sans KR",sans-serif}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] :is(.gfq-toast-quest,.gfq-toast-step){--k:#0f6a80}
 :is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school]{--paper:#fbfbfe;--ink:#23263a}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] :is(.gfq-toast-quest,.gfq-toast-step){--k:#3d63b0}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] .gfq-toast{border-radius:10px;overflow:hidden}
 @keyframes gfq-toast-in{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
@@ -3138,8 +3199,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // v0.7.2: looks per world. Only colours, fonts and paper texture change; the layout stays the same.
   const GFQ_THEMES=[
     ['modern','현대','사건 파일 · 남색과 회색 종이',['#d7d4cd','#3b3f7a','#f0c02f']],
-    ['east','동양','한지 · 청록 · 단청 · 낙관',['#e9e2d2','#1d6a64','#c0392b']],
-    ['fantasy','판타지','양피지 · 진홍 · 금장식 · 밀랍',['#e3d3ae','#6a1e2b','#c9a227']],
+    ['east','동양','수묵 산수 · 옥빛 · 주홍 · 황토 금테',['#ebe7df','#3d5a55','#d9572e']],
+    ['fantasy','판타지','가죽 책상 · 낡은 수첩 · 세피아 · 황동',['#efe5cd','#6b4f2e','#c9a24a']],
     ['sf','SF','관제 화면 · 육각 · 각진 카드',['#e1e6ea','#0f6a80','#16c6db']],
     ['school','학원·일상','줄 노트 · 테이프 · 스티커',['#ecedf3','#3d63b0','#ff8fab']]
   ];
@@ -3151,7 +3212,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }
   function render(){if(!panel)return;let w=current();if(currentTab==='assets'||currentTab==='items')currentTab='profile';const tabs=[['quests','퀘스트'],['profile','프로필'],['cast','인물'],['places','장소'],['calendar','일정'],['history','기록'],['settings','설정']];if(!tabs.some(t=>t[0]===currentTab))currentTab='quests';const label=tabs.find(t=>t[0]===currentTab)[1];const today=w?gfqCurrentDate(w):null;const empty='<div class="gfq-empty"><strong>월드를 먼저 골라 주세요</strong><span class="gfq-sub">게임에서 월드를 열면 자동으로 연결됩니다.</span></div>';
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.3</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);for(const b of [toastBox,questBox])if(b)b.dataset.theme=gfqTheme(w);if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.4</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);for(const b of [toastBox,questBox])if(b)b.dataset.theme=gfqTheme(w);if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
   function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
