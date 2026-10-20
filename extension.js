@@ -1,4 +1,4 @@
-/* 퀘스트 v0.8.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.8.3 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -3313,8 +3313,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         accepted.push({parentId:options[idx].id,type:item.type,reason:reason.slice(0,180),quote:quote.slice(0,220)});
       }
       if(current()!==w||!w.quests.includes(q))return;
-      w.gfQuestLinkReviews||={};w.gfQuestLinkReviews[q.id]=accepted;save();render();
-      alert(accepted.length?accepted.length+'개의 근거가 있는 연결 후보를 찾았습니다. 연결 전 내용을 확인해 주세요.':'확실한 상위 퀘스트 관계를 찾지 못했습니다. 연결은 자동으로 진행되지 않습니다.');
+      w.gfQuestLinkReviews||={};w.gfQuestLinkReviews[q.id]=accepted;w.gfQuestLinkChecked||={};w.gfQuestLinkChecked[q.id]={at:now(),count:accepted.length};save();render();
     }catch(err){alert('퀘스트 연결 검토에 실패했습니다: '+String(err?.message||err));}
   }
   function gfqQuestsHtml(w){
@@ -3331,10 +3330,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const parent=(w.quests||[]).find(q=>q.id===sel.parentQuestId);
     const children=(w.quests||[]).filter(q=>q.parentQuestId===sel.id);
     const suggestions=parent?[]:gfqQuestSuggestions(w,sel);
+    const check=w.gfQuestLinkChecked?.[sel.id];
     const family='<section class="gfq-card"><b>퀘스트 연결</b>'+
       (parent?'<p>상위: <button class="gfq-link" data-action="open-quest" data-id="'+esc(parent.id)+'">'+esc(parent.title)+'</button></p>':'<p class="gfq-muted">독립 퀘스트입니다.</p>')+
       (children.length?'<p>하위 퀘스트: '+children.map(q=>'<button class="gfq-link" data-action="open-quest" data-id="'+esc(q.id)+'">'+esc(q.title)+'</button>').join(' · ')+'</p>':'')+
-      (suggestions.length?'<p class="gfq-muted">연결 후보(확인 필요): '+suggestions.map(x=>'<div><button class="gfq-link" data-action="quest-parent" data-id="'+esc(sel.id)+'" data-parent="'+esc(x.p.id)+'">'+esc(x.p.title)+'</button> · '+esc(x.type)+'<p class="gfq-muted">근거: '+esc(x.quote)+' · 판단: '+esc(x.reason)+'</p></div>').join('')+'</p>':'')+
+      (check&&!suggestions.length?'<p class="gfq-muted">AI 검토 결과: 확실한 상위 퀘스트 관계가 확인되지 않았습니다. 현재 독립 퀘스트로 유지합니다.</p>':'')+
+      (suggestions.length?'<div class="gfq-muted">연결 후보(검토 후 선택): '+suggestions.map(x=>'<div><button class="gfq-link" data-action="quest-parent" data-id="'+esc(sel.id)+'" data-parent="'+esc(x.p.id)+'">'+esc(x.p.title)+'</button> · '+esc(x.type)+'<p class="gfq-muted">근거: '+esc(x.quote)+' · 판단: '+esc(x.reason)+'</p></div>').join('')+'</div>':'')+
       btn('AI로 연결 검토','quest-review-links','data-id="'+esc(sel.id)+'"')+btn('상위 퀘스트 직접 지정','quest-parent','data-id="'+esc(sel.id)+'"')+
       (parent?btn('연결 해제','quest-unlink','data-id="'+esc(sel.id)+'"'):'')+
       '<p class="gfq-muted">동일 월드 안에서만 연결합니다. 완료·보상은 각각 독립적으로 유지됩니다.</p></section>';
@@ -3423,7 +3424,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
     // v0.7.7: a background re-render (new story data) must not wipe what the player is typing in the quest form.
     const f0=questEdit&&panel.querySelector('.gfq-qform'),draft=f0?{id:f0.dataset.id,v:[...f0.querySelectorAll('[data-f]')].map(e=>e.type==='checkbox'?e.checked:e.value)}:null;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.7</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.8.3</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
   function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
