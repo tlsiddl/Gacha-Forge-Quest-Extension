@@ -12,7 +12,33 @@
   let data;
   try { data=JSON.parse(localStorage.getItem(STORE)||'null') || initial(); } catch {data=initial();}
   if(!data || data.v!==1 || !data.worlds || typeof data.worlds!=='object') data=initial();
-  const save=()=>{try{try{gfqAchCheck(data.worlds?.[data.world]);}catch{}const json=JSON.stringify(data);localStorage.setItem(STORE,json);gfqStorageWarn(json.length);gfqInjectSchedule();return true;}catch(e){alert('저장하지 못했습니다: '+e.message);return false;}};
+  // Keep only two bounded local snapshots, stored outside the main save to avoid recursive growth.
+  const GFQ_AUTO_BACKUP_KEY='gf-quest-snapshots-v1';
+  function gfqAutoSnapshot(){
+    try{
+      const prior=localStorage.getItem(STORE);
+      if(!prior||prior.length>850000)return;
+      const list=JSON.parse(localStorage.getItem(GFQ_AUTO_BACKUP_KEY)||'[]');
+      if(!Array.isArray(list))return;
+      if(list.length&&Date.now()-list[0].at<20*60*1000)return;
+      localStorage.setItem(GFQ_AUTO_BACKUP_KEY,JSON.stringify([{at:Date.now(),json:prior},...list].slice(0,2)));
+    }catch(e){/* Quota-limited storage: never block the user's primary save. */}
+  }
+  function gfqRestoreSnapshots(){
+    let list=[];
+    try{list=JSON.parse(localStorage.getItem(GFQ_AUTO_BACKUP_KEY)||'[]');}catch{}
+    if(!Array.isArray(list)||!list.length)return alert('복원할 자동 백업이 없습니다. 저장 공간이 부족하거나 데이터가 큰 경우 자동 보관이 제한됩니다.');
+    const picked=prompt('복원할 백업 번호를 입력해 주세요.\n'+list.map((v,i)=>(i+1)+'. '+new Date(v.at).toLocaleString('ko-KR')).join('\n'),'1');
+    if(picked===null)return;
+    const n=Number(picked);if(!Number.isSafeInteger(n)||n<1||n>list.length)return alert('백업 번호를 확인해 주세요.');
+    let restored;try{restored=JSON.parse(list[n-1].json);}catch{return alert('백업 데이터가 올바르지 않습니다.');}
+    if(restored?.v!==1||!restored.worlds||typeof restored.worlds!=='object')return alert('지원하지 않는 백업 형식입니다.');
+    if(!confirm('선택한 시점의 전체 월드 기록으로 복원하시겠습니까? 현재 기록은 바뀌므로 먼저 JSON 내보내기를 권합니다.'))return;
+    const previous=data;data=restored;
+    if(!save()){data=previous;return;}
+    render();alert('저장 기록을 복원했습니다. 로어북 반영 상태는 다시 확인해 주세요.');
+  }
+  const save=()=>{try{gfqAutoSnapshot();try{gfqAchCheck(data.worlds?.[data.world]);}catch{}const json=JSON.stringify(data);localStorage.setItem(STORE,json);gfqStorageWarn(json.length);gfqInjectSchedule();return true;}catch(e){alert('저장하지 못했습니다: '+e.message);return false;}};
   const now=()=>new Date().toLocaleString('ko-KR');
   const current=()=>{if(!data.world || !data.worlds[data.world]) return null;return data.worlds[data.world];};
   let root, panel, currentTab='quests', activeFilter='전체';
@@ -3454,7 +3480,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   case 'cast':return gfqCastHtml(w);
   case 'calendar':return gfqCalendarHtml(w);
   case 'history':return `${gfqChapterCards(w)}${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
-  case 'settings':return `${gfqThemeHtml(w)}${gfqCurrencyHtml(w)}${gfqStorageHtml(w)}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
+  case 'settings':return `${gfqThemeHtml(w)}${gfqCurrencyHtml(w)}${gfqStorageHtml(w)}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')+btn('자동 복원 지점','restore-auto')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
   const ask=(message,def='')=>prompt(message,def);
   const update=fn=>{const w=current();if(!w)return;fn(w);save();render();};
   const record=(w,text)=>{w.history.unshift({at:now(),text});w.history=w.history.slice(0,500);};
@@ -3543,6 +3569,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       record(w,'장비 '+(it.equipped?'착용':'해제')+': '+it.name);
     });
   }
+  if(act==='restore-auto')return gfqRestoreSnapshots();
   if(act==='item-filter'){itemFilter=id;selectedItem='';return render();}
   if(act==='select-item'){selectedItem=id;return render();}
   if(act==='select-place'){const same=currentTab==='places';selectedPlace=id;currentTab='places';render();if(same){const c=panel.querySelector('.gfq-placecard');if(c&&c.scrollIntoView)c.scrollIntoView({block:'nearest'});}return;}
