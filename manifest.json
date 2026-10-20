@@ -1,9 +1,9 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.7.8",
+    "version": "0.7.9",
     "description": "퀘스트 자동 완료 안전장치 및 로어북 충돌 보호",
     "runtime": "client",
     "enabled": false,
