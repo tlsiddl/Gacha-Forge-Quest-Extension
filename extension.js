@@ -1,4 +1,4 @@
-/* 퀘스트 v0.8.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.8.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -3281,10 +3281,41 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     while(stack.length){const id=stack.pop();for(const child of (w.quests||[]).filter(x=>x.parentQuestId===id)){if(!blocked.has(child.id)){blocked.add(child.id);stack.push(child.id);}}}
     return (w.quests||[]).filter(x=>!blocked.has(x.id));
   }
+  // A quest relationship must be reviewed against the actual quest records, not shared location words.
+  function gfqQuestLinkEvidence(q){
+    return [q.title,q.detail,...[].concat(q.sourceEvidence||[])].filter(v=>typeof v==='string').join('\n').slice(0,2400);
+  }
   function gfqQuestSuggestions(w,q){
-    const words=t=>new Set(String(t||'').toLowerCase().match(/[\p{L}\p{N}]{2,}/gu)||[]);
-    const base=words(q.title+' '+String(q.detail||'').slice(0,100));
-    return gfqQuestParentOptions(w,q).map(p=>({p,n:[...words(p.title+' '+String(p.detail||'').slice(0,100))].filter(t=>base.has(t)).length})).filter(x=>x.n>=2).sort((a,b)=>b.n-a.n).slice(0,4);
+    const allowed=new Set(gfqQuestParentOptions(w,q).map(x=>x.id));
+    return (w.gfQuestLinkReviews?.[q.id]||[]).filter(x=>allowed.has(x.parentId)&&x.quote&&x.reason)
+      .map(x=>({p:w.quests.find(v=>v.id===x.parentId),type:x.type,reason:x.reason,quote:x.quote})).filter(x=>x.p);
+  }
+  async function gfqReviewQuestLinks(w,q){
+    const connectionId=String(data.aiConnectionId||'').trim();
+    if(!connectionId)return alert('설정에서 AI 연결을 먼저 선택해 주세요.');
+    if(gfqBusy)return alert('AI 분석이 진행 중입니다. 완료 후 다시 시도해 주세요.');
+    const options=gfqQuestParentOptions(w,q).slice(-35);
+    if(!options.length)return alert('현재 월드에 연결할 다른 퀘스트가 없습니다.');
+    const source=gfqQuestLinkEvidence(q),rows=options.map((p,i)=>({id:'p'+(i+1),title:p.title,record:gfqQuestLinkEvidence(p)}));
+    const instruction='두 퀘스트가 실제 같은 의뢰의 상위·하위 임무인지 판정합니다. 지역, 장소, 등장인물, 장르, 게이트 같은 단어가 같다는 이유로 연결하지 마세요. 의뢰·목적·지시 관계가 명시된 경우에만 제안하세요. 다른 의뢰면 빈 배열을 반환하세요. 모든 연결은 사용자가 승인합니다. JSON만 출력: {"links":[{"parentId":"p1","type":"하위 목표|동일 의뢰|후속 임무","reason":"두 임무의 실제 인과관계","quote":"입력 기록에 그대로 등장하는 짧은 근거 문자열"}]}. quote는 입력 record의 연속 문자열을 그대로 복사하세요.';
+    try{
+      const host=typeof marinara==='object'&&marinara?marinara:globalThis.marinara||{};
+      const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),90000);let raw;
+      try{raw=await gfqGenerate(host,connectionId,'gfq-link-'+Date.now(),'You verify quest links conservatively. Return JSON only.',instruction+'\n[선택 퀘스트]\n'+JSON.stringify({title:q.title,record:source})+'\n[상위 퀘스트 후보]\n'+JSON.stringify(rows),1100,ctrl.signal);}finally{clearTimeout(timer);}
+      const parsed=gfqParseEvents(raw,'links');
+      if(!parsed||parsed.partial)throw Error('AI 응답을 정상적인 JSON으로 해석하지 못했습니다.');
+      const accepted=[];
+      for(const item of parsed.events.slice(0,8)){
+        const idx=rows.findIndex(v=>v.id===item.parentId);
+        if(idx<0||!['하위 목표','동일 의뢰','후속 임무'].includes(item.type))continue;
+        const quote=String(item.quote||'').trim(),reason=String(item.reason||'').trim();
+        if(quote.length<8||reason.length<8||!rows[idx].record.includes(quote)&&!source.includes(quote))continue;
+        accepted.push({parentId:options[idx].id,type:item.type,reason:reason.slice(0,180),quote:quote.slice(0,220)});
+      }
+      if(current()!==w||!w.quests.includes(q))return;
+      w.gfQuestLinkReviews||={};w.gfQuestLinkReviews[q.id]=accepted;save();render();
+      alert(accepted.length?accepted.length+'개의 근거가 있는 연결 후보를 찾았습니다. 연결 전 내용을 확인해 주세요.':'확실한 상위 퀘스트 관계를 찾지 못했습니다. 연결은 자동으로 진행되지 않습니다.');
+    }catch(err){alert('퀘스트 연결 검토에 실패했습니다: '+String(err?.message||err));}
   }
   function gfqQuestsHtml(w){
     const groups={'진행 중':q=>!gfqQuestDone(q),'완료':gfqQuestDone,'전체':()=>true};
@@ -3303,8 +3334,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const family='<section class="gfq-card"><b>퀘스트 연결</b>'+
       (parent?'<p>상위: <button class="gfq-link" data-action="open-quest" data-id="'+esc(parent.id)+'">'+esc(parent.title)+'</button></p>':'<p class="gfq-muted">독립 퀘스트입니다.</p>')+
       (children.length?'<p>하위 퀘스트: '+children.map(q=>'<button class="gfq-link" data-action="open-quest" data-id="'+esc(q.id)+'">'+esc(q.title)+'</button>').join(' · ')+'</p>':'')+
-      (suggestions.length?'<p class="gfq-muted">연결 후보(확인 필요): '+suggestions.map(x=>'<button class="gfq-link" data-action="quest-parent" data-id="'+esc(sel.id)+'" data-parent="'+esc(x.p.id)+'">'+esc(x.p.title)+'</button>').join(' · ')+'</p>':'')+
-      btn('상위 퀘스트 지정','quest-parent','data-id="'+esc(sel.id)+'"')+
+      (suggestions.length?'<p class="gfq-muted">연결 후보(확인 필요): '+suggestions.map(x=>'<div><button class="gfq-link" data-action="quest-parent" data-id="'+esc(sel.id)+'" data-parent="'+esc(x.p.id)+'">'+esc(x.p.title)+'</button> · '+esc(x.type)+'<p class="gfq-muted">근거: '+esc(x.quote)+' · 판단: '+esc(x.reason)+'</p></div>').join('')+'</p>':'')+
+      btn('AI로 연결 검토','quest-review-links','data-id="'+esc(sel.id)+'"')+btn('상위 퀘스트 직접 지정','quest-parent','data-id="'+esc(sel.id)+'"')+
       (parent?btn('연결 해제','quest-unlink','data-id="'+esc(sel.id)+'"'):'')+
       '<p class="gfq-muted">동일 월드 안에서만 연결합니다. 완료·보상은 각각 독립적으로 유지됩니다.</p></section>';
 
@@ -3409,6 +3440,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   document.addEventListener('click',e=>{if(panel&&!e.target.closest?.('.gfq-drop'))panel.querySelectorAll('.gfq-drop[open]').forEach(d=>d.open=false);});
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
+  if(act==='quest-review-links'){const q=w.quests.find(x=>x.id===id);if(q)return gfqReviewQuestLinks(w,q);return;}
   if(act==='quest-parent'){
     const q=w.quests.find(x=>x.id===id);if(!q)return;
     const options=gfqQuestParentOptions(w,q);
@@ -3420,7 +3452,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       const n=Number(input);if(!Number.isSafeInteger(n)||n<1||n>options.length)return alert('번호를 확인해 주세요.');
       parent=options[n-1];
     }
-    if(!confirm(q.title+'을(를) '+parent.title+'의 하위 퀘스트로 연결하시겠습니까?'))return;
+    const reviewed=(w.gfQuestLinkReviews?.[q.id]||[]).find(x=>x.parentId===parent.id);
+    if(!confirm(q.title+'을(를) '+parent.title+'의 하위 퀘스트로 연결하시겠습니까?\n'+(reviewed?'관계: '+reviewed.type+'\n근거: '+reviewed.quote:'AI 근거가 확인되지 않은 수동 연결입니다. 서로 다른 의뢰가 아닌지 확인해 주세요.')))return;
     return update(w=>{q.parentQuestId=parent.id;record(w,'퀘스트 연결: '+q.title+' → '+parent.title);});
   }
   if(act==='quest-unlink'){
