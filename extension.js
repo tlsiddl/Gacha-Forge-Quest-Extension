@@ -2346,7 +2346,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
     const target=(w.quests||[]).find(q=>q.id===(p.updateOf||p.acceptedQuestId));
     if(!target){
-      if(at==='flush'){p.deferred=false;const count=(w.quests||[]).length;if(approveAiProposal(p.id,true))events.push(...gfqEventsFor(w,p,new Map(),count));return;}
+      if(at==='flush'){p.deferred=false;p.offered=false;p.auditNote='챕터 종료만으로는 퀘스트 수락·완료를 확정하지 않습니다. 검토 후 승인해 주세요.';events.push({kind:'review',title:'퀘스트 확인 필요',text:String(p.questTitle||p.name||'퀘스트')+' · 챕터 종료 시점 미확정'});return;}
       if(p.offered)return;
       p.offered=true;
       const pres=gfqQuestPresentation(gfqSafeProposal(p,gfqRuleCtx(w)));
@@ -2354,7 +2354,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       return;
     }
     const before=new Map([[target.id,{claimed:!!target.claimed,done:(target.steps||[]).map((_,k)=>target.stepDone?.[k]===true),rep:!!target.reputationAwarded}]]);
-    if(at==='flush'||at>=last){
+    if(at==='flush'){
+      p.deferred=false;p.updateOf=target.id;p.auditNote='챕터 종료만으로 세부 목표 및 퀘스트 완료를 인정하지 않습니다. 근거를 확인해 주세요.';
+      events.push({kind:'review',title:'완료 여부 검토',text:target.title+' · 완료 근거 확인 필요'});
+      return;
+    }
+    if(at>=last){
       p.updateOf=target.id;p.deferred=false;
       if(approveAiProposal(p.id,true))events.push(...gfqEventsFor(w,p,before,(w.quests||[]).length));
       return;
@@ -2501,7 +2506,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     record(w,connect?'가챠 포지 월드 로어북에 연결: '+(g.lorebookName||g.lorebookId)+' (맨 앞, 스토리 장면에도 사용)':'가챠 포지 월드 로어북 연결 해제: '+(g.lorebookName||g.lorebookId));
     save();return w.gfRunLore;
   }
-  var injectTimer=0,injectBusy=false;
+  var injectTimer=0,injectBusy=false,injectNeedsRetry=false;
   function gfqInjectSchedule(){
     const w=typeof current==='function'?current():null;
     if(!w?.gfInject?.enabled||!w.gfInject.lorebookId)return;
@@ -2512,7 +2517,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // v0.6.2: one constant entry per section (요약·퀘스트·돈·소지품). Only sections whose text changed are sent.
   // The entry made by v0.5.x becomes the 요약 entry, so nothing the player already connected is lost.
   async function gfqInjectSync(force,target){
-    const w=target||current(),g=w?.gfInject;if(!g?.lorebookId||injectBusy)return false;
+    const w=target||current(),g=w?.gfInject;if(!g?.lorebookId)return false;
+    if(injectBusy){injectNeedsRetry=true;return false;}
     g.entries=g.entries&&typeof g.entries==='object'?g.entries:{};
     if(g.entryId&&!g.entries.status)g.entries.status={id:g.entryId,hash:''};
     const book='/api/lorebooks/'+encodeURIComponent(g.lorebookId)+'/entries';
@@ -2533,7 +2539,14 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       }
       g.entryId=g.entries.status?.id||g.entryId;if(sent){g.lastAt=now();}g.error='';
     }catch(e){g.error=e.status===404?'로어북을 찾지 못했습니다. 설정 탭에서 다시 만들어 주세요.':String(e.message||e);}
-    finally{injectBusy=false;}
+    finally{
+      injectBusy=false;
+      if(injectNeedsRetry){
+        injectNeedsRetry=false;
+        if(injectTimer)clearTimeout(injectTimer);
+        injectTimer=setTimeout(()=>{injectTimer=0;gfqInjectSync(false);},1500);
+      }
+    }
     try{localStorage.setItem(STORE,JSON.stringify(data));}catch{}
     if(panel&&currentTab==='settings')render();
     return !g.error;
