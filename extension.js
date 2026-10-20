@@ -2871,8 +2871,31 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     return '<span class="gfq-glyph">'+ic+'</span>';
   }
 
+  function gfqRewardInbox(w){
+    const rows=[];
+    for(const q of w.quests||[])for(const [i,r] of (q.rewardDetails||[]).entries()){
+      if(!r||r.certainty==='suggested')continue;
+      const state=gfqRewardState(w,r);
+      rows.push({q,r,i,state});
+    }
+    const pending=rows.filter(x=>x.state.tone!=='ok');
+    const renderRow=x=>'<div class="gfq-card"><b>'+esc(x.q.title)+'</b><p>'+esc(x.r.name)+(typeof x.r.amount==='number'?' · '+esc(gfqAmount(x.r.amount,x.r.unit)):'')+'</p><span class="gfq-muted">'+esc(x.state.text)+'</span> '+btn('퀘스트 보기','open-quest','data-id="'+esc(x.q.id)+'"')+'</div>';
+    return '<section class="gfq-card"><h3>보상 수령함</h3><p class="gfq-muted">퀘스트 완료와 보상 수령은 별개입니다. 실제 지급·소유가 확인된 경우에만 수령 완료로 표시합니다.</p>'+
+      '<details open><summary>수령 대기·확인 필요 ('+pending.length+')</summary>'+pending.map(renderRow).join('')+'</details>'+
+      '<details><summary>수령·적용 기록 ('+(rows.length-pending.length)+')</summary>'+rows.filter(x=>x.state.tone==='ok').map(renderRow).join('')+'</details></section>';
+  }
+  function gfqEquipPanel(w,i){
+    if(i.kind==='voucher')return '';
+    const equipped=i.equipped===true&&i.state!=='pending';
+    return '<section class="gfq-card"><h5>장비 옵션·착용 정보</h5>'+
+      '<p class="gfq-muted">장착 부위: '+esc(i.equipSlot||'미지정')+'</p>'+
+      '<p>옵션: '+esc(i.equipOptions||'미기록')+'</p>'+
+      '<p><b>'+(equipped?'현재 착용 중':'미착용')+'</b></p>'+
+      btn('장비 정보 수정','equip-edit','data-id="'+esc(i.id)+'"')+
+      (i.state!=='pending'?btn(equipped?'착용 해제':'착용하기','equip-toggle','data-id="'+esc(i.id)+'"'):'<p class="gfq-muted">수령 예정 물품은 착용할 수 없습니다.</p>')+'</section>';
+  }
   function gfqItemsHtml(w){
-    const groups={'전체':()=>true,'보유':i=>i.state!=='pending'&&i.kind!=='voucher','수령 예정':i=>i.state==='pending','이용권':i=>i.kind==='voucher'};
+    const groups={'전체':()=>true,'보유':i=>i.state!=='pending'&&i.kind!=='voucher','착용 중':i=>i.equipped===true&&i.state!=='pending','수령 예정':i=>i.state==='pending','이용권':i=>i.kind==='voucher'};
     if(!groups[itemFilter])itemFilter='전체';
     const list=w.items.filter(groups[itemFilter]);
     const sel=list.find(i=>i.id===selectedItem)||list[0]||null;
@@ -2890,7 +2913,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<div class="gfq-plate">'+gfqItemGlyph(sel)+'<span class="gfq-plate-tag">'+(sel.state==='pending'?'수령 예정':sel.kind==='voucher'?'이용권':'보유')+'</span></div>'+
         '<h5>요약</h5><ul class="gfq-facts">'+facts.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+
         (sel.evidence||sel.source?'<p class="gfq-quote"><mark>'+esc(String(sel.evidence||'').slice(0,40))+'</mark>'+esc(String(sel.evidence||'').slice(40,200))+(sel.source?' <small>'+esc(sel.source)+'</small>':'')+'</p>':'')+
-        '<div class="gfq-row">'+acts+btn('삭제','delete-item',`data-id="${esc(sel.id)}"`)+'</div></article>';
+        '<div class="gfq-row">'+acts+btn('삭제','delete-item',`data-id="${esc(sel.id)}"`)+'</div>'+gfqEquipPanel(w,sel)+'</article>';
     }
     return '<section class="gfq-items"><div class="gfq-items-head"><h3>소지품</h3>'+tabs+btn('＋ 소지품','add-item')+'</div>'+
       (w.items.length?'<div class="gfq-items-body"><div class="gfq-slots">'+(grid||'<p class="gfq-sub">이 분류에는 물품이 없습니다.</p>')+'</div>'+detail+'</div>':'<div class="gfq-empty"><strong>소지품이 비어 있습니다</strong><span class="gfq-sub">스토리에서 얻은 물품을 직접 추가하거나 AI 분석으로 채울 수 있습니다.</span></div>')+'</section>';
@@ -3425,7 +3448,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     // v0.7.7: a background re-render (new story data) must not wipe what the player is typing in the quest form.
     const f0=questEdit&&panel.querySelector('.gfq-qform'),draft=f0?{id:f0.dataset.id,v:[...f0.querySelectorAll('[data-f]')].map(e=>e.type==='checkbox'?e.checked:e.value)}:null;
     panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.8.3</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
-  function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
+  function content(w){switch(currentTab){case 'quests':return gfqRewardInbox(w)+gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
   case 'cast':return gfqCastHtml(w);
@@ -3504,6 +3527,22 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   if(act==='cast-note'){const c=w.gfCast?.[id];if(!c)return;const v=ask(c.name+'에 대한 메모를 적어 주세요. (비우면 지워집니다)',c.note||'');if(v===null)return;return update(w=>{const t=String(v).trim().slice(0,300);if(t)w.gfCast[id].note=t;else delete w.gfCast[id].note;});}
   if(act==='cal-day'){calDay=id;return render();}
   if(act==='cal-month'){calMonth=id;calDay=el.dataset.day||'';return render();}
+  if(act==='equip-edit'){
+    const it=w.items.find(x=>x.id===id);if(!it||it.kind==='voucher')return;
+    const slot=ask('장비 착용 부위 (예: 무기, 머리, 몸, 손, 발, 장신구)',it.equipSlot||'');
+    if(slot===null)return;
+    const options=ask('장비 옵션 및 효과를 입력해 주세요. (예: 방어력 +5, 냉기 저항)',it.equipOptions||'');
+    if(options===null)return;
+    return update(w=>{it.equipSlot=slot.trim().slice(0,60);it.equipOptions=options.trim().slice(0,1200);record(w,'장비 옵션 수정: '+it.name);});
+  }
+  if(act==='equip-toggle'){
+    const it=w.items.find(x=>x.id===id);if(!it||it.kind==='voucher'||it.state==='pending')return;
+    return update(w=>{
+      if(!it.equipped&&it.equipSlot)for(const other of w.items)if(other.id!==it.id&&other.equipSlot===it.equipSlot&&other.equipped){other.equipped=false;record(w,'장비 교체·착용 해제: '+other.name);}
+      it.equipped=!it.equipped;
+      record(w,'장비 '+(it.equipped?'착용':'해제')+': '+it.name);
+    });
+  }
   if(act==='item-filter'){itemFilter=id;selectedItem='';return render();}
   if(act==='select-item'){selectedItem=id;return render();}
   if(act==='select-place'){const same=currentTab==='places';selectedPlace=id;currentTab='places';render();if(same){const c=panel.querySelector('.gfq-placecard');if(c&&c.scrollIntoView)c.scrollIntoView({block:'nearest'});}return;}
