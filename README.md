@@ -27,29 +27,25 @@
 
 ### 준비물
 
-- **Marinara Engine** 및 **Gacha Forge**
-- Marinara에서 사용할 수 있는 **개인 확장(Personal Extension) 설치 기능**
-- AI 분석을 사용할 경우, Marinara에 설정된 **AI 연결**
+- **Marinara Engine**와 **Gacha Forge**
+- **GitHub 확장 관리자** 개인 확장
+- AI 분석을 사용하려면 Marinara에 설정된 **AI 연결**
 
-### 개인 확장 설치 방법
+### GitHub 링크로 설치하기
 
-1. 이 저장소의 **[Code → Download ZIP](https://github.com/tlsiddl/Gacha-Forge-Quest-Extension/archive/refs/heads/main.zip)**으로 소스 코드를 내려받습니다.
-2. 압축을 풀고 `manifest.json`과 `extension.js`를 확인합니다.
-3. 두 파일을 **ZIP 최상위 경로**에 넣어 새 ZIP으로 압축합니다. GitHub에서 받은 ZIP은 상위 폴더가 들어 있으므로 그대로 설치하기보다 이 구조로 다시 묶어 주세요.
-4. Marinara의 **개인 확장 관리 화면**에서 ZIP을 업로드하고 확장을 활성화합니다.
-5. Gacha Forge에 들어가 상단바의 **퀘스트 아이콘**을 확인합니다.
+1. Marinara에서 **GitHub 확장 관리자**를 엽니다.
+2. 저장소 추가 또는 GitHub 링크 등록 기능에 아래 주소를 입력합니다.
 
-올바른 압축 구조:
+   ```text
+   https://github.com/tlsiddl/Gacha-Forge-Quest-Extension
+   ```
 
-```text
-Gacha-Forge-Quest-Extension.zip
-├── manifest.json
-└── extension.js
-```
+3. GitHub 확장 관리자에서 해당 확장을 **설치·활성화**합니다.
+4. **Gacha Forge** 화면으로 이동해 상단바에 **퀘스트 아이콘**이 표시되는지 확인합니다.
 
-`bridge/` 등 저장소의 개발용 파일은 **설치에 필요하지 않습니다**. 별도의 서버 브리지나 API 키를 이 확장에 직접 입력할 필요도 없습니다.
+설치 후 새 버전이 올라오면 GitHub 확장 관리자에서 해당 저장소의 **업데이트 기능**을 이용해 주세요.
 
-> 개인 확장 관리자 버전이나 엔진 설정에 따라 메뉴 이름과 설치 단계가 다를 수 있습니다. 아이콘이 보이지 않으면 확장 활성화 여부, 가챠 포지 화면 진입 여부, 브라우저 새로고침을 확인하세요.
+> ZIP 파일을 직접 다운로드하거나 다시 압축할 필요는 없습니다. 관리자 버전에 따라 버튼 이름이 다를 수 있습니다. `bridge/` 폴더는 현재 설치에 필요하지 않습니다.
 
 ## 처음 사용하는 방법
 
