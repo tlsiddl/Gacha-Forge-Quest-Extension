@@ -1,4 +1,4 @@
-/* 퀘스트 v0.10.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.10.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -833,6 +833,61 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel[data-theme=sf] .gfq-meter{border-radius:0;background:#ffffff14}
 #gfq-01-panel[data-theme=sf] .gfq-meter i{background:repeating-linear-gradient(90deg,var(--mark) 0 4px,transparent 4px 6px)}
 #gfq-01-panel[data-theme=sf] details>summary{color:var(--ink)}
+`;
+  // v0.10.2: mobile viewport, inner scrolling and narrow quest layout; desktop is unchanged.
+  style.textContent+=`
+@media (max-width:760px), (max-height:480px) and (pointer:coarse) {
+  #gfq-01-panel {
+    position:fixed!important;inset:0!important;top:0!important;left:0!important;
+    right:0!important;bottom:0!important;margin:0!important;
+    transform:none!important;width:100%!important;max-width:100%!important;
+    height:100vh!important;height:100dvh!important;
+    max-height:100vh!important;max-height:100dvh!important;
+    min-height:0!important;box-sizing:border-box!important;overflow:hidden!important;
+    padding:0!important;
+  }
+  #gfq-01-panel .gfq-frame {
+    display:grid;grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    width:100%;height:100%;min-height:0;max-height:100%;overflow:hidden;
+  }
+  #gfq-01-panel .gfq-side {min-width:0;min-height:0;max-width:100%;overflow:hidden;}
+  #gfq-01-panel .gfq-tabs {
+    overflow-x:auto!important;overflow-y:hidden!important;
+    min-width:0;max-width:100%;-webkit-overflow-scrolling:touch;touch-action:pan-x;
+  }
+  #gfq-01-panel .gfq-tabs button {flex-shrink:0;}
+  #gfq-01-panel .gfq-main {
+    min-width:0!important;min-height:0!important;max-height:100%!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;touch-action:pan-y;
+    overscroll-behavior-y:contain;
+    padding-bottom:max(24px,env(safe-area-inset-bottom))!important;
+  }
+  #gfq-01-panel .gfq-quests {
+    display:grid;grid-template-columns:minmax(0,1fr)!important;
+    gap:12px;min-width:0;max-width:100%;align-items:stretch;
+  }
+  #gfq-01-panel .gfq-qside {position:static!important;top:auto;min-width:0;}
+  #gfq-01-panel .gfq-qlist {
+    min-height:0;max-height:min(30vh,180px)!important;max-height:min(30dvh,180px)!important;
+    overflow-y:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+    overscroll-behavior:contain;
+  }
+  #gfq-01-panel .gfq-qdetail,
+  #gfq-01-panel .gfq-qbody,
+  #gfq-01-panel .gfq-qhead,
+  #gfq-01-panel .gfq-qfoot {
+    min-width:0;max-width:100%;overflow-wrap:anywhere;
+  }
+  #gfq-01-panel .gfq-card {max-width:100%;overflow-wrap:anywhere;}
+}
+@media (max-width:380px) {
+  #gfq-01-panel .gfq-main {padding-left:10px!important;padding-right:10px!important;}
+  #gfq-01-panel .gfq-qhead h3 {font-size:18px;}
+  #gfq-01-panel .gfq-qbody {padding:12px;}
+  #gfq-01-panel .gfq-qfoot {display:flex;flex-wrap:wrap;gap:6px;padding:10px;}
+}
 `;
   style.textContent+=`
 #${ID}-toasts,#${ID}-qtoasts{position:fixed;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:stretch;gap:10px;z-index:2147483002;pointer-events:none;--paper:#f1efea;--ink:#202229;--sub:#67655f;--k:#3b3f7a;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;--sans:"Pretendard","Noto Sans KR",system-ui,sans-serif}
@@ -3678,7 +3733,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
     // v0.7.7: a background re-render (new story data) must not wipe what the player is typing in the quest form.
     const f0=questEdit&&panel.querySelector('.gfq-qform'),draft=f0?{id:f0.dataset.id,v:[...f0.querySelectorAll('[data-f]')].map(e=>e.type==='checkbox'?e.checked:e.value)}:null;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.10.1</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.10.2</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
   function content(w){switch(currentTab){case 'quests':return gfqLinkAuditHtml(w)+gfqRewardInbox(w)+gfqQuestsHtml(w);
   case 'profile':return gfqChangeCompareHtml(w)+gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
