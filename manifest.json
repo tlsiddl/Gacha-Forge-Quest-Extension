@@ -1,10 +1,10 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.9.0",
-    "description": "보상 수령함·장비 옵션/착용·제한 자동 백업·스토리 선택 이력",
+    "version": "0.9.1",
+    "description": "물품 분류·장비 전용 착용 UI·AI 원문 근거 옵션",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
