@@ -1,4 +1,4 @@
-/* 퀘스트 v0.7.5 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.7.6 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -513,54 +513,6 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel[data-theme=school] .gfq-rc-total{border-radius:10px}
 #gfq-01-panel[data-theme=school] .gfq-chno{border-radius:14px 0 0 14px}
 /* v0.7.4 동양: 수묵 산수 · 옥빛 · 주홍 · 황토 금테 */
-#gfq-01-panel[data-theme=east]{--paper:#ebe7df;--paper2:#2f3d3b;--card:#f7f5f0;--card2:#fbfaf6;--hi:#fffefb;--ink:#26302e;--sub:#6b726e;--line:#cbc3b1;--ind:#3d5a55;--ind2:#4f736c;--indd:#24363a;--mark:#d9572e;--onacc:#d8e2de;--board:#efece5;--hatch1:#ddd8cc;--hatch2:#e9e5dc;--red:#c8472a;--gold:#c4a06a}
-#gfq-01-panel[data-theme=east] .gfq-main{background:radial-gradient(circle at 86% 120px,#fffefb 0 78px,#fffefb00 79px),radial-gradient(circle at 86% 120px,transparent 0 86px,#c4a06a44 87px 88px,transparent 89px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%233d5a55' stop-opacity='.26'/%3E%3Cstop offset='1' stop-color='%233d5a55' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 240V150c50-8 80-80 135-74s60 52 105 40 70-96 130-84 70 70 118 62 84-46 132-34 76 40 180 44V240z' fill='url(%23a)'/%3E%3Cpath d='M0 240v-52c60 0 100-36 160-30s84 30 146 24 110-50 186-38 120 36 308 30V240z' fill='%233d5a55' fill-opacity='.10'/%3E%3C/svg%3E") left bottom/100% 220px no-repeat,var(--paper)}
-#gfq-01-panel[data-theme=east] .gfq-side{background:linear-gradient(180deg,#24363a,#2f3d3b 55%,#3d5a55);border-right:1px solid #c4a06a;box-shadow:inset -4px 0 0 #24363a,inset -5px 0 0 #c4a06a66}
-#gfq-01-panel[data-theme=east] .gfq-brand-mark{border-color:#c4a06a;box-shadow:inset 0 0 0 4px #2f3d3b,inset 0 0 0 7px #d9572e}
-#gfq-01-panel[data-theme=east] .gfq-brand small{color:#c4a06a}
-#gfq-01-panel[data-theme=east] .gfq-tabs{gap:10px;padding:0 18px}
-#gfq-01-panel[data-theme=east] .gfq-tabs button{gap:0;border:1px solid #c4a06a88;background:#2f3d3b}
-#gfq-01-panel[data-theme=east] .gfq-tab-ic{width:42px;height:42px;background:transparent;border:0;border-right:1px solid #c4a06a66;color:#d8e2de;box-shadow:none}
-#gfq-01-panel[data-theme=east] .gfq-tab-l{margin:0;clip-path:none;background:transparent;border:0;color:#e9e5dc;text-decoration:none;padding:9px 14px;letter-spacing:.2em;font-family:var(--serif)}
-#gfq-01-panel[data-theme=east] .gfq-tabs button:hover .gfq-tab-l{background:#ffffff10}
-#gfq-01-panel[data-theme=east] .gfq-tabs button.primary{background:#d9572e;border-color:#f0b48f}
-#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-ic{background:transparent;color:#fff;transform:none;border-right-color:#f0b48f88;box-shadow:none}
-#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-l{background:transparent;color:#fff;box-shadow:none}
-#gfq-01-panel[data-theme=east] .gfq-side-foot{background:#f7f5f0;border:1px solid #c4a06a;box-shadow:none;border-radius:0}
-#gfq-01-panel[data-theme=east] .gfq-top{background:#ebe7dfe8;border-bottom:1px solid #c4a06a;box-shadow:0 3px 0 -2px #3d5a55}
-#gfq-01-panel[data-theme=east] .gfq-top h2{color:var(--ink);border-left:4px solid #d9572e;padding-left:12px;letter-spacing:.24em}
-#gfq-01-panel[data-theme=east] :is(.gfq-card,.gfq-qdetail,.gfq-dossier,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-receipt){border:1px solid #c4a06a;box-shadow:3px 3px 0 #3d5a5514;background-image:linear-gradient(#c4a06a,#c4a06a),linear-gradient(#c4a06a,#c4a06a),linear-gradient(#c4a06a,#c4a06a),linear-gradient(#c4a06a,#c4a06a);background-size:14px 2px,2px 14px,14px 2px,2px 14px;background-position:4px 4px,4px 4px,calc(100% - 4px) calc(100% - 4px),calc(100% - 4px) calc(100% - 4px);background-repeat:no-repeat;background-color:var(--card)}
-#gfq-01-panel[data-theme=east] .gfq-card::before{width:3px;background:#3d5a55}
-#gfq-01-panel[data-theme=east] h3{color:var(--ink);letter-spacing:.12em}
-#gfq-01-panel[data-theme=east] .gfq-sec h3::before,#gfq-01-panel[data-theme=east] .gfq-items-head h3::before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;background:#d9572e;transform:rotate(45deg) translateY(-2px)}
-#gfq-01-panel[data-theme=east] button{border-radius:2px;border-color:#c4a06a}
-#gfq-01-panel[data-theme=east] button.primary{background:#d9572e;border-color:#d9572e;color:#fff}
-#gfq-01-panel[data-theme=east] button.primary:hover:not(:disabled){background:#e86a40;border-color:#e86a40}
-#gfq-01-panel[data-theme=east] .gfq-drop summary{border-color:#c4a06a;box-shadow:none}#gfq-01-panel[data-theme=east] .gfq-drop-k{background:#3d5a55}
-#gfq-01-panel[data-theme=east] .gfq-seg{border-color:#c4a06a}#gfq-01-panel[data-theme=east] .gfq-seg button[aria-pressed=true]{background:#3d5a55}
-#gfq-01-panel[data-theme=east] .gfq-qitem{border-color:#c4a06a88}
-#gfq-01-panel[data-theme=east] .gfq-qitem.on{background:#3d5a55;border-color:#3d5a55;box-shadow:inset 4px 0 #d9572e}
-#gfq-01-panel[data-theme=east] .gfq-qhead{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120' preserveAspectRatio='none'%3E%3Cpath d='M0 120V80c40-6 60-46 100-40s40 30 80 22 50-60 100-50 50 46 90 40 70-26 110-18 70 22 120 26V120z' fill='%23ffffff' fill-opacity='.10'/%3E%3C/svg%3E") left bottom/100% 70% no-repeat,linear-gradient(100deg,#2f4440,#4f736c);border-bottom:2px solid #c4a06a}
-#gfq-01-panel[data-theme=east] .gfq-qhead::after{background:radial-gradient(circle,#fffefb22 0 60px,transparent 61px);right:20px;top:-40px;width:180px;height:180px}
-#gfq-01-panel[data-theme=east] .gfq-qhead h3{color:#fff;text-shadow:0 1px 6px #0004}
-#gfq-01-panel[data-theme=east] .gfq-qcrest{clip-path:none;border-radius:50%;width:84px;height:84px;background:#f7f5f0;box-shadow:inset 0 0 0 3px #f7f5f0,inset 0 0 0 4px #c4a06a}
-#gfq-01-panel[data-theme=east] .gfq-qcrest span{color:#d9572e;letter-spacing:.1em}
-#gfq-01-panel[data-theme=east] .gfq-ticket{border-radius:0}
-#gfq-01-panel[data-theme=east] .gfq-tk-stub{background:#2f3d3b}
-#gfq-01-panel[data-theme=east] .gfq-photo{border:1px solid #c4a06a;padding:8px;transform:none}
-#gfq-01-panel[data-theme=east] .gfq-photo::after{content:"";top:auto;bottom:-14px;left:auto;right:-14px;width:38px;height:38px;margin:0;background:#d9572e;border-radius:3px;transform:rotate(-6deg);box-shadow:inset 0 0 0 3px #d9572e,inset 0 0 0 4px #f7c9b3}
-#gfq-01-panel[data-theme=east] .gfq-stamp{border-color:#d9572e;color:#c8472a;border-radius:2px;background:#d9572e0d}
-#gfq-01-panel[data-theme=east] .gfq-stamp2-in{border-radius:4px;border:1px dashed #c4a06a}
-#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in{border:0;border-radius:6px;background:#c8472a;color:#fff6ec;box-shadow:inset 0 0 0 4px #c8472a,inset 0 0 0 5px #f7c9b399;transform:rotate(var(--r))}
-#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in small{color:#fde3d6}
-#gfq-01-panel[data-theme=east] .gfq-receipt{border-left:0;border-right:0;border-top:12px solid #3b2a1d;border-bottom:12px solid #3b2a1d;background:var(--card2);box-shadow:0 0 0 1px #c4a06a inset,4px 6px 0 #0000001a}
-#gfq-01-panel[data-theme=east] .gfq-receipt::after{display:none}
-#gfq-01-panel[data-theme=east] .gfq-rc-total{background:#2f3d3b}
-#gfq-01-panel[data-theme=east] .gfq-slot{border-color:#c4a06a88}
-#gfq-01-panel[data-theme=east] .gfq-slot.on{background:#3d5a55;border-color:#d9572e}
-#gfq-01-panel[data-theme=east] .gfq-board{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cpath d='M0 240V160c60-10 90-70 150-62s70 48 120 38 80-90 150-78 80 64 130 56 90-40 200 0V240z' fill='%233d5a55' fill-opacity='.10'/%3E%3C/svg%3E") left bottom/100% 40% no-repeat,var(--board);border-color:#c4a06a}
-#gfq-01-panel[data-theme=east] .gfq-board::before,#gfq-01-panel[data-theme=east] .gfq-board::after{border-color:#d9572e}
-#gfq-01-panel[data-theme=east] .gfq-route polyline{stroke:#d9572e}
 /* v0.7.4 판타지: 가죽 책상 위 낡은 수첩 · 세피아 · 황동 */
 #gfq-01-panel[data-theme=fantasy]{--paper:#efe5cd;--paper2:#2b2119;--card:#f7efdc;--card2:#fbf6e9;--hi:#fffaef;--ink:#3a2b1b;--sub:#7b6547;--line:#c7b28b;--ind:#6b4f2e;--ind2:#8a6a3f;--indd:#3a2a18;--mark:#c9a24a;--onacc:#efe0c0;--board:#efe4c9;--hatch1:#ddcfb0;--hatch2:#e9dec5;--red:#9b3b2a;--serif:"Cormorant Garamond","Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;background:#2b2119}
 #gfq-01-panel[data-theme=fantasy] .gfq-frame{background:radial-gradient(ellipse at 30% 20%,#4a3828,#2b2119 70%)}
@@ -631,22 +583,132 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel[data-theme=fantasy] .gfq-chno{background:#6b4f2e;font-family:var(--serif)}
 @media(max-width:760px){#gfq-01-panel[data-theme=sf] .gfq-side{background:var(--indd)}#gfq-01-panel[data-theme=school] .gfq-side{background:var(--ind)}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tab-l{background:none;border:0;clip-path:none;box-shadow:none;color:#e8eef6}#gfq-01-panel:is([data-theme=sf],[data-theme=school]) .gfq-tabs button.primary .gfq-tab-l{background:none;color:#fff;box-shadow:none}#gfq-01-panel[data-theme=school] .gfq-tab-ic{border-color:#fff;background:transparent;color:#fff}#gfq-01-panel[data-theme=school] .gfq-tabs button.primary .gfq-tab-ic{background:var(--mark);transform:none}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs{padding:0;gap:3px}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button.primary,#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tabs button:hover{flex:1 1 0;min-width:0;flex-direction:column;margin:0;padding:2px 0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-ic{width:28px;height:26px;border:0}#gfq-01-panel:is([data-theme=east],[data-theme=fantasy],[data-theme=sf],[data-theme=school]) .gfq-tab-l{padding:0 0 3px;letter-spacing:0;font-size:11px;text-align:center}#gfq-01-panel[data-theme=fantasy] .gfq-main{margin:0;border-radius:0}#gfq-01-panel[data-theme=fantasy] .gfq-side{background:#2b2119}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button,#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary{margin:0;border-radius:10px 10px 0 0;border:1px solid #a68b5f;border-bottom:0;padding:0}#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary::before{display:none}#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0}#gfq-01-panel[data-theme=east] .gfq-tab-ic{border-right:0}}
 /* v0.7.5 동양: 두루마리. 본문은 좌우 나무 축에 감긴 가로 두루마리, 큰 카드는 위아래 축이 달린 족자 */
-#gfq-01-panel[data-theme=east]{--wood:linear-gradient(90deg,#2a1a10,#6b4428 22%,#a9744a 45%,#7a4e2e 70%,#2e1c11);--woodv:linear-gradient(180deg,#2a1a10,#6b4428 22%,#a9744a 45%,#7a4e2e 70%,#2e1c11);--brocade:repeating-linear-gradient(90deg,#24363a 0 10px,#2f4a46 10px 12px,#c4a06a 12px 13px,#2f4a46 13px 15px)}
-#gfq-01-panel[data-theme=east] .gfq-main{padding:0 50px 40px;background:var(--wood) left top/18px 100% no-repeat,var(--wood) right top/18px 100% no-repeat,linear-gradient(90deg,#00000022,transparent 8px) 18px 0/10px 100% no-repeat,linear-gradient(270deg,#00000022,transparent 8px) calc(100% - 18px) 0/10px 100% no-repeat,radial-gradient(circle at 86% 120px,#fffefb 0 78px,#fffefb00 79px),radial-gradient(circle at 86% 120px,transparent 0 86px,#c4a06a44 87px 88px,transparent 89px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%233d5a55' stop-opacity='.26'/%3E%3Cstop offset='1' stop-color='%233d5a55' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 240V150c50-8 80-80 135-74s60 52 105 40 70-96 130-84 70 70 118 62 84-46 132-34 76 40 180 44V240z' fill='url(%23a)'/%3E%3Cpath d='M0 240v-52c60 0 100-36 160-30s84 30 146 24 110-50 186-38 120 36 308 30V240z' fill='%233d5a55' fill-opacity='.10'/%3E%3C/svg%3E") left bottom/100% 220px no-repeat,var(--paper)}
-#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -32px 22px;padding:16px 32px 12px;border-bottom:0;box-shadow:none;background:linear-gradient(#ebe7dff2,#ebe7dff2) top/100% calc(100% - 9px) no-repeat,var(--brocade) bottom/100% 9px no-repeat;padding-bottom:21px}
-#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal){position:relative;margin-top:14px;margin-bottom:14px;border-top:0;border-bottom:0;box-shadow:inset 0 9px 0 -2px #24363a33,3px 3px 0 #3d5a5514}
-#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{content:"";position:absolute;z-index:4;left:-14px;right:-14px;height:14px;border-radius:7px;background:radial-gradient(circle at 7px 50%,#c4a06a 0 4px,#7a5a2a 4.5px 6px,transparent 6.5px),radial-gradient(circle at calc(100% - 7px) 50%,#c4a06a 0 4px,#7a5a2a 4.5px 6px,transparent 6.5px),var(--woodv);box-shadow:0 2px 3px #0004;pointer-events:none}
-#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before{top:-10px}
-#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{bottom:-10px}
-#gfq-01-panel[data-theme=east] .gfq-qhead{border-top:6px solid #24363a}
-#gfq-01-panel[data-theme=east] .gfq-qdetail{overflow:visible}
-#gfq-01-panel[data-theme=east] .gfq-tabs button{box-shadow:inset 5px 0 0 #c4a06a55,inset -5px 0 0 #c4a06a55,inset 6px 0 0 #00000033,inset -6px 0 0 #00000033}
-#gfq-01-panel[data-theme=east] .gfq-tabs button.primary{box-shadow:inset 5px 0 0 #f0b48f88,inset -5px 0 0 #f0b48f88,inset 6px 0 0 #00000033,inset -6px 0 0 #00000033}
-#gfq-01-panel[data-theme=east] .gfq-qside .gfq-qlist{padding:6px 10px}
-#gfq-01-panel[data-theme=east] .gfq-qitem{box-shadow:inset 4px 0 0 #6b4428,inset -4px 0 0 #6b4428,2px 2px 0 #0000000f}
-#gfq-01-panel[data-theme=east] .gfq-qitem.on{box-shadow:inset 4px 0 0 #d9572e,inset -4px 0 0 #2a1a10}
-#gfq-01-panel[data-theme=east] .gfq-receipt{margin-top:12px}
 @media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-main{padding:0 26px 28px;background-size:10px 100%,10px 100%,6px 100%,6px 100%,auto,auto,100% 160px,auto}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -12px 14px;padding:10px 12px 19px}#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{left:-8px;right:-8px}}
+/* v0.7.6 동양: 절제된 두루마리. 종이와 먹이 바탕, 금선은 가늘게, 붉은색은 낙관에만. 색조 3가지(수묵·청화백자·청자) */
+#gfq-01-panel[data-theme=east]{--paper:#efece6;--paper2:#f4f1ea;--card:#faf8f4;--card2:#fcfbf8;--hi:#fffefc;--ink:#262523;--sub:#76716a;--line:#dbd4c7;--ind:#2b2a28;--ind2:#45433f;--indd:#1b1a19;--deep:#1b1a19;--acc:#a8392c;--gold:#b39c6e;--mark:#a8392c;--onacc:#e8e3d9;--board:#f3f0ea;--hatch1:#e2ddd2;--hatch2:#ece8df;--red:#a8392c;--side:#f4f1ea;--side-fg:#2b2a28;--wood:linear-gradient(90deg,#0b0b0b,#2e2c29 35%,#4a4640 50%,#24221f 70%,#0b0b0b);--woodv:linear-gradient(180deg,#0b0b0b,#2e2c29 35%,#4a4640 50%,#24221f 70%,#0b0b0b);--mist:%23262523}
+#gfq-01-panel[data-theme=east][data-tone=porcelain]{--paper:#eef0ef;--paper2:#f5f6f5;--card:#fbfcfb;--card2:#fdfefd;--ink:#1d2330;--sub:#6b7280;--line:#d3d8df;--ind:#1f3f6e;--ind2:#2f5a94;--indd:#142b4d;--deep:#142b4d;--gold:#a7adb8;--side:#f5f6f5;--side-fg:#1f3f6e;--onacc:#dbe4f2;--board:#f3f5f6;--wood:linear-gradient(90deg,#0b1424,#203556 35%,#3b5580 50%,#1a2c49 70%,#0b1424);--woodv:linear-gradient(180deg,#0b1424,#203556 35%,#3b5580 50%,#1a2c49 70%,#0b1424)}
+#gfq-01-panel[data-theme=east][data-tone=celadon]{--paper:#e9ede7;--paper2:#eef2ec;--card:#f7f9f5;--card2:#fbfcfa;--ink:#22302a;--sub:#6c7a72;--line:#cfd8d0;--ind:#4e7466;--ind2:#678f80;--indd:#2f4a40;--deep:#2f4a40;--gold:#a88a55;--side:#eef2ec;--side-fg:#2f4a40;--onacc:#dce8e1;--board:#f0f3ee;--wood:linear-gradient(90deg,#1c140d,#4a3726 35%,#6e5539 50%,#3d2d1f 70%,#1c140d);--woodv:linear-gradient(180deg,#1c140d,#4a3726 35%,#6e5539 50%,#3d2d1f 70%,#1c140d)}
+#gfq-01-panel[data-theme=east] .gfq-main{padding:0 48px 40px;background:var(--wood) left top/14px 100% no-repeat,var(--wood) right top/14px 100% no-repeat,linear-gradient(90deg,#0000001a,transparent 7px) 14px 0/8px 100% no-repeat,linear-gradient(270deg,#0000001a,transparent 7px) calc(100% - 14px) 0/8px 100% no-repeat,radial-gradient(circle at 84% 130px,transparent 0 92px,color-mix(in srgb,var(--gold) 45%,transparent) 93px 93.6px,transparent 94.5px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23262523' stop-opacity='.13'/%3E%3Cstop offset='1' stop-color='%23262523' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 240V150c50-8 80-80 135-74s60 52 105 40 70-96 130-84 70 70 118 62 84-46 132-34 76 40 180 44V240z' fill='url(%23a)'/%3E%3Cpath d='M0 240v-52c60 0 100-36 160-30s84 30 146 24 110-50 186-38 120 36 308 30V240z' fill='%23262523' fill-opacity='.05'/%3E%3C/svg%3E") left bottom/100% 200px no-repeat,var(--paper)}
+#gfq-01-panel[data-theme=east] .gfq-side{background:var(--side);border-right:1px solid var(--line);box-shadow:inset -1px 0 0 var(--hi)}
+#gfq-01-panel[data-theme=east] .gfq-brand{color:var(--side-fg)}
+#gfq-01-panel[data-theme=east] .gfq-brand small{color:var(--sub)}
+#gfq-01-panel[data-theme=east] .gfq-brand-mark{border-color:var(--side-fg);box-shadow:inset 0 0 0 4px var(--side),inset 0 0 0 7px var(--acc)}
+#gfq-01-panel[data-theme=east] .gfq-tabs{gap:4px;padding:0 16px}
+#gfq-01-panel[data-theme=east] .gfq-tabs button{position:relative;gap:0;border:0;border-bottom:1px solid var(--line);background:transparent}
+#gfq-01-panel[data-theme=east] .gfq-tab-ic{width:38px;height:42px;background:transparent;border:0;color:var(--sub);box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-tab-l{margin:0;clip-path:none;background:transparent;border:0;color:var(--side-fg);text-decoration:none;padding:10px 8px;letter-spacing:.32em;font:600 15px/1.2 var(--serif)}
+#gfq-01-panel[data-theme=east] .gfq-tabs button:hover:not(:disabled) .gfq-tab-l{color:var(--ind2)}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary{background:var(--ind);border-bottom-color:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary:hover:not(:disabled){background:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-ic{background:transparent;color:var(--onacc);transform:none;box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-l,#gfq-01-panel[data-theme=east] .gfq-tabs button.primary:hover:not(:disabled) .gfq-tab-l{background:transparent;color:var(--hi);box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary::after{content:"";position:absolute;right:10px;top:50%;width:9px;height:9px;margin-top:-5px;background:var(--acc);border-radius:1px}
+#gfq-01-panel[data-theme=east] .gfq-side-foot{background:var(--card);border:0;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);box-shadow:none;border-radius:0;margin:auto 16px 0}
+#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -34px 24px;padding:18px 34px 16px;border-bottom:0;box-shadow:none;background:linear-gradient(var(--paper),var(--paper)) top/100% calc(100% - 5px) no-repeat,linear-gradient(var(--gold),var(--gold)) 0 calc(100% - 4px)/100% 1px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 100%/100% 1px no-repeat;background-color:transparent}
+#gfq-01-panel[data-theme=east] .gfq-top h2{color:var(--ink);border-left:0;padding-left:0;letter-spacing:.34em;font-weight:700}
+#gfq-01-panel[data-theme=east] .gfq-top h2::after{content:"";display:inline-block;width:14px;height:14px;margin-left:6px;vertical-align:4px;background:var(--acc);border-radius:2px;box-shadow:inset 0 0 0 2px var(--acc),inset 0 0 0 3px #ffffffaa}
+#gfq-01-panel[data-theme=east] h3{color:var(--ink);letter-spacing:.14em}
+#gfq-01-panel[data-theme=east] .gfq-sec h3::before,#gfq-01-panel[data-theme=east] .gfq-items-head h3::before{content:"";display:inline-block;width:3px;height:14px;margin-right:10px;background:var(--ind);vertical-align:-1px}
+#gfq-01-panel[data-theme=east] :is(.gfq-card,.gfq-dossier,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-receipt,.gfq-qdetail){border:1px solid var(--line);border-radius:0;box-shadow:0 1px 0 var(--hi) inset,0 10px 24px -14px #00000040;background-color:var(--card)}
+#gfq-01-panel[data-theme=east] .gfq-card::before{width:2px;background:var(--ind)}
+#gfq-01-panel[data-theme=east] button{border-radius:0;border-color:var(--line);background:var(--card);color:var(--ink)}
+#gfq-01-panel[data-theme=east] button:hover:not(:disabled):not(.on):not([aria-pressed=true]):not(.primary){background:var(--hi);border-color:var(--gold)}
+#gfq-01-panel[data-theme=east] button.primary{background:var(--ind);border-color:var(--ind);color:var(--hi);letter-spacing:.08em}
+#gfq-01-panel[data-theme=east] button.primary:hover:not(:disabled){background:var(--ind2);border-color:var(--ind2)}
+#gfq-01-panel[data-theme=east] .gfq-drop summary{border-color:var(--line);box-shadow:none;background:var(--card)}#gfq-01-panel[data-theme=east] .gfq-drop-k{background:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-seg{border-color:var(--line);background:var(--card)}#gfq-01-panel[data-theme=east] .gfq-seg button[aria-pressed=true]{background:var(--ind);color:var(--hi)}
+#gfq-01-panel[data-theme=east] .gfq-qitem{border-color:var(--line);box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-qitem.on{background:var(--ind);border-color:var(--ind);color:var(--hi);box-shadow:inset 3px 0 0 var(--acc)}
+#gfq-01-panel[data-theme=east] .gfq-qitem.on:hover:not(:disabled){background:var(--ind2)}
+#gfq-01-panel[data-theme=east] .gfq-qitem.on .gfq-pips i.on{background:var(--hi)}
+#gfq-01-panel[data-theme=east] .gfq-pips i.on{background:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-qhead{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120' preserveAspectRatio='none'%3E%3Cpath d='M0 120V84c40-6 60-46 100-40s40 30 80 22 50-60 100-50 50 46 90 40 70-26 110-18 70 22 120 26V120z' fill='%23000000' fill-opacity='.05'/%3E%3C/svg%3E") left bottom/100% 80% no-repeat,var(--card2);color:var(--ink);border-top:0;border-bottom:1px solid var(--line)}
+#gfq-01-panel[data-theme=east] .gfq-qhead::after{background:radial-gradient(circle,transparent 0 58px,color-mix(in srgb,var(--gold) 50%,transparent) 59px 59.6px,transparent 60.5px);right:-10px;top:-40px;width:180px;height:180px}
+#gfq-01-panel[data-theme=east] .gfq-qhead h3{color:var(--ink);text-shadow:none;letter-spacing:.08em}
+#gfq-01-panel[data-theme=east] .gfq-qplace{color:var(--ind)}#gfq-01-panel[data-theme=east] .gfq-qplace:hover:not(:disabled){color:var(--acc)}
+#gfq-01-panel[data-theme=east] .gfq-qmeta{color:var(--sub)}#gfq-01-panel[data-theme=east] .gfq-qmeta i{background:var(--gold)}
+#gfq-01-panel[data-theme=east] .gfq-qcrest{clip-path:none;border-radius:50%;width:76px;height:76px;background:transparent;border:1px solid var(--gold);box-shadow:inset 0 0 0 4px var(--card2),inset 0 0 0 5px color-mix(in srgb,var(--gold) 60%,transparent)}
+#gfq-01-panel[data-theme=east] .gfq-qcrest span{color:var(--ind);letter-spacing:.14em}
+#gfq-01-panel[data-theme=east] .gfq-obj-mark{border-color:var(--ind)}#gfq-01-panel[data-theme=east] .gfq-obj.on .gfq-obj-mark{background:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-rw-row{border-left:2px solid var(--ind);background:var(--card2)}
+#gfq-01-panel[data-theme=east] .gfq-rw-row.cond{border-left:2px dashed var(--line)}
+#gfq-01-panel[data-theme=east] .gfq-rw-ic,#gfq-01-panel[data-theme=east] .gfq-rw-tile .gfq-ico{color:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-rw-tile{background:var(--card2);border-color:var(--line)}
+#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal){position:relative;margin-top:12px;margin-bottom:12px;overflow:visible}
+#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{content:"";position:absolute;z-index:4;left:-9px;right:-9px;height:9px;border-radius:5px;background:radial-gradient(circle at 4.5px 50%,var(--gold) 0 3px,transparent 3.5px),radial-gradient(circle at calc(100% - 4.5px) 50%,var(--gold) 0 3px,transparent 3.5px),var(--woodv);box-shadow:0 2px 3px #0003;pointer-events:none}
+#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before{top:-6px}
+#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{bottom:-6px}
+#gfq-01-panel[data-theme=east] .gfq-ticket{border-radius:0}
+#gfq-01-panel[data-theme=east] .gfq-tk-stub{background:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-photo{border:1px solid var(--line);padding:8px;transform:none;box-shadow:none;background:var(--hi)}
+#gfq-01-panel[data-theme=east] .gfq-photo::after{content:"";top:auto;bottom:-10px;left:auto;right:-10px;width:28px;height:28px;margin:0;background:var(--acc);border-radius:2px;transform:rotate(-4deg);box-shadow:inset 0 0 0 2px var(--acc),inset 0 0 0 3px #ffffffaa}
+#gfq-01-panel[data-theme=east] .gfq-tk-name{letter-spacing:.1em}
+#gfq-01-panel[data-theme=east] .gfq-cash b{color:var(--ink)!important}
+#gfq-01-panel[data-theme=east] .gfq-rings i.on{background:var(--ind);border-color:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-stamp{border:1px solid var(--acc);color:var(--acc);border-radius:2px;background:transparent;transform:none}
+#gfq-01-panel[data-theme=east] .gfq-stamp2-in{border-radius:2px;border:1px solid var(--line);background:transparent}
+#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in{border:0;border-radius:3px;background:var(--acc);color:#fffaf4;box-shadow:inset 0 0 0 3px var(--acc),inset 0 0 0 4px #ffffff99;transform:rotate(var(--r))}
+#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in small{color:#fff2ea}
+#gfq-01-panel[data-theme=east] .gfq-stamps{background:var(--card)}
+#gfq-01-panel[data-theme=east] .gfq-receipt{margin-top:10px;border-left:0;border-right:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-image:var(--woodv) 8 0;background:var(--card2)}
+#gfq-01-panel[data-theme=east] .gfq-receipt::after{display:none}
+#gfq-01-panel[data-theme=east] .gfq-rc-total{background:var(--ind);color:var(--hi)}#gfq-01-panel[data-theme=east] .gfq-rc-total span::before{color:var(--gold)}
+#gfq-01-panel[data-theme=east] .gfq-slot{border-color:var(--line);background:var(--card)}
+#gfq-01-panel[data-theme=east] .gfq-slot.on{background:var(--ind);border:2px solid var(--gold);box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-glyph{color:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-badge{background:var(--acc);color:#fff;border-color:var(--hi)}
+#gfq-01-panel[data-theme=east] .gfq-board{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cpath d='M0 240V160c60-10 90-70 150-62s70 48 120 38 80-90 150-78 80 64 130 56 90-40 200 0V240z' fill='%23000000' fill-opacity='.05'/%3E%3C/svg%3E") left bottom/100% 40% no-repeat,var(--board);border-color:var(--line)}
+#gfq-01-panel[data-theme=east] .gfq-board::before,#gfq-01-panel[data-theme=east] .gfq-board::after{border-color:var(--gold)}
+#gfq-01-panel[data-theme=east] .gfq-route polyline{stroke:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-pin-text b{color:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-pinbox.on .gfq-pin-text{background:var(--ind);border-color:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-chno{background:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-cal-day.today{box-shadow:inset 0 0 0 1px var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-cal-day i.k-chapter{background:var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-face.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-tones{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+@media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-side{background:var(--side);border-bottom:1px solid var(--line)}#gfq-01-panel[data-theme=east] .gfq-tabs button{border-bottom:0}#gfq-01-panel[data-theme=east] .gfq-tabs button.primary::after{display:none}#gfq-01-panel[data-theme=east] .gfq-main{padding:0 22px 28px;background-size:8px 100%,8px 100%,5px 100%,5px 100%,auto,100% 160px,auto}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -10px 14px;padding:10px 10px 14px}#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::before,#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-placecard,.gfq-cal)::after{left:-6px;right:-6px}}
+/* v0.7.6 두루마리 장식(참고: 칠일 출석 두루마리). 수묵 색조는 먹회색·살구빛 종이·금 */
+#gfq-01-panel[data-theme=east][data-tone=ink]{--paper:#efe8e1;--paper2:#f4efe9;--card:#f8f3ed;--card2:#fbf8f4;--hi:#fffdfb;--ink:#2a2b30;--sub:#7d7570;--line:#ddd0c4;--ind:#3a3d44;--ind2:#50545d;--indd:#25272c;--deep:#25272c;--gold:#c4a26a;--acc:#b0473a;--side:#f4efe9;--side-fg:#3a3d44;--onacc:#efe3cf;--board:#f4eee8;--wood:linear-gradient(90deg,#16171a,#3a3d44 35%,#5d616b 50%,#33363c 70%,#16171a);--woodv:linear-gradient(180deg,#16171a,#3a3d44 35%,#5d616b 50%,#33363c 70%,#16171a)}
+#gfq-01-panel[data-theme=east] .gfq-main{padding:0 52px 40px;background:
+ linear-gradient(var(--gold),var(--gold)) 0 0/18px 8px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 100%/18px 8px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 0/18px 8px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 100%/18px 8px no-repeat,
+ linear-gradient(var(--gold),var(--gold)) 18px 0/1px 100% no-repeat,linear-gradient(var(--gold),var(--gold)) calc(100% - 18px) 0/1px 100% no-repeat,
+ var(--wood) left top/18px 100% no-repeat,var(--wood) right top/18px 100% no-repeat,
+ linear-gradient(90deg,#0000001f,transparent 9px) 19px 0/10px 100% no-repeat,linear-gradient(270deg,#0000001f,transparent 9px) calc(100% - 19px) 0/10px 100% no-repeat,
+ radial-gradient(ellipse 7px 4px at 78% 22%,#e3a99e88,transparent),radial-gradient(ellipse 5px 3px at 82% 30%,#e3a99e66,transparent),radial-gradient(ellipse 6px 3px at 12% 70%,#e3a99e55,transparent),radial-gradient(ellipse 5px 3px at 64% 86%,#e3a99e55,transparent),
+ radial-gradient(ellipse 60% 50% at 70% 40%,#f3dcd055,transparent 70%),
+ url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 240' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%233a3d44' stop-opacity='.14'/%3E%3Cstop offset='1' stop-color='%233a3d44' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 240V150c50-8 80-80 135-74s60 52 105 40 70-96 130-84 70 70 118 62 84-46 132-34 76 40 180 44V240z' fill='url(%23a)'/%3E%3C/svg%3E") left bottom/100% 200px no-repeat,var(--paper)}
+#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -34px 26px;padding:18px 34px 26px;background:linear-gradient(var(--paper),var(--paper)) top/100% calc(100% - 13px) no-repeat,linear-gradient(var(--gold),var(--gold)) 0 calc(100% - 12px)/100% 1px no-repeat,linear-gradient(var(--ind),var(--ind)) 0 100%/100% 10px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 calc(100% - 4px)/100% 1px no-repeat}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary{background:var(--ind);box-shadow:inset 0 0 0 3px var(--ind),inset 0 0 0 4px color-mix(in srgb,var(--gold) 75%,transparent)}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary::after{display:none}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-l{color:#f3e6cf}
+#gfq-01-panel[data-theme=east] button.primary{background:var(--ind);border:1px solid var(--gold);color:#f3e6cf;box-shadow:inset 0 0 0 2px var(--ind),inset 0 0 0 3px color-mix(in srgb,var(--gold) 70%,transparent);font-family:var(--serif);letter-spacing:.18em}
+#gfq-01-panel[data-theme=east] button.primary:hover:not(:disabled){background:var(--ind2);border-color:var(--gold)}
+#gfq-01-panel[data-theme=east] .gfq-qfoot .primary{padding:12px 28px;min-width:180px}
+#gfq-01-panel[data-theme=east] .gfq-qitem.on{background:var(--ind);box-shadow:inset 0 0 0 3px var(--ind),inset 0 0 0 4px color-mix(in srgb,var(--gold) 70%,transparent)}
+#gfq-01-panel[data-theme=east] .gfq-qhead{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120' preserveAspectRatio='none'%3E%3Cpath d='M0 120V84c40-6 60-46 100-40s40 30 80 22 50-60 100-50 50 46 90 40 70-26 110-18 70 22 120 26V120z' fill='%23ffffff' fill-opacity='.06'/%3E%3C/svg%3E") left bottom/100% 80% no-repeat,linear-gradient(120deg,var(--ind),var(--indd));color:#f3e6cf;border-bottom:1px solid var(--gold);box-shadow:inset 0 0 0 5px var(--ind),inset 0 0 0 6px color-mix(in srgb,var(--gold) 70%,transparent)}
+#gfq-01-panel[data-theme=east] .gfq-qhead::after{background:radial-gradient(circle,transparent 0 58px,color-mix(in srgb,var(--gold) 40%,transparent) 59px 59.6px,transparent 60.5px)}
+#gfq-01-panel[data-theme=east] .gfq-qhead h3{color:#f6ede2}
+#gfq-01-panel[data-theme=east] .gfq-qplace{color:var(--gold)}#gfq-01-panel[data-theme=east] .gfq-qplace:hover:not(:disabled){color:#f6ede2}
+#gfq-01-panel[data-theme=east] .gfq-qmeta{color:#cfc4b8}#gfq-01-panel[data-theme=east] .gfq-qmeta i{background:var(--gold)}
+#gfq-01-panel[data-theme=east] .gfq-qcrest{position:relative;width:46px;height:100px;border-radius:0;margin:10px 6px 0;background:var(--card);border:1px solid var(--gold);box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px color-mix(in srgb,var(--gold) 70%,transparent)}
+#gfq-01-panel[data-theme=east] .gfq-qcrest::before{content:"";position:absolute;left:50%;top:-14px;width:1px;height:14px;background:var(--gold)}
+#gfq-01-panel[data-theme=east] .gfq-qcrest span{writing-mode:vertical-rl;color:var(--acc);font-size:18px;letter-spacing:.4em}
+#gfq-01-panel[data-theme=east] .gfq-slots,#gfq-01-panel[data-theme=east] .gfq-faces{row-gap:34px;padding-top:22px;background:linear-gradient(color-mix(in srgb,var(--ind) 45%,transparent),color-mix(in srgb,var(--ind) 45%,transparent)) 0 6px/100% 1px no-repeat}
+#gfq-01-panel[data-theme=east] :is(.gfq-slot,.gfq-face){position:relative;overflow:visible;border:1px solid var(--line);border-top:0;background:linear-gradient(var(--ind),var(--ind)) top/100% 10px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 10px/100% 1px no-repeat,radial-gradient(circle at 0 100%,transparent 9px,var(--gold) 9.5px 10.5px,transparent 11px) left bottom/22px 22px no-repeat,radial-gradient(circle at 100% 100%,transparent 9px,var(--gold) 9.5px 10.5px,transparent 11px) right bottom/22px 22px no-repeat,linear-gradient(180deg,var(--card),#efe3da)}
+#gfq-01-panel[data-theme=east] .gfq-slot{padding-top:22px}
+#gfq-01-panel[data-theme=east] .gfq-slot::before,#gfq-01-panel[data-theme=east] .gfq-face::before{content:"";position:absolute;top:-16px;left:50%;width:1px;height:16px;margin:0;border-radius:0;background:color-mix(in srgb,var(--ind) 60%,transparent);box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-face::after{content:"";position:absolute;top:-19px;left:50%;width:5px;height:5px;margin-left:-2px;border-radius:50%;background:var(--ind)}
+#gfq-01-panel[data-theme=east] :is(.gfq-slot,.gfq-face):hover:not(:disabled){background:linear-gradient(var(--ind),var(--ind)) top/100% 10px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 10px/100% 1px no-repeat,linear-gradient(180deg,var(--hi),#f4e9e1)}
+#gfq-01-panel[data-theme=east] .gfq-slot.on,#gfq-01-panel[data-theme=east] .gfq-slot.on:hover:not(:disabled){background:linear-gradient(var(--gold),var(--gold)) top/100% 10px no-repeat,linear-gradient(160deg,var(--ind),var(--indd));border:1px solid var(--gold);border-top:0;box-shadow:inset 0 0 0 3px var(--ind),inset 0 0 0 4px color-mix(in srgb,var(--gold) 60%,transparent)}
+#gfq-01-panel[data-theme=east] .gfq-slot.on::after{content:"";position:absolute;bottom:-26px;left:50%;width:16px;height:26px;margin-left:-8px;background:radial-gradient(circle at 50% 5px,var(--gold) 0 4px,transparent 4.5px),linear-gradient(var(--gold),var(--gold)) 7px 9px/2px 17px no-repeat,linear-gradient(var(--gold),var(--gold)) 4px 12px/1px 14px no-repeat,linear-gradient(var(--gold),var(--gold)) 11px 12px/1px 14px no-repeat}
+#gfq-01-panel[data-theme=east] .gfq-face.on{border:1px solid var(--gold);border-top:0;box-shadow:0 0 0 1px var(--ind)}
+#gfq-01-panel[data-theme=east] .gfq-face .gfq-face-img{margin-top:11px}
+#gfq-01-panel[data-theme=east] .gfq-seg button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--ind),inset 0 0 0 3px color-mix(in srgb,var(--gold) 60%,transparent)}
+#gfq-01-panel[data-theme=east] .gfq-rc-total{box-shadow:inset 0 0 0 3px var(--ind),inset 0 0 0 4px color-mix(in srgb,var(--gold) 60%,transparent)}
+@media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-main{padding:0 24px 28px;background-size:9px 6px,9px 6px,9px 6px,9px 6px,1px 100%,1px 100%,9px 100%,9px 100%,5px 100%,5px 100%,auto,auto,auto,auto,auto,100% 150px,auto}#gfq-01-panel[data-theme=east] .gfq-main{background-position:0 0,0 100%,100% 0,100% 100%,9px 0,calc(100% - 9px) 0,left top,right top,10px 0,calc(100% - 10px) 0}#gfq-01-panel[data-theme=east] .gfq-top{margin:0 -10px 16px;padding:10px 10px 22px}}
+#gfq-01-panel[data-theme=east] :is(.gfq-link,.gfq-qplace),#gfq-01-panel[data-theme=east] :is(.gfq-link,.gfq-qplace):hover:not(:disabled){background:none;border:0}
+@media(max-width:760px){#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0;gap:3px}#gfq-01-panel[data-theme=east] .gfq-tabs button{flex:1 1 0;min-width:0}#gfq-01-panel[data-theme=east] .gfq-tab-ic{width:28px;height:26px}#gfq-01-panel[data-theme=east] .gfq-tab-l{padding:0 0 3px;letter-spacing:0;font-size:11px}#gfq-01-panel[data-theme=east] .gfq-top h2{letter-spacing:.12em}}
 `;
   style.textContent+=`
 #${ID}-toasts,#${ID}-qtoasts{position:fixed;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:stretch;gap:10px;z-index:2147483002;pointer-events:none;--paper:#f1efea;--ink:#202229;--sub:#67655f;--k:#3b3f7a;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;--sans:"Pretendard","Noto Sans KR",system-ui,sans-serif}
@@ -673,7 +735,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button{font:700 13px var(--sans);padding:8px 18px;border-radius:0;border:1.5px solid var(--ink);background:var(--k);color:#fff;cursor:pointer}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button[data-o=later]{background:transparent;color:var(--ink)}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button:focus-visible{outline:3px solid #f0c02f;outline-offset:2px}
-:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east]{--paper:#f7f5f0;--ink:#26302e}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] :is(.gfq-toast-quest,.gfq-toast-step){--k:#3d5a55}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-toast{border:1px solid #c4a06a}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-t-stub{background:linear-gradient(90deg,#2a1a10,#6b4428 22%,#a9744a 45%,#7a4e2e 70%,#2e1c11);border-right:0;box-shadow:4px 0 0 var(--k)}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-t-body{border-left:4px solid var(--k)}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-offer-row button[data-o=yes]{background:#d9572e;border-color:#d9572e}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east]{--paper:#faf8f4;--ink:#262523}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] :is(.gfq-toast-quest,.gfq-toast-step){--k:#2b2a28}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east][data-tone=porcelain] :is(.gfq-toast-quest,.gfq-toast-step){--k:#1f3f6e}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east][data-tone=celadon] :is(.gfq-toast-quest,.gfq-toast-step){--k:#4e7466}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-toast{border:1px solid #d6cfc2;box-shadow:0 14px 34px #0007}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-t-stub{border-right:1px solid #b39c6e}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-offer-row button[data-o=yes]{background:var(--k);border-color:var(--k)}
 :is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy]{--paper:#fbf6e9;--ink:#3a2b1b}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] .gfq-toast{border:1px solid #8a6f4a;box-shadow:inset 0 0 0 3px #fbf6e9,inset 0 0 0 4px #c7b28b,0 14px 34px #0009}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] :is(.gfq-toast-quest,.gfq-toast-step){--k:#6b4f2e}
 :is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] .gfq-toast{clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf]{--paper:#f3f6f8;--ink:#121820;--serif:"Bahnschrift","DIN Alternate","Roboto Condensed","Pretendard","Noto Sans KR",sans-serif}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] :is(.gfq-toast-quest,.gfq-toast-step){--k:#0f6a80}
 :is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school]{--paper:#fbfbfe;--ink:#23263a}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] :is(.gfq-toast-quest,.gfq-toast-step){--k:#3d63b0}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] .gfq-toast{border-radius:10px;overflow:hidden}
@@ -2145,7 +2207,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(!toastBox){toastBox=document.createElement('div');toastBox.id=ID+'-toasts';toastBox.setAttribute('popover','manual');document.body.append(toastBox);}
     if(!questBox){questBox=document.createElement('div');questBox.id=ID+'-qtoasts';questBox.className='gfq-center';questBox.setAttribute('popover','manual');document.body.append(questBox);}
     const box=center?questBox:toastBox;
-    for(const b of [toastBox,questBox])b.dataset.theme=gfqTheme(current());
+    for(const b of [toastBox,questBox]){b.dataset.theme=gfqTheme(current());b.dataset.tone=gfqTone(current());}
     try{if(box.showPopover&&!box.matches(':popover-open'))box.showPopover();}catch{}
     return box;
   }
@@ -3216,20 +3278,23 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // v0.7.2: looks per world. Only colours, fonts and paper texture change; the layout stays the same.
   const GFQ_THEMES=[
     ['modern','현대','사건 파일 · 남색과 회색 종이',['#d7d4cd','#3b3f7a','#f0c02f']],
-    ['east','동양','두루마리 · 수묵 산수 · 옥빛 · 주홍',['#ebe7df','#3d5a55','#d9572e']],
+    ['east','동양','두루마리 · 걸개 · 금장식',['#efe8e1','#3a3d44','#c4a26a']],
     ['fantasy','판타지','가죽 책상 · 낡은 수첩 · 세피아 · 황동',['#efe5cd','#6b4f2e','#c9a24a']],
     ['sf','SF','관제 화면 · 육각 · 각진 카드',['#e1e6ea','#0f6a80','#16c6db']],
     ['school','학원·일상','줄 노트 · 테이프 · 스티커',['#ecedf3','#3d63b0','#ff8fab']]
   ];
+  const GFQ_TONES=[['ink','수묵','먹회색 · 살구빛 종이 · 금',['#efe8e1','#3a3d44','#c4a26a']],['porcelain','청화백자','쪽빛 · 백자',['#eef0ef','#1f3f6e','#a7adb8']],['celadon','청자','비색 · 청동',['#e9ede7','#4e7466','#a88a55']]];
+  const gfqTone=w=>GFQ_TONES.some(t=>t[0]===w?.gfEastTone)?w.gfEastTone:'ink';
   const gfqTheme=w=>GFQ_THEMES.some(t=>t[0]===w?.gfTheme)?w.gfTheme:'modern';
   function gfqThemeHtml(w){
     const cur=gfqTheme(w);
     return '<div class="gfq-card"><b>화면 테마</b><p class="gfq-muted">이 월드의 장르에 맞는 모양을 고를 수 있습니다. 월드마다 따로 저장되며, 알림 팝업에도 같은 색이 쓰입니다.</p><div class="gfq-themes">'+
-      GFQ_THEMES.map(([k,n,d,c])=>'<button class="gfq-theme" data-action="pick-theme" data-id="'+k+'" aria-pressed="'+(k===cur)+'"><span class="gfq-theme-sw" aria-hidden="true">'+c.map(x=>'<i style="background:'+x+'"></i>').join('')+'</span><b>'+n+'</b><small>'+d+'</small></button>').join('')+'</div></div>';
+      GFQ_THEMES.map(([k,n,d,c])=>'<button class="gfq-theme" data-action="pick-theme" data-id="'+k+'" aria-pressed="'+(k===cur)+'"><span class="gfq-theme-sw" aria-hidden="true">'+c.map(x=>'<i style="background:'+x+'"></i>').join('')+'</span><b>'+n+'</b><small>'+d+'</small></button>').join('')+'</div>'+
+      (cur==='east'?'<p class="gfq-muted">동양 테마 색조</p><div class="gfq-themes">'+GFQ_TONES.map(([k,n,d,c])=>'<button class="gfq-theme" data-action="pick-tone" data-id="'+k+'" aria-pressed="'+(k===gfqTone(w))+'"><span class="gfq-theme-sw" aria-hidden="true">'+c.map(x=>'<i style="background:'+x+'"></i>').join('')+'</span><b>'+n+'</b><small>'+d+'</small></button>').join('')+'</div>':'')+'</div>';
   }
   function render(){if(!panel)return;let w=current();if(currentTab==='assets'||currentTab==='items')currentTab='profile';const tabs=[['quests','퀘스트'],['profile','프로필'],['cast','인물'],['places','장소'],['calendar','일정'],['history','기록'],['settings','설정']];if(!tabs.some(t=>t[0]===currentTab))currentTab='quests';const label=tabs.find(t=>t[0]===currentTab)[1];const today=w?gfqCurrentDate(w):null;const empty='<div class="gfq-empty"><strong>월드를 먼저 골라 주세요</strong><span class="gfq-sub">게임에서 월드를 열면 자동으로 연결됩니다.</span></div>';
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.5</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);for(const b of [toastBox,questBox])if(b)b.dataset.theme=gfqTheme(w);if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.6</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
   function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
@@ -3249,6 +3314,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   if(act==='select-quest'){selectedQuest=id;return render();}
   if(act==='pick-unit'){return update(w=>{if(id)w.gfCurrency=id;else delete w.gfCurrency;record(w,'주 화폐: '+(id||'자동 ('+gfqMainUnit(w)+')'));});}
   if(act==='pick-unit-custom'){const v=ask('주 화폐 단위를 적어 주세요. (예: 마석, 루피, 포인트)',w.gfCurrency||'');if(v===null)return;const u=String(v).trim().slice(0,12);return update(w=>{if(u)w.gfCurrency=u;else delete w.gfCurrency;record(w,'주 화폐: '+(u||'자동'));});}
+  if(act==='pick-tone'){return update(w=>{w.gfEastTone=id;record(w,'동양 테마 색조: '+(GFQ_TONES.find(t=>t[0]===id)?.[1]||id));});}
   if(act==='pick-theme'){return update(w=>{w.gfTheme=id;record(w,'화면 테마: '+(GFQ_THEMES.find(t=>t[0]===id)?.[1]||id));});}
   if(act==='pick-world'){data.world=id;save();return render();}
   if(act==='cash-base'){const cur=w.gfCashBase?.amount;const v=ask('이야기를 시작할 때 주인공이 가진 돈('+gfqMainUnit(w)+')을 숫자로 입력해 주세요. 거래 내역의 입금 확인과 지출을 더하고 빼서 현재 소지금을 계산합니다.',cur!=null?String(cur):'');if(v===null)return;const n=Number(String(v).replace(/[,\s원]/g,''));if(!Number.isFinite(n)||n<0)return alert('0 이상의 숫자로 입력해 주세요.');return update(w=>{w.gfCashBase={amount:Math.round(n),unit:gfqMainUnit(w),at:now()};record(w,'시작 소지금 설정: '+gfqAmount(Math.round(n),gfqMainUnit(w)));});}
