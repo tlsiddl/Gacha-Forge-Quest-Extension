@@ -2,8 +2,8 @@ const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
-const consts=['GFQ_CONDITIONAL','gfqIsCond','GFQ_INJECT_SECTIONS','gfqWeekday','GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
-const names=['gfqCleanLore','gfqMergeLore','gfqInjectText','gfqQuestRewardItems','gfqInjectLines','gfqInjectFit','gfqInjectSections','gfqCash','gfqVNDate','gfqDayDiff','gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
+const consts=['GFQ_CURRENCIES','GFQ_UNIT_OF','gfqUnit','gfqIsMoneyUnit','GFQ_THEME_UNIT','GFQ_UNIT_ALT','GFQ_NATIVE_NUM','gfqCurCache','gfqMoneyScale','GFQ_CONDITIONAL','gfqIsCond','GFQ_INJECT_SECTIONS','gfqWeekday','GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
+const names=['gfqCleanLore','gfqMergeLore','gfqInjectText','gfqQuestRewardItems','gfqKNum','gfqMoneyIn','gfqDetectUnit','gfqMainUnit','gfqInjectLines','gfqInjectFit','gfqInjectSections','gfqCash','gfqVNDate','gfqDayDiff','gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
 const L={legacy:true,hero:'채서래'};
@@ -296,7 +296,7 @@ t('구매: 지출은 원장, 산 물품은 소지품(받기 전이면 수령 예
 });
 t('원장 요약: 승인된 원화 거래만 상태별 합산',()=>{
   const s=F.gfqLedgerSummary({gfLedger:[{unit:'원',amount:1400000,state:'received'},{unit:'원',amount:300000,state:'paid'},{unit:'원',amount:500000,state:'pending'},{unit:'원',amount:null,state:'receivable'},{unit:'%',amount:50,state:'waived'}]});
-  assert.deepStrictEqual(s,{received:1400000,paid:300000,receivable:0,pending:500000,unknown:1,other:1});
+  assert.deepStrictEqual(s,{unit:'원',received:1400000,paid:300000,receivable:0,pending:500000,unknown:1,other:1,byUnit:{}});
 });
 t('판매: 대금은 원장, 판 물품은 소지품에서 차감 · 현금으로 받은 대금은 입금으로 인정',()=>{
   const w={items:[{id:'i',name:'마석 조각',qty:5}],history:[]};
@@ -560,5 +560,19 @@ t('조건부 보장: 중도 철수 시 보장은 총액에 더하지 않는 조�
   const quest=out.list.find(p=>p.category==='quest');assert.ok(quest.questRewards.some(r=>r.certainty==='conditional'&&r.amount===600000));
   const w={gfLedger:[{id:'a',name:'중도 철수 시 기본급 50% 보장',amount:600000,unit:'원',state:'pending'},{id:'b',name:'보수',amount:1500000,unit:'원',state:'pending'}]};
   assert.strictEqual(F.gfqLedgerSummary(w).pending,1500000,'floor not counted as money owed');
+});
+t('화폐: 골드·냥·전·크레딧과 글자로 쓴 수를 인식하고 화폐별로 따로 합산',()=>{
+  const m=F.gfqMoneyIn('보수로 1,200골드와 은화 서른 닢, 그리고 닷 냥을 받았다. 엽전 삼백 냥은 다음에 준다. 3만 크레딧 입금. 이전 장면에서 두 문을 지났다.');
+  const got=m.map(x=>x.n+x.unit);
+  for(const k of ['1200골드','30은화','5냥','300냥','30000크레딧'])assert.ok(got.includes(k),k+' in '+got.join(','));
+  assert.ok(!got.some(x=>/문|^2전/.test(x)),'no door / 이전 false positives: '+got.join(','));assert.ok(!got.includes('10000크레딧'),'3만 not read twice');
+  assert.ok(F.gfqAmountsIn('금화 열두 닢을 건넸다').has(12));assert.strictEqual(F.gfqKNum('스물다섯'),25);assert.strictEqual(F.gfqKNum('이천오백'),2500);
+  const w={gfStorySamples:[{id:'a',text:'의뢰비는 500골드다.'},{id:'b',text:'선금 200골드를 받았다. 숙박비 30골드.'}],gfLedger:[
+    {id:'1',name:'선금',amount:200,unit:'골드',state:'received'},{id:'2',name:'잔금',amount:300,unit:'G',state:'pending'},{id:'3',name:'옛 빚',amount:5,unit:'냥',state:'received'}]};
+  assert.strictEqual(F.gfqMainUnit(w),'골드');
+  const sm=F.gfqLedgerSummary(w);assert.strictEqual(sm.unit,'골드');assert.strictEqual(sm.received,200);assert.strictEqual(sm.pending,300,'G counts as 골드');
+  assert.strictEqual(sm.byUnit['냥'].received,5,'other currency kept apart');
+  assert.strictEqual(F.gfqMainUnit({gfTheme:'east'}),'냥','theme default when the story names none');
+  assert.strictEqual(F.gfqMainUnit({...w,gfCurrency:'마석'}),'마석','player choice wins');
 });
 console.log('\n'+pass+'개 통과');

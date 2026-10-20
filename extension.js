@@ -1,4 +1,4 @@
-/* 퀘스트 v0.7.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.7.3 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -444,11 +444,6 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-outfits button[aria-pressed=true]{border:2px solid var(--mark);background:var(--ind);color:#fff;box-shadow:0 0 0 1px var(--ind)}
 
 /* v0.7.2 themes: each world can pick a look. Only colours, fonts and paper texture change. */
-#gfq-01-panel[data-theme=east]{--paper:#e6dfcf;--paper2:#ddd3bf;--card:#f6f1e5;--card2:#fbf8ef;--hi:#fffdf6;--ink:#1d1a17;--sub:#6a6154;--line:#bdb199;--ind:#2a2622;--ind2:#463f37;--indd:#141210;--mark:#b8352a;--onacc:#d9cfbf;--board:#efe8d8;--hatch1:#d6ccb7;--hatch2:#e4dccb;--red:#a3271c}
-#gfq-01-panel[data-theme=east] .gfq-main{background:linear-gradient(90deg,#b8352a12 1px,transparent 1px) 0 0/34px 100%,radial-gradient(ellipse at 20% 0,#ffffff80,transparent 60%),var(--paper)}
-#gfq-01-panel[data-theme=east] .gfq-side{background:radial-gradient(ellipse 140% 60% at 0 0,var(--ind) 0 38%,#2a262200 62%),repeating-radial-gradient(circle at 70% 90%,transparent 0 30px,#2a262212 31px 32px,transparent 33px 50px),var(--paper2)}
-#gfq-01-panel[data-theme=east] .gfq-brand-mark{border-color:#b8352a;box-shadow:inset 0 0 0 4px var(--ind),inset 0 0 0 7px #b8352a}
-#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in,#gfq-01-panel[data-theme=east] .gfq-stamp{color:#a3271c;border-color:#a3271c}
 #gfq-01-panel[data-theme=fantasy]{--paper:#e3d3ae;--paper2:#d9c497;--card:#f3e7c9;--card2:#f8efd8;--hi:#fffaee;--ink:#2a1c10;--sub:#6c5839;--line:#b49b6c;--ind:#6a1e2b;--ind2:#8a2b3a;--indd:#3d0e16;--mark:#c9a227;--onacc:#e8cfa8;--board:#efe2c2;--hatch1:#d3bf93;--hatch2:#e2d2ad}
 #gfq-01-panel[data-theme=fantasy] .gfq-main{background:radial-gradient(ellipse at 50% 40%,transparent 55%,#7a5a2a2e),radial-gradient(circle at 15% 20%,#ffffff55,transparent 40%),var(--paper)}
 #gfq-01-panel[data-theme=fantasy] .gfq-side{background:linear-gradient(158deg,var(--ind) 0 40%,transparent 40.2%),repeating-radial-gradient(circle at 34% 88%,transparent 0 34px,#c9a2272a 35px 36px,transparent 37px 60px),var(--paper2)}
@@ -471,6 +466,109 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-card .gfq-theme[aria-pressed=true],#gfq-01-panel .gfq-card .gfq-theme[aria-pressed=true]:hover{outline:3px solid var(--mark);outline-offset:-1px;background:var(--hi);color:var(--ink);border-color:var(--ind)}
 
 #gfq-01-panel .gfq-rw-row.cond{border-left-style:dashed;background:transparent}#gfq-01-panel .gfq-rw-row.cond b{color:var(--sub);font-size:18px}
+
+#gfq-01-panel .gfq-units{gap:6px}#gfq-01-panel .gfq-units button{padding:4px 12px;font-size:13px}
+#gfq-01-panel .gfq-rc-other{display:flex;flex-direction:column;gap:2px;margin:-4px 0 10px;padding:8px 12px;border:1px dashed var(--line);font-size:12px}#gfq-01-panel .gfq-rc-other b{font-size:11px;color:var(--sub)}
+
+/* v0.7.3 theme shapes. 동양: 청록·한지·단청·낙관 / 판타지: 양피지·진홍·금 장식·밀랍 / SF: 각진 HUD / 학원: 둥근 노트·마스킹 테이프 */
+#gfq-01-panel[data-theme=east]{--paper:#e9e2d2;--paper2:#ddd4c0;--card:#f6f1e4;--card2:#fbf8ee;--hi:#fffdf6;--ink:#1c1a17;--sub:#655d51;--line:#bcae95;--ind:#1d6a64;--ind2:#28877f;--indd:#0f3d39;--mark:#c0392b;--onacc:#cfe3df;--board:#efe8d8;--hatch1:#d6ccb7;--hatch2:#e4dccb;--red:#b0301f}
+#gfq-01-panel[data-theme=east] .gfq-main{background:radial-gradient(ellipse at 20% 0,#ffffff90,transparent 60%),repeating-linear-gradient(90deg,transparent 0 33px,#1d6a640d 33px 34px),var(--paper)}
+#gfq-01-panel[data-theme=east] .gfq-side{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='70' viewBox='0 0 120 70'%3E%3Cpath d='M10 50c0-9 9-14 17-11 2-9 14-12 20-5 6-6 18-2 18 7 8-1 13 8 7 13H14c-3 0-4-2-4-4z' fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='1.4'/%3E%3Cpath d='M70 22c0-6 6-9 11-7 2-6 10-7 13-2 5-3 11 1 10 6 5 0 7 6 3 8H73c-2 0-3-2-3-5z' fill='none' stroke='%23ffffff' stroke-opacity='.12' stroke-width='1.2'/%3E%3C/svg%3E") 0 0/120px 70px,linear-gradient(180deg,var(--indd),var(--ind) 60%,#2b7a72);border-right:0;box-shadow:inset -8px 0 0 #c0392b,inset -12px 0 0 #e6b54a,inset -16px 0 0 #2f8f5b,inset -18px 0 0 #1c1a17}
+#gfq-01-panel[data-theme=east] .gfq-tabs{padding:0 26px 0 16px}
+#gfq-01-panel[data-theme=east] .gfq-tabs button{gap:8px}
+#gfq-01-panel[data-theme=east] .gfq-tab-ic{border-radius:50%;border:1.5px solid #e6b54a;background:var(--card);color:var(--ind);box-shadow:none}
+#gfq-01-panel[data-theme=east] .gfq-tab-l{margin:0;clip-path:none;border-radius:4px;border:1px solid #e6b54a;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px #1d6a6455;text-decoration:none;text-align:center;padding:9px 12px;color:var(--indd)}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-ic{background:#c0392b;color:#fff;border-color:#fff;transform:none}
+#gfq-01-panel[data-theme=east] .gfq-tabs button.primary .gfq-tab-l{background:var(--card);color:#c0392b;border-color:#c0392b;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px #c0392b}
+#gfq-01-panel[data-theme=east] .gfq-side-foot{border-radius:4px;border-color:#e6b54a;background:var(--card)}
+#gfq-01-panel[data-theme=east] .gfq-top{border-bottom:3px solid var(--ind);box-shadow:0 4px 0 -1px #c0392b}
+#gfq-01-panel[data-theme=east] .gfq-top h2::after{content:"";display:inline-block;width:22px;height:22px;margin-left:12px;vertical-align:middle;background:#c0392b;border-radius:3px;transform:rotate(-4deg);box-shadow:inset 0 0 0 2px #c0392b,inset 0 0 0 3px #f6f1e4,inset 0 0 0 6px #c0392b}
+#gfq-01-panel[data-theme=east] :is(.gfq-card,.gfq-qdetail,.gfq-dossier,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-qitem,.gfq-slot,.gfq-face,.gfq-rw-tile,.gfq-rw-row){border-radius:6px}
+#gfq-01-panel[data-theme=east] :is(.gfq-qdetail,.gfq-ticket,.gfq-placecard,.gfq-cal){box-shadow:inset 0 0 0 4px var(--card),inset 0 0 0 5px #1d6a6440,4px 4px 0 #0000001a}
+#gfq-01-panel[data-theme=east] .gfq-card::before{background:repeating-linear-gradient(180deg,#1d6a64 0 10px,#c0392b 10px 14px,#e6b54a 14px 17px,#2f8f5b 17px 20px)}
+#gfq-01-panel[data-theme=east] .gfq-qhead{background:var(--ind);border-bottom:6px solid transparent;border-image:repeating-linear-gradient(90deg,#c0392b 0 14px,#e6b54a 14px 20px,#2f8f5b 20px 28px,#1c1a17 28px 30px) 6}
+#gfq-01-panel[data-theme=east] .gfq-qhead::after{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cpath d='M30 150c0-20 20-30 38-24 4-20 32-26 44-11 13-13 40-4 39 15 18-2 28 18 15 28H38c-5 0-8-4-8-8z' fill='none' stroke='%23ffffff' stroke-opacity='.18' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat}
+#gfq-01-panel[data-theme=east] .gfq-qcrest{clip-path:none;border-radius:50%;width:80px;height:80px;box-shadow:inset 0 0 0 4px var(--card),inset 0 0 0 6px #c0392b}
+#gfq-01-panel[data-theme=east] .gfq-qcrest span{color:#c0392b}
+#gfq-01-panel[data-theme=east] :is(button,select,input){border-radius:4px}
+#gfq-01-panel[data-theme=east] button.primary{box-shadow:inset 0 0 0 2px var(--ind),inset 0 0 0 3px #e6b54a}
+#gfq-01-panel[data-theme=east] .gfq-stamp2-in{border-radius:6px}
+#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in{border:3px solid #c0392b;color:#c0392b;background:#c0392b14;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px #c0392b}
+#gfq-01-panel[data-theme=east] .gfq-stamp{border-radius:3px;color:#c0392b;border-color:#c0392b;background:#c0392b0d}
+#gfq-01-panel[data-theme=east] .gfq-receipt{border-radius:0;border-left:0;border-right:0;border-top:10px solid #3b2a1d;border-bottom:10px solid #3b2a1d;box-shadow:0 -3px 0 #6b4e35 inset,0 3px 0 #6b4e35,4px 6px 0 #0000001a}
+#gfq-01-panel[data-theme=east] .gfq-receipt::after{display:none}
+#gfq-01-panel[data-theme=east] .gfq-rc-total{background:var(--indd)}
+#gfq-01-panel[data-theme=east] .gfq-board{background:radial-gradient(circle at 62% 46%,#1d6a6414,transparent 40%),repeating-linear-gradient(0deg,transparent 0 39px,#1d6a641a 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,#1d6a641a 39px 40px),var(--board)}
+#gfq-01-panel[data-theme=fantasy] .gfq-side{background:linear-gradient(180deg,#4b1520,var(--ind) 45%,#5a1a26);border-right:3px double #c9a227}
+#gfq-01-panel[data-theme=fantasy] .gfq-tab-ic{background:var(--card);border:1.5px solid #c9a227;transform:rotate(45deg) scale(.82);box-shadow:none}
+#gfq-01-panel[data-theme=fantasy] .gfq-tab-ic svg{transform:rotate(-45deg)}
+#gfq-01-panel[data-theme=fantasy] .gfq-tab-l{margin-left:-2px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 50%,100% 100%,0 100%);border:0;border-top:1px solid #c9a227;border-bottom:1px solid #c9a227;text-decoration:none;font-family:var(--serif);letter-spacing:.08em;background:linear-gradient(180deg,#f8efd8,#e9d9b2)}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary .gfq-tab-ic{transform:rotate(45deg) scale(.9);background:#c9a227;color:var(--indd);border-color:#fff3c4}
+#gfq-01-panel[data-theme=fantasy] .gfq-tabs button.primary .gfq-tab-l{background:linear-gradient(180deg,#d9b445,#b68f1f);color:#3d0e16;border-color:#fff3c4}
+#gfq-01-panel[data-theme=fantasy] .gfq-top{border-bottom:4px double #c9a227}
+#gfq-01-panel[data-theme=fantasy] .gfq-top h2::before{content:"❦ ";color:#c9a227;font-size:.8em}
+#gfq-01-panel[data-theme=fantasy] :is(.gfq-qdetail,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-dossier){border:3px double #b08a2e;position:relative}
+#gfq-01-panel[data-theme=fantasy] :is(.gfq-qdetail,.gfq-placecard,.gfq-cal,.gfq-stamps)::after{content:"❧";position:absolute;right:8px;bottom:2px;color:#b08a2e;font-size:22px;line-height:1;pointer-events:none}
+#gfq-01-panel[data-theme=fantasy] .gfq-card{border:1px solid #b08a2e}
+#gfq-01-panel[data-theme=fantasy] .gfq-card::before{background:linear-gradient(180deg,#c9a227,var(--ind) 30%,var(--ind) 70%,#c9a227)}
+#gfq-01-panel[data-theme=fantasy] h3::before{content:"✦ ";color:#c9a227}
+#gfq-01-panel[data-theme=fantasy] .gfq-qhead{background:radial-gradient(ellipse at 0 0,#8a2b3a,transparent 60%),var(--ind);border-bottom:3px double #c9a227}
+#gfq-01-panel[data-theme=fantasy] .gfq-qcrest{background:linear-gradient(180deg,#f3e2a6,#c9a227);color:var(--indd)}
+#gfq-01-panel[data-theme=fantasy] button.primary{background:linear-gradient(180deg,#8a2b3a,var(--ind));border-color:#c9a227;box-shadow:inset 0 0 0 1px #ffe39a55}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in{border:0;color:#fff3c4;background:radial-gradient(circle at 35% 30%,#a8334a,#6a1e2b 70%);box-shadow:0 0 0 4px #6a1e2b55,inset 0 0 0 5px #8a2b3a,inset 0 0 0 6px #e8c46e88;transform:rotate(var(--r))}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in small{color:#f3e2a6}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp{border-color:var(--ind);color:var(--ind)}
+#gfq-01-panel[data-theme=fantasy] .gfq-receipt{border:3px double #b08a2e;background:linear-gradient(180deg,#f8efd8,#efe1bf)}
+#gfq-01-panel[data-theme=fantasy] .gfq-receipt h3::before{content:"";}
+#gfq-01-panel[data-theme=fantasy] .gfq-rc-total{background:var(--indd);color:#f3e2a6;border:1px solid #c9a227}
+#gfq-01-panel[data-theme=fantasy] .gfq-board{background:radial-gradient(ellipse at 50% 50%,transparent 50%,#7a5a2a26),repeating-radial-gradient(circle at 62% 46%,transparent 0 58px,#6a1e2b1f 59px 60px,transparent 61px 118px),var(--board)}
+#gfq-01-panel[data-theme=sf]::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0f6a8008 0 1px,transparent 1px 3px)}
+#gfq-01-panel[data-theme=sf] .gfq-tab-ic{clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border:0;background:var(--ind);color:#fff;box-shadow:none}
+#gfq-01-panel[data-theme=sf] .gfq-tab-l{clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);margin-left:-4px;padding-left:20px;border:0;border-bottom:2px solid var(--ind);text-decoration:none;font-family:var(--cond);letter-spacing:.1em}
+#gfq-01-panel[data-theme=sf] .gfq-tabs button.primary .gfq-tab-ic{background:var(--mark);color:var(--indd);transform:none}
+#gfq-01-panel[data-theme=sf] .gfq-tabs button.primary .gfq-tab-l{background:var(--indd);color:var(--mark);border-bottom-color:var(--mark);box-shadow:inset 0 0 12px #16c6db44}
+#gfq-01-panel[data-theme=sf] .gfq-top{border-bottom:1px solid var(--ind);box-shadow:0 3px 0 -1px var(--mark)}
+#gfq-01-panel[data-theme=sf] .gfq-top h2{font-family:var(--cond);letter-spacing:.14em}
+#gfq-01-panel[data-theme=sf] :is(.gfq-card,.gfq-qitem,.gfq-slot,.gfq-rw-tile,.gfq-rw-row,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-face,.gfq-receipt){clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+#gfq-01-panel[data-theme=sf] :is(.gfq-qdetail,.gfq-ticket,.gfq-dossier,.gfq-cal,.gfq-placecard){background-image:linear-gradient(var(--mark),var(--mark)),linear-gradient(var(--mark),var(--mark)),linear-gradient(var(--mark),var(--mark)),linear-gradient(var(--mark),var(--mark));background-size:18px 2px,2px 18px,18px 2px,2px 18px;background-position:6px 6px,6px 6px,calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) calc(100% - 6px);background-repeat:no-repeat}
+#gfq-01-panel[data-theme=sf] .gfq-card::before{width:3px;background:var(--mark);box-shadow:0 0 8px var(--mark)}
+#gfq-01-panel[data-theme=sf] .gfq-qhead{background:linear-gradient(90deg,var(--indd),var(--ind));border-bottom:2px solid var(--mark)}
+#gfq-01-panel[data-theme=sf] .gfq-qhead::after{background:repeating-linear-gradient(0deg,#16c6db14 0 1px,transparent 1px 6px);border-radius:0;inset:0;width:auto;height:auto;right:0;top:0}
+#gfq-01-panel[data-theme=sf] .gfq-qcrest{clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);width:86px;height:74px;background:var(--mark);color:var(--indd)}
+#gfq-01-panel[data-theme=sf] :is(h3,.gfq-qhead h3,.gfq-tk-name,.gfq-receipt h3){font-family:var(--cond);letter-spacing:.06em}
+#gfq-01-panel[data-theme=sf] button:not(.gfq-tabs button,.gfq-slot,.gfq-face,.gfq-qitem,.gfq-obj,.gfq-pinbox,.gfq-link,.gfq-cal-day,.gfq-theme,.gfq-seg button,.gfq-qplace,.gfq-outfits button,.gfq-drop-menu button){clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);padding-left:16px;padding-right:16px}
+#gfq-01-panel[data-theme=sf] .gfq-stamp2-in{border-radius:0;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%);border:0;background:#0f6a800f}
+#gfq-01-panel[data-theme=sf] .gfq-stamp2.got .gfq-stamp2-in{background:linear-gradient(160deg,var(--ind),var(--indd));color:var(--mark);box-shadow:none;transform:none}
+#gfq-01-panel[data-theme=sf] .gfq-stamp2.got .gfq-stamp2-in small{color:#bfe6ee}
+#gfq-01-panel[data-theme=sf] .gfq-stamp{border-color:var(--ind);color:var(--ind);transform:none}
+#gfq-01-panel[data-theme=sf] .gfq-receipt::after{display:none}
+#gfq-01-panel[data-theme=sf] .gfq-rc-total{background:var(--indd);color:var(--mark)}
+#gfq-01-panel[data-theme=school] .gfq-tab-ic{border-radius:50%;border:2px solid var(--ind);box-shadow:none}
+#gfq-01-panel[data-theme=school] .gfq-tab-l{clip-path:none;border-radius:0 999px 999px 0;border:2px solid #c3c7da;border-left:0;text-decoration:none}
+#gfq-01-panel[data-theme=school] .gfq-tabs button.primary .gfq-tab-ic{background:var(--mark);border-color:#fff;color:#fff;transform:rotate(-8deg)}
+#gfq-01-panel[data-theme=school] .gfq-tabs button.primary .gfq-tab-l{background:var(--ind);color:#fff;border-color:var(--ind)}
+#gfq-01-panel[data-theme=school] .gfq-side-foot{border-radius:14px;border-width:2px}
+#gfq-01-panel[data-theme=school] .gfq-top{border-bottom:3px dotted var(--ind)}
+#gfq-01-panel[data-theme=school] .gfq-top h2{background:linear-gradient(transparent 58%,#ff8fab88 58%);padding:0 4px}
+#gfq-01-panel[data-theme=school] h3{background:linear-gradient(transparent 60%,#ffe08a 60%);display:inline-block;padding:0 3px}
+#gfq-01-panel[data-theme=school] :is(.gfq-card,.gfq-qdetail,.gfq-dossier,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-stamps,.gfq-chcard,.gfq-qitem,.gfq-face,.gfq-rw-tile,.gfq-rw-row,.gfq-receipt,.gfq-board){border-radius:14px;overflow:visible}
+#gfq-01-panel[data-theme=school] :is(.gfq-qdetail,.gfq-ticket,.gfq-placecard,.gfq-cal,.gfq-receipt){position:relative}
+#gfq-01-panel[data-theme=school] :is(.gfq-qdetail,.gfq-placecard,.gfq-cal,.gfq-ticket)::before{content:"";position:absolute;z-index:3;top:-10px;left:50%;width:96px;height:22px;margin-left:-48px;background:repeating-linear-gradient(45deg,#ff8fab99 0 6px,#ffb3c799 6px 12px);transform:rotate(-3deg);pointer-events:none}
+#gfq-01-panel[data-theme=school] .gfq-qhead{border-radius:14px 14px 0 0;background:linear-gradient(115deg,var(--ind),#7a9be0)}
+#gfq-01-panel[data-theme=school] .gfq-qcrest{clip-path:none;border-radius:50%;width:78px;height:78px;border:3px dashed var(--mark)}
+#gfq-01-panel[data-theme=school] :is(button,select,input,.gfq-drop summary){border-radius:10px}
+#gfq-01-panel[data-theme=school] .gfq-slot{border-radius:4px;border:0;box-shadow:2px 3px 0 #0000001a;background:#fff6b8}
+#gfq-01-panel[data-theme=school] .gfq-slot:nth-child(3n+2){background:#ffd6e0}#gfq-01-panel[data-theme=school] .gfq-slot:nth-child(3n){background:#d6e6ff}
+#gfq-01-panel[data-theme=school] .gfq-slot:nth-child(odd){transform:rotate(-1.2deg)}#gfq-01-panel[data-theme=school] .gfq-slot:nth-child(even){transform:rotate(1deg)}
+#gfq-01-panel[data-theme=school] .gfq-slot::before{background:#ff8fab;width:9px;height:9px}
+#gfq-01-panel[data-theme=school] .gfq-slot.on{background:var(--ind);transform:none}
+#gfq-01-panel[data-theme=school] .gfq-stamp2-in{border:2px dashed #ff8fab88}
+#gfq-01-panel[data-theme=school] .gfq-stamp2.got .gfq-stamp2-in{border:0;background:radial-gradient(circle at 30% 25%,#fff,#ffd0dc 60%,#ff8fab);color:#7a2a44;box-shadow:0 3px 0 #0000001f}
+#gfq-01-panel[data-theme=school] .gfq-stamp2.got .gfq-stamp2-in small{color:#7a2a44}
+#gfq-01-panel[data-theme=school] .gfq-stamp{border-radius:999px;transform:none}
+#gfq-01-panel[data-theme=school] .gfq-receipt::after{display:none}
+#gfq-01-panel[data-theme=school] .gfq-rc-total{border-radius:10px}
+#gfq-01-panel[data-theme=school] .gfq-chno{border-radius:14px 0 0 14px}
 `;
   style.textContent+=`
 #${ID}-toasts,#${ID}-qtoasts{position:fixed;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:stretch;gap:10px;z-index:2147483002;pointer-events:none;--paper:#f1efea;--ink:#202229;--sub:#67655f;--k:#3b3f7a;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;--sans:"Pretendard","Noto Sans KR",system-ui,sans-serif}
@@ -497,9 +595,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button{font:700 13px var(--sans);padding:8px 18px;border-radius:0;border:1.5px solid var(--ink);background:var(--k);color:#fff;cursor:pointer}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button[data-o=later]{background:transparent;color:var(--ink)}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button:focus-visible{outline:3px solid #f0c02f;outline-offset:2px}
-:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east]{--paper:#f6f1e5;--ink:#1d1a17}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] :is(.gfq-toast-quest,.gfq-toast-step){--k:#2a2622}
-:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy]{--paper:#f3e7c9;--ink:#2a1c10}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] :is(.gfq-toast-quest,.gfq-toast-step){--k:#6a1e2b}
-:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf]{--paper:#f3f6f8;--ink:#121820;--serif:"Bahnschrift","DIN Alternate","Roboto Condensed","Pretendard","Noto Sans KR",sans-serif}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] :is(.gfq-toast-quest,.gfq-toast-step){--k:#0f6a80}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east]{--paper:#f6f1e5;--ink:#1d1a17}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] :is(.gfq-toast-quest,.gfq-toast-step){--k:#1d6a64}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] .gfq-toast{border-radius:6px;overflow:hidden}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy]{--paper:#f3e7c9;--ink:#2a1c10}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] .gfq-toast{border:3px double #b08a2e}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] :is(.gfq-toast-quest,.gfq-toast-step){--k:#6a1e2b}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] .gfq-toast{clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf]{--paper:#f3f6f8;--ink:#121820;--serif:"Bahnschrift","DIN Alternate","Roboto Condensed","Pretendard","Noto Sans KR",sans-serif}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] :is(.gfq-toast-quest,.gfq-toast-step){--k:#0f6a80}
 :is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school]{--paper:#fbfbfe;--ink:#23263a}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] :is(.gfq-toast-quest,.gfq-toast-step){--k:#3d63b0}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] .gfq-toast{border-radius:10px;overflow:hidden}
 @keyframes gfq-toast-in{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast{animation:none}}
@@ -1006,6 +1104,57 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   const GFQ_CASH_WORDS=/(수당|보수|급여|기본급|정산금|대금|상금|사례금|보상금|지원금|위로금|일당|월급|용역비)/u;
   const GFQ_DISCOUNT_WORDS=/(감면|할인|우대|면제|무상|무료)/u;
   // Every amount written in a text (1,400,000 / 140만 / 1.5억 / 50퍼센트 ...).
+  // v0.7.3: currencies differ by world (원, 골드, 냥, 전, 금화, 크레딧 …). Units are kept as the story writes them, mapped to
+  // one name per currency; totals are kept per currency and never mixed. The main currency is chosen by the player,
+  // else the one the story uses most, else the theme's usual one.
+  const GFQ_CURRENCIES=[['원',['원'],1e6],['골드',['골드','gold','Gold','GOLD','G'],1e3],['실버',['실버','silver','Silver'],1e4],['금화',['금화'],100],['은화',['은화'],1e3],['동전',['동화','동전'],1e4],['냥',['냥','량'],100],['전',['전','푼','문','닢'],1e3],['돈',['돈쭝','돈'],10],['관',['관'],10],['크레딧',['크레딧','credits','credit','Credits','Credit','CR','Cr'],1e4],['달러',['달러','불','$'],1e4],['엔',['엔','¥'],1e6],['위안',['위안'],1e4],['유로',['유로','€'],1e4],['코인',['코인','coin','coins'],1e3]];
+  const GFQ_UNIT_OF=new Map(GFQ_CURRENCIES.flatMap(([u,al])=>al.map(a=>[a.toLowerCase(),u])));
+  const gfqUnit=u=>{const s=String(u||'').trim();return GFQ_UNIT_OF.get(s.toLowerCase())||s;};
+  const gfqIsMoneyUnit=u=>GFQ_CURRENCIES.some(c=>c[0]===gfqUnit(u));
+  const GFQ_THEME_UNIT={modern:'원',east:'냥',fantasy:'골드',sf:'크레딧',school:'원'};
+  const GFQ_UNIT_ALT=GFQ_CURRENCIES.flatMap(c=>c[1]).sort((a,b)=>b.length-a.length).map(a=>a.replace(/[$]/g,'\\$')).join('|');
+  const GFQ_NATIVE_NUM='(?:(?:열|스물|스무|서른|마흔|쉰|예순|일흔|여든|아흔)(?:한|하나|두|둘|세|셋|네|넷|다섯|여섯|일곱|여덟|아홉)?|한|두|세|석|서|네|넉|너|다섯|닷|여섯|엿|일곱|여덟|아홉)';
+  // Korean number words: sino ('삼백', '이천오백') or native ('열', '스물두', '닷').
+  function gfqKNum(s){
+    s=String(s||'').replace(/\s+/g,'');if(!s)return NaN;
+    if(/^[일이삼사오육칠팔구십백천만억]+$/u.test(s)){
+      const d={일:1,이:2,삼:3,사:4,오:5,육:6,칠:7,팔:8,구:9},p={십:10,백:100,천:1000};let total=0,sec=0,num=0;
+      for(const ch of s){if(d[ch])num=d[ch];else if(p[ch]){sec+=(num||1)*p[ch];num=0;}else if(ch==='만'||ch==='억'){total+=(sec+num||1)*(ch==='만'?1e4:1e8);sec=0;num=0;}}
+      return total+sec+num;
+    }
+    const tens={열:10,스물:20,스무:20,서른:30,마흔:40,쉰:50,예순:60,일흔:70,여든:80,아흔:90},ones={한:1,하나:1,두:2,둘:2,세:3,셋:3,석:3,서:3,네:4,넷:4,넉:4,너:4,다섯:5,닷:5,여섯:6,엿:6,일곱:7,여덟:8,아홉:9};
+    let n=0;for(const [k,v] of Object.entries(tens))if(s.startsWith(k)){n=v;s=s.slice(k.length);break;}
+    if(s){if(!(s in ones))return NaN;n+=ones[s];}
+    return n||NaN;
+  }
+  // Every money amount in a text, with its currency: [{n, unit}]. Digits ('1,200 골드', '3만 냥') and words ('닷 냥', '은화 서른 닢' style '서른 닢').
+  function gfqMoneyIn(text){
+    const t=String(text||''),out=[];
+    const re=new RegExp('(\\d[\\d,]*(?:\\.\\d+)?)\\s*(억|만|천)?\\s*('+GFQ_UNIT_ALT+')(?![A-Za-z])','gu');
+    for(const m of t.matchAll(re)){const n=Number(m[1].replace(/,/g,''))*(m[2]==='억'?1e8:m[2]==='만'?1e4:m[2]==='천'?1e3:1);if(Number.isFinite(n))out.push({n,unit:gfqUnit(m[3]),at:m.index,end:m.index+m[0].length});}
+    const rw=new RegExp('(?<![가-힣\\d,.])([일이삼사오육칠팔구십백천만억]+|'+GFQ_NATIVE_NUM+')\\s*('+GFQ_UNIT_ALT+')(?![A-Za-z])','gu');
+    for(const m of t.matchAll(rw)){if(m[2]==='원'&&!/[백천만억]/u.test(m[1]))continue;if(['문','불','량'].includes(m[2])||(m[2]==='전'&&/^[일이삼사오육칠팔구]$/u.test(m[1])))continue;const n=gfqKNum(m[1]);if(Number.isFinite(n)&&n>0)out.push({n,unit:gfqUnit(m[2]),at:m.index,end:m.index+m[0].length});}
+    // '은화 서른 닢', '금화 12닢': the counter 닢 belongs to the coin named just before it.
+    for(const x of out){const raw=t.slice(x.at,x.end);if(/닢\s*$/u.test(raw)){const before=t.slice(Math.max(0,x.at-8),x.at).match(/(금화|은화|동화|동전|엽전|은전|금전)\s*$/u);x.unit=before?gfqUnit(before[1]==='엽전'||before[1]==='금전'||before[1]==='은전'?'전':before[1]):'전';}}
+    return out;
+  }
+  const gfqCurCache=new Map();
+  function gfqDetectUnit(w){
+    const samples=w?.gfStorySamples||[],key=samples.length+'|'+(samples[samples.length-1]?.id||'')+'|'+(w?.gfLedger||[]).length;
+    const hit=gfqCurCache.get(w);if(hit&&hit.key===key)return hit.unit;
+    const count=new Map();
+    for(const s of samples.slice(-120))for(const m of gfqMoneyIn(s.text))count.set(m.unit,(count.get(m.unit)||0)+1);
+    for(const t of w?.gfLedger||[])if(gfqIsMoneyUnit(t.unit))count.set(gfqUnit(t.unit),(count.get(gfqUnit(t.unit))||0)+3);
+    const best=[...count].sort((a,b)=>b[1]-a[1])[0];const unit=best&&best[1]>=2?best[0]:'';
+    gfqCurCache.set(w,{key,unit});return unit;
+  }
+  function gfqMainUnit(w){return (w?.gfCurrency&&String(w.gfCurrency))||gfqDetectUnit(w)||GFQ_THEME_UNIT[w?.gfTheme]||'원';}
+  const gfqMoneyScale=u=>(GFQ_CURRENCIES.find(c=>c[0]===gfqUnit(u))||[0,0,1e3])[2];
+  function gfqCurrencyHtml(w){
+    const cur=w.gfCurrency||'',auto=gfqDetectUnit(w),main=gfqMainUnit(w);
+    return '<div class="gfq-card"><b>주 화폐</b><p class="gfq-muted">소지금·돈 요약·업적은 주 화폐로 계산합니다. 다른 화폐 거래도 각각 기록되며 서로 더하지 않습니다. 지금 주 화폐: <b>'+esc(main)+'</b>'+(auto?' (스토리에서 가장 많이 나온 화폐: '+esc(auto)+')':' (스토리에서 아직 화폐를 찾지 못해 테마 기본값을 씁니다)')+'</p>'+
+      '<div class="gfq-row gfq-units">'+'<button data-action="pick-unit" data-id="" aria-pressed="'+(!cur)+'">자동</button>'+GFQ_CURRENCIES.map(([u])=>'<button data-action="pick-unit" data-id="'+esc(u)+'" aria-pressed="'+(cur===u)+'">'+esc(u)+'</button>').join('')+btn('직접 입력','pick-unit-custom')+'</div></div>';
+  }
   function gfqAmountsIn(text){
     const out=new Set(),t=String(text||'');
     for(const m of t.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*(억|만|천)?/gu)){
@@ -1013,16 +1162,17 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       out.add(m[2]==='억'?n*1e8:m[2]==='만'?n*1e4:m[2]==='천'?n*1e3:n);
       if(m[2]==='만'||m[2]==='억')out.add(n); // "140만" may also be read as 140
     }
+    for(const x of gfqMoneyIn(t))out.add(x.n); // v0.7.3: '닷 냥', '삼백 골드'
     return out;
   }
   function gfqSafeProposal(x,ctx=GFQ_GENERIC){
     const result={...x};
     const q=String(result.evidence||''),name=String(result.name||'');
     // v0.3.10: "N원 상당의 <물품>" is the value of goods, never cash owed or received.
-    if(['asset','contract'].includes(result.category)&&!GFQ_CASH_WORDS.test(name)&&/원\s*상당(?:의)?\s*(?!금액|현금|액수)\S/u.test(q)){
+    if(['asset','contract'].includes(result.category)&&!GFQ_CASH_WORDS.test(name)&&new RegExp('(?:'+GFQ_UNIT_ALT+')\\s*상당(?:의)?\\s*(?!금액|현금|액수)\\S','u').test(q)){
       const got=/(수령했|받았|건네받|지급받았|손에 넣)/u.test(q);
       Object.assign(result,{category:'item',status:got?'confirmed':'active',financialStatus:got?'ownership':'pending',
-        value:typeof result.amount==='number'?result.amount:([...gfqAmountsIn((q.match(/([\d,]+(?:\.\d+)?\s*(?:억|만)?)\s*원\s*상당/u)||[])[1]||'')][0]??null),amount:null,unit:'',
+        value:typeof result.amount==='number'?result.amount:(gfqMoneyIn(q)[0]?.n??null),valueUnit:gfqIsMoneyUnit(result.unit)?gfqUnit(result.unit):(gfqMoneyIn(q)[0]?.unit||''),amount:null,unit:'',
         auditNote:'금액은 물품의 가치이며 현금이 아닙니다. '+(got?'수령한 물품':'수령 예정 물품')+'으로 분류했습니다.'});
     }
     // v0.3.11: a future discount (e.g. '공임 50퍼센트 감면 보장') is a benefit voucher, not money.
@@ -1030,7 +1180,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       result.category='benefit';
     }
     // v0.3.12: money labelled as a benefit goes back to the ledger (수당·보수는 이용권이 아니라 자산입니다).
-    if(result.category==='benefit'&&GFQ_CASH_WORDS.test(name)&&(String(result.unit||'')==='원'||!GFQ_DISCOUNT_WORDS.test(name))){
+    if(result.category==='benefit'&&GFQ_CASH_WORDS.test(name)&&(gfqIsMoneyUnit(result.unit)||!GFQ_DISCOUNT_WORDS.test(name))){
       const mixed=GFQ_DISCOUNT_WORDS.test(name);
       Object.assign(result,{category:'asset',financialStatus:['received','receivable','pending'].includes(result.financialStatus)?result.financialStatus:'pending',
         auditNote:'금전 보수이므로 혜택이 아닌 거래로 분류했습니다.'+(mixed?' 함께 언급된 할인·감면 혜택은 별도 항목으로 확인해 주세요.':'')});
@@ -1066,7 +1216,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         if(downgraded)result.auditNote='보상 정산 표현만 있고 계좌 입금 근거가 없어 수령 확인에서 '+(done?'확정(미입금)':'지급 예정')+'으로 낮췄습니다.';
       }
     }
-    if(result.category==='item'&&(/(내일|예정|제작 중|제작 건|수령하시게|상당)/.test(q)||String(result.unit)==='원')){
+    if(result.category==='item'&&(/(내일|예정|제작 중|제작 건|수령하시게|상당)/.test(q)||gfqIsMoneyUnit(result.unit))){
       result.status='active';result.financialStatus='pending';
       result.auditNote='미수령·제작 중 물품 또는 시가 정보로 보입니다.';
     }
@@ -1168,8 +1318,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       ...(safe.category!==x.category?{originalCategory:x.category}:{}),
       questTitle:String(x.questTitle||'').slice(0,90),questObjective:String(x.questObjective||'').slice(0,350),questRewards:Array.isArray(x.questRewards)?x.questRewards.slice(0,8):[],
       source:String(x.source||'').slice(0,120),amount:typeof safe.amount==='number'&&Number.isFinite(safe.amount)?safe.amount:null,
-      unit:String(safe.unit||'').slice(0,30),owner:String(x.owner||'unknown'),eventKind:String(x.eventKind||''),
-      financialStatus:safe.financialStatus,auditNote:safe.auditNote||'',...(typeof safe.value==='number'?{value:safe.value}:{}),
+      unit:String(gfqIsMoneyUnit(safe.unit)?gfqUnit(safe.unit):(safe.unit||'')).slice(0,30),owner:String(x.owner||'unknown'),eventKind:String(x.eventKind||''),
+      financialStatus:safe.financialStatus,auditNote:safe.auditNote||'',...(typeof safe.value==='number'?{value:safe.value,...(safe.valueUnit?{valueUnit:safe.valueUnit}:{})}:{}),
       ...(safe.category==='benefit'?{benefitUses:safe.benefitUses||1,benefitMode:safe.benefitMode||'record',benefitPermanent:safe.benefitMode==='permanent',benefitConsumed:safe.benefitMode==='record'}:{}),
       ...(Array.isArray(x.soldItems)&&x.soldItems.length&&['received','receivable','pending'].includes(safe.financialStatus)?{soldItems:x.soldItems.slice(0,5).filter(v=>v&&typeof v.name==='string'&&v.name.trim()).map(v=>({name:v.name.trim().slice(0,80),qty:Number.isSafeInteger(Number(v.qty))&&Number(v.qty)>0?Math.min(999,Number(v.qty)):1}))}:{}),
       ...(Array.isArray(x.purchasedItems)&&x.purchasedItems.length&&safe.financialStatus==='paid'?{purchasedItems:x.purchasedItems.slice(0,5).filter(v=>v&&typeof v.name==='string'&&v.name.trim()).map(v=>({name:v.name.trim().slice(0,80),qty:Number.isSafeInteger(Number(v.qty))&&Number(v.qty)>0?Math.min(999,Number(v.qty)):1,received:v.received!==false}))}:{}),
@@ -1185,7 +1335,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const p=gfqBuildProposal(x,evidence,ctx);
     // v0.3.12: a number the AI wrote must actually be in the quoted text (e.g. 900,000원 when the text says 950,000원).
     if(p.category==='quest'){p.amount=null;p.unit='';}
-    else if(typeof p.amount==='number'&&['원','%'].includes(p.unit)&&!gfqAmountsIn(evidence).has(p.amount)){
+    else if(typeof p.amount==='number'&&(gfqIsMoneyUnit(p.unit)||p.unit==='%')&&!gfqAmountsIn(evidence).has(p.amount)){
       p.auditNote=[p.auditNote,'AI가 제시한 금액 '+gfqAmount(p.amount,p.unit)+'이(가) 원문 근거에 없어 금액을 비웠습니다.'].filter(Boolean).join(' ');p.amount=null;
     }
     // Rewards written inside a quest are kept only when their own evidence is found in this chapter's text.
@@ -1194,7 +1344,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         if(!r||typeof r!=='object')return null;
         const ev=typeof r.evidence==='string'&&r.evidence.trim().length>=6?gfqLocateEvidence(r.evidence.trim(),texts):null;
         if(!ev)return null;
-        const amount=typeof r.amount==='number'&&(!['원','%'].includes(String(r.unit||''))||gfqAmountsIn(ev).has(r.amount))?r.amount:null;
+        const amount=typeof r.amount==='number'&&(!(gfqIsMoneyUnit(r.unit)||String(r.unit||'')==='%')||gfqAmountsIn(ev).has(r.amount))?r.amount:null;
         return {...r,evidence:ev,amount};
       }).filter(Boolean);
     }
@@ -1232,7 +1382,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '<label for="gfq-ai-range">분석 범위</label><select id="gfq-ai-range"><option value="new" '+((data.aiRange||'new')==='new'?'selected':'')+'>새로 추가·변경된 챕터만</option><option value="all" '+(data.aiRange==='all'?'selected':'')+'>전체 챕터</option><option value="pick" '+(data.aiRange==='pick'?'selected':'')+'>챕터 직접 지정</option></select> '+
       '<button data-action="invoke-quest-bridge">AI 분석 실행</button> <button data-action="prepare-ai-prompt">분석 지침 복사</button> <button data-action="import-ai-result">AI 분석 JSON 가져오기</button>'+
       (rows.length?'<div class="gfq-row"><button data-action="select-all-ai">전체 선택</button><button data-action="unselect-all-ai">선택 해제</button><button data-action="approve-selected-ai">선택 승인</button><button data-action="delete-selected-ai">선택 삭제</button><button data-action="delete-all-ai" class="gfq-danger">전체 삭제</button></div>':'')+
-      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(gfqLabel('category',x.category))+' · '+esc(x.name)+'</b><small>'+esc(gfqLabel('status',x.status))+(x.category==='quest'?'':' · '+esc(gfqLabel('money',['asset','contract'].includes(x.category)&&gfqIsCond(x)?'conditional':x.financialStatus)))+'</small></div>'+(['asset','contract'].includes(x.category)&&gfqIsCond(x)?'<p class="gfq-muted"><b>조건부 보장</b> · 철수·실패 같은 조건이 생길 때만 받는 최소 금액입니다. 승인해도 거래 내역과 받을 돈에 더하지 않고 기록만 남깁니다.'+((w.aiProposals||[]).some(q=>q.category==='quest'&&(q.questRewards||[]).some(r=>r&&r.name===x.name))||(w.quests||[]).some(q=>(q.rewardDetails||[]).some(r=>r.name===x.name))?' 같은 내용이 퀘스트 보상에 이미 들어 있으니 제외해도 됩니다.':'')+'</p>':'')+(x.linkedQuest?'<p class="gfq-muted">퀘스트 \''+esc(x.linkedQuest)+'\'의 보상으로 연결됨 · 승인하면 거래 내역에 기록되고 그 퀘스트 보상과 이어집니다.</p>':'')+'<p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(gfqAmount(x.amount,x.unit))+' · 출처: '+esc(x.source||'미확인')+'</div>'+(gfqTiming(x)?'<div class="gfq-muted">'+(x.category==='quest'?'기한·시점':'지급·수령 시점')+': '+esc(gfqTimingText(gfqTiming(x)))+(gfqResolveTiming(w,gfqTiming(x))?' → '+esc(gfqResolveTiming(w,gfqTiming(x))):'')+'</div>':'')+(x.value?'<div class="gfq-muted">물품 가치: '+esc(gfqAmount(x.value,'원'))+' (현금 아님)</div>':'')+gfqClearedHint(w,x)+(x.date?'<div class="gfq-muted">세계관 날짜: '+esc(x.date)+(x.endDate&&x.endDate!==x.date?' ~ '+esc(x.endDate):'')+'</div>':'')+gfqProposalLinkExtra(x)+(x.deferred?'<div class="gfq-muted"><b>장면 도달 대기</b> · 해당 대사가 나오면 자동으로 반영합니다. 지금 반영하려면 [확인 후 반영]을 눌러 주세요.</div>':'')+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).objective)+'</div>'+gfqProposalQuestExtra(w,x)+'<div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).rewardList.map(gfqRewardText).join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
+      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(gfqLabel('category',x.category))+' · '+esc(x.name)+'</b><small>'+esc(gfqLabel('status',x.status))+(x.category==='quest'?'':' · '+esc(gfqLabel('money',['asset','contract'].includes(x.category)&&gfqIsCond(x)?'conditional':x.financialStatus)))+'</small></div>'+(['asset','contract'].includes(x.category)&&gfqIsCond(x)?'<p class="gfq-muted"><b>조건부 보장</b> · 철수·실패 같은 조건이 생길 때만 받는 최소 금액입니다. 승인해도 거래 내역과 받을 돈에 더하지 않고 기록만 남깁니다.'+((w.aiProposals||[]).some(q=>q.category==='quest'&&(q.questRewards||[]).some(r=>r&&r.name===x.name))||(w.quests||[]).some(q=>(q.rewardDetails||[]).some(r=>r.name===x.name))?' 같은 내용이 퀘스트 보상에 이미 들어 있으니 제외해도 됩니다.':'')+'</p>':'')+(x.linkedQuest?'<p class="gfq-muted">퀘스트 \''+esc(x.linkedQuest)+'\'의 보상으로 연결됨 · 승인하면 거래 내역에 기록되고 그 퀘스트 보상과 이어집니다.</p>':'')+'<p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(gfqAmount(x.amount,x.unit))+' · 출처: '+esc(x.source||'미확인')+'</div>'+(gfqTiming(x)?'<div class="gfq-muted">'+(x.category==='quest'?'기한·시점':'지급·수령 시점')+': '+esc(gfqTimingText(gfqTiming(x)))+(gfqResolveTiming(w,gfqTiming(x))?' → '+esc(gfqResolveTiming(w,gfqTiming(x))):'')+'</div>':'')+(x.value?'<div class="gfq-muted">물품 가치: '+esc(gfqAmount(x.value,x.valueUnit||gfqMainUnit(w)))+' (현금 아님)</div>':'')+gfqClearedHint(w,x)+(x.date?'<div class="gfq-muted">세계관 날짜: '+esc(x.date)+(x.endDate&&x.endDate!==x.date?' ~ '+esc(x.endDate):'')+'</div>':'')+gfqProposalLinkExtra(x)+(x.deferred?'<div class="gfq-muted"><b>장면 도달 대기</b> · 해당 대사가 나오면 자동으로 반영합니다. 지금 반영하려면 [확인 후 반영]을 눌러 주세요.</div>':'')+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).objective)+'</div>'+gfqProposalQuestExtra(w,x)+'<div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).rewardList.map(gfqRewardText).join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
   }
   // v0.3.13: deterministic safety net for missed payments. Every story sentence that states a won amount
   // together with a payment cue is checked against candidates, quest rewards and the ledger.
@@ -1258,12 +1408,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     for(const rec of gfqStoryRecords(w)){
       for(const sentence of rec.text.split(/(?<=[.!?。])\s+|\n+/u)){
         if(!GFQ_PAY_CUE.test(sentence))continue;
-        const found=[...sentence.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*(억|만|천)?\s*원(?!\s*상당)/gu)].map(m=>Number(m[1].replace(/,/g,''))*(m[2]==='억'?1e8:m[2]==='만'?1e4:m[2]==='천'?1e3:1));
+        const money=gfqMoneyIn(sentence).filter(x=>!/^\s*상당/u.test(sentence.slice(x.end))),found=money.map(x=>x.n);
         // v0.4.3: a running total (1,200,000 + 1,300,000 + 1,400,000 = 3,900,000) is a recap, not a payment.
         const totals=gfqSumTotals(found);
         for(const n of found){
           if(!Number.isFinite(n)||n<=0||covered.has(n)||seen.has(n)||totals.has(n))continue;
-          seen.add(n);out.push({amount:n,source:rec.source,sentence:sentence.trim().slice(0,300),recap:/(전날|어제|지난|앞서|이전|이미|에 이어|까지 더하면|누적|합계|모두 합)/u.test(sentence)});
+          seen.add(n);out.push({amount:n,unit:money.find(x=>x.n===n)?.unit||'원',source:rec.source,sentence:sentence.trim().slice(0,300),recap:/(전날|어제|지난|앞서|이전|이미|에 이어|까지 더하면|누적|합계|모두 합)/u.test(sentence)});
           if(out.length>=30)return out;
         }
       }
@@ -1274,7 +1424,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const list=w.gfMissingMoney||[];
     if(!list.length)return '';
     return '<div class="gfq-card"><b>누락 의심 금액 ('+list.length+'개)</b><p class="gfq-muted">원문에 지급 관련 금액이 있지만 검토 후보·퀘스트 보상·거래 내역 어디에도 없는 문장입니다. AI 분석이 빠뜨렸을 수 있습니다. 상태를 직접 정해 후보로 추가하거나, 지급과 무관하면 무시해 주세요.</p>'+
-      list.map((m,i)=>'<div class="gfq-muted"><b>'+esc(gfqAmount(m.amount,'원'))+'</b> · '+esc(m.source)+(m.recap?' · 지난 지급을 되짚는 문장':'')+'<br>'+esc(m.sentence)+'</div><div class="gfq-row">'+((w.gfLedger||[]).some(t=>t.amount===null)?btn('금액 미확인 거래에 채우기','money-fill-ledger','data-idx="'+i+'"'):'')+btn('후보로 추가','money-to-candidate','data-idx="'+i+'"')+btn('무시','money-dismiss','data-idx="'+i+'"')+'</div>').join('')+
+      list.map((m,i)=>'<div class="gfq-muted"><b>'+esc(gfqAmount(m.amount,m.unit||'원'))+'</b> · '+esc(m.source)+(m.recap?' · 지난 지급을 되짚는 문장':'')+'<br>'+esc(m.sentence)+'</div><div class="gfq-row">'+((w.gfLedger||[]).some(t=>t.amount===null)?btn('금액 미확인 거래에 채우기','money-fill-ledger','data-idx="'+i+'"'):'')+btn('후보로 추가','money-to-candidate','data-idx="'+i+'"')+btn('무시','money-dismiss','data-idx="'+i+'"')+'</div>').join('')+
       '<div class="gfq-row">'+btn('누락 금액 다시 검사','money-rescan')+'</div></div>';
   }
   function gfqDiagnosticsHtml(w){
@@ -1480,8 +1630,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const input=(records||gfqStoryRecords(w)).map(x=>'['+x.source+']\n'+x.text).join('\n\n');
     return [
       '한국어 RPG 세계의 사건과 금전 출납부를 분석합니다. 입력에 없는 사실과 금액은 절대 추정하지 않습니다. 줄거리 출처에 \'게임 기록: 클리어\'가 있으면 그 챕터의 임무가 게임에서 마무리됐다는 참고 정보입니다.',
-      '반환 JSON: {"timeline":{"currentDate":"분석 대상 마지막 장면 시점의 세계관 날짜 YYYY-MM-DD, 원문에 날짜가 적혀 있을 때만","dateEvidence":"그 날짜가 적힌 원문 인용","daysPassed":"[세계관 날짜] 이후 마지막 장면까지 지난 날 수(원문에 다음 날·이틀 뒤처럼 적힌 경우만) 또는 null","daysEvidence":"날이 바뀐 원문 인용"},"events":[{"category":"quest|asset|item|credential|contract|benefit","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|conditional|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","linkTo":"이전 맥락 목록의 ID(t1, i2 등) 또는 빈 문자열","benefitUses":"혜택일 때 사용 가능 횟수(명시 없으면 1) 또는 null","benefitPermanent":false,"benefitConsumed":false,"purchasedItems":[{"name":"구매한 물품","qty":1,"received":true}],"soldItems":[{"name":"판매한 물품","qty":1}],"timing":"지급·수령·완료 시점을 나타내는 원문 표현 그대로(예: 내일 이 시간, 임무 완료 시, 금일 오후 6시) 또는 빈 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
-      '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다. 철수·실패처럼 어떤 조건이 생길 때만 보장되는 최소 금액(예: 중도 철수 시 기본급 50% 보장)은 conditional로 분류하며, 다른 보수에 더해지는 돈이 아닙니다.',
+      '반환 JSON: {"timeline":{"currentDate":"분석 대상 마지막 장면 시점의 세계관 날짜 YYYY-MM-DD, 원문에 날짜가 적혀 있을 때만","dateEvidence":"그 날짜가 적힌 원문 인용","daysPassed":"[세계관 날짜] 이후 마지막 장면까지 지난 날 수(원문에 다음 날·이틀 뒤처럼 적힌 경우만) 또는 null","daysEvidence":"날이 바뀐 원문 인용"},"events":[{"category":"quest|asset|item|credential|contract|benefit","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|conditional|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원문의 화폐 단위 그대로(원·골드·냥·전·금화·크레딧 등)|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","linkTo":"이전 맥락 목록의 ID(t1, i2 등) 또는 빈 문자열","benefitUses":"혜택일 때 사용 가능 횟수(명시 없으면 1) 또는 null","benefitPermanent":false,"benefitConsumed":false,"purchasedItems":[{"name":"구매한 물품","qty":1,"received":true}],"soldItems":[{"name":"판매한 물품","qty":1}],"timing":"지급·수령·완료 시점을 나타내는 원문 표현 그대로(예: 내일 이 시간, 임무 완료 시, 금일 오후 6시) 또는 빈 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
+      '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다. 화폐는 세계관마다 다릅니다(원, 골드, 냥, 전, 푼, 금화, 은화, 크레딧 등). unit에는 원문 단위를 그대로 적고, "닷 냥", "은화 서른 닢"처럼 글자로 쓴 수도 amount에 숫자로 넣습니다. 철수·실패처럼 어떤 조건이 생길 때만 보장되는 최소 금액(예: 중도 철수 시 기본급 50% 보장)은 conditional로 분류하며, 다른 보수에 더해지는 돈이 아닙니다.',
       '거래의 지급 의사나 보장만으로 실제 입금(received)으로 처리하지 않습니다. 금액을 확정했지만 입금 문장이 없으면 received를 쓰지 않습니다. 총액과 그 구성 수당은 같은 transactionId를 사용하고 각각 중복 수입으로 합산하지 않습니다.',
       'name은 반드시 한국어로 씁니다. 수당·보수·기본급·정산금처럼 돈으로 받는 것은 혜택(benefit)이 아니라 category=asset입니다.',
       '총액이 명시된 지급은 총액 1건만 출력하고, 기본 수당·위험 수당 같은 구성 내역은 따로 출력하지 않고 name에 괄호로 적습니다. 총액이 없으면 각 금액을 출력합니다. amount에는 원문에 적힌 숫자만 씁니다.',
@@ -1491,7 +1641,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       'timeline에는 원문에 적힌 날짜와 날짜 변화만 넣습니다. 날짜가 적힌 문서·면허·통지 등이 오늘 발급·작성된 것이 분명할 때만 그 날짜를 currentDate로 씁니다. 과거·미래의 다른 날을 가리키는 날짜는 쓰지 않습니다. 근거가 없으면 빈 문자열과 null로 둡니다.',
       '지난 지급을 되짚는 문장(예: 전날 A 1,200,000원과 오늘 B 1,300,000원에 이어 이번 금액까지 합계 3,900,000원)은 새 수입이 아닙니다. 각 과거 지급은 이전 맥락에 같은 항목이 있으면 linkTo로 연결하고 원문 금액을 amount에 넣어 금액을 보완합니다. 이전 맥락에 없으면 별도 항목으로 출력하되, 합계 금액은 출력하지 않습니다.',
       '물건을 팔고 대금을 받은 판매는 category=asset, eventKind=payment로 출력하고 soldItems에 판 물품과 수량을 넣습니다. 대금을 실제로 받았으면 received, 받기로만 했으면 receivable 또는 pending입니다.',
-      'N원 상당의 물품·장비·세트는 돈이 아닙니다. category=item으로 출력하고, 아직 받지 않았으면 financialStatus=pending, amount=null로 둡니다. 받을 돈(receivable)으로 처리하지 않습니다.',
+      'N원·N골드 상당처럼 값만 적힌 물품·장비·세트는 돈이 아닙니다. category=item으로 출력하고, 아직 받지 않았으면 financialStatus=pending, amount=null로 둡니다. 받을 돈(receivable)으로 처리하지 않습니다.',
       'timing에는 지급·수령·완료가 실제로 일어나는 시점이나 기한만 넣습니다. \'중도 철수 시\'처럼 일어나지 않을 수도 있는 가정 조건은 넣지 않습니다.',
       '면허·자격증은 credential, 제작 계약은 contract, 제작 중인 물품은 완료된 아이템으로 처리하지 않습니다. 퀘스트 수락/완료도 구분합니다. 모든 항목은 입력 원문에서 확인할 수 있는 evidence가 있어야 합니다.',
       hero+'에게 귀속되는 돈·물품·면허·계약·의뢰만 후보로 출력하세요. NPC나 길드의 자산/계약/서명, 단순 시설 사건, 반입량·대피 인원·압력·오차율 같은 수치 기록은 절대 후보가 아닙니다.',
@@ -1897,7 +2047,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       for(const it of (p.soldItems||[]))ev.push({kind:'item',title:'아이템 판매',text:it.name+' ×'+it.qty});
     }else if(p.category==='item'){
       const waiting=p.financialStatus==='pending'||p.status==='active';
-      ev.push({kind:'item',title:waiting?'수령 예정':'아이템 획득',text:p.name+(!waiting&&typeof p.amount==='number'&&p.unit!=='원'?' ×'+p.amount:'')+(waiting&&gfqTiming(p)?' · '+gfqTiming(p).text:'')});
+      ev.push({kind:'item',title:waiting?'수령 예정':'아이템 획득',text:p.name+(!waiting&&typeof p.amount==='number'&&!gfqIsMoneyUnit(p.unit)?' ×'+p.amount:'')+(waiting&&gfqTiming(p)?' · '+gfqTiming(p).text:'')});
     }
     else if(p.category==='benefit'&&p.benefitMode==='voucher')ev.push({kind:'benefit',title:'혜택 획득',text:(/권$/.test(p.name)?p.name:p.name+'권')+' ×'+(p.benefitUses||1)});
     else if(p.category==='benefit'&&p.benefitMode==='permanent')ev.push({kind:'benefit',title:'상시 혜택',text:p.name});
@@ -2142,7 +2292,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const won=(n,u)=>typeof n==='number'?gfqAmount(n,u).replace(' 원','원'):'금액 미확인';
     const date=gfqCurrentDate(w);if(date)lines.push(['날짜',date.date+' ('+gfqWeekday(date.date)+')']);
     const place=w.gfPlaceNow&&w.gfPlaces?.[w.gfPlaceNow.key];if(place)lines.push(['현재 위치',place.name]);
-    const cash=gfqCash(w);if(cash.known)lines.push(['소지금',won(cash.balance,'원')]);
+    const cash=gfqCash(w);if(cash.known)lines.push(['소지금',won(cash.balance,cash.unit)]);
     const open=(w.quests||[]).filter(q=>!q.claimed).slice(-4).reverse();
     for(const q of open){const k=(q.steps||[]).findIndex((_,i)=>q.stepDone?.[i]!==true);lines.push(['진행 중',q.title+(k>=0?' — 다음 목표: '+q.steps[k]:'')]);}
     for(const t of ledger.filter(t=>['pending','receivable'].includes(t.state)).slice(-6))lines.push(['받을 돈',t.name+' '+won(t.amount,t.unit)+(t.state==='pending'?' (지급 예정'+(t.timing?.text?' · '+t.timing.text:'')+')':' (확정·미입금)')]);
@@ -2382,7 +2532,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(!waiting){const nk=t=>gfqNormMap(String(t||'').replace(/\s+/g,'')).out,mine=nk(x.name);
       const cands=mine.length>=4?(w.items||[]).filter(i=>i.state==='pending'&&(()=>{const o=nk(i.name);return o.length>=4&&(o.includes(mine)||mine.includes(o));})()):[];
       if(cands.length===1)waiting=cands[0];}
-    const qtyOk=typeof x.amount==='number'&&Number.isSafeInteger(x.amount)&&x.amount>0&&x.unit!=='원';
+    const qtyOk=typeof x.amount==='number'&&Number.isSafeInteger(x.amount)&&x.amount>0&&!gfqIsMoneyUnit(x.unit);
     const receiving=x.financialStatus!=='pending'&&['confirmed','completed'].includes(x.status);
     if(waiting&&receiving){
       delete waiting.state;waiting.receivedAt=now();if(qtyOk)waiting.qty=x.amount;
@@ -2390,9 +2540,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
     if(!receiving){
       if(waiting){record(w,'수령 예정 물품 추가 근거: '+waiting.name+' · '+x.evidence);return true;}
-      const value=typeof x.value==='number'?x.value:(x.unit==='원'&&typeof x.amount==='number'?x.amount:null);
+      const value=typeof x.value==='number'?x.value:(gfqIsMoneyUnit(x.unit)&&typeof x.amount==='number'?x.amount:null);
       w.items.push({id:uid(),name:String(x.name||'').slice(0,100),qty:qtyOk?x.amount:1,state:'pending',chainKey:chain||x.id,timing:gfqTiming(x),
-        ...(value!==null?{value}:{})});
+        ...(value!==null?{value,valueUnit:x.valueUnit||(gfqIsMoneyUnit(x.unit)?gfqUnit(x.unit):'')}:{})});
       record(w,'수령 예정 물품 등록: '+x.name+(gfqTiming(x)?' · '+gfqTimingText(gfqTiming(x)):''));return true;
     }
     // Never add an owned item from a mention without a confirmed quantity.
@@ -2439,10 +2589,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
   }
   // v0.3.11: ledger totals (원 only). Derived from approved records; never edits fields or game currency.
-  function gfqLedgerSummary(w){
-    const sum={received:0,paid:0,receivable:0,pending:0,unknown:0,other:0};
+  function gfqLedgerSummary(w,unit){
+    // v0.7.3: totals in one currency (the main one by default); other currencies are summed separately in byUnit.
+    const main=unit||gfqMainUnit(w),sum={unit:main,received:0,paid:0,receivable:0,pending:0,unknown:0,other:0,byUnit:{}};
     for(const t of (w.gfLedger||[])){
-      if(t.unit!=='원'){sum.other++;continue;}
+      const u=gfqUnit(t.unit);
+      if(u!==main){sum.other++;if(gfqIsMoneyUnit(u)&&typeof t.amount==='number'&&['received','paid','receivable','pending'].includes(t.state)&&!(['pending','receivable'].includes(t.state)&&gfqIsCond(t))){const b=sum.byUnit[u]||(sum.byUnit[u]={received:0,paid:0,receivable:0,pending:0});b[t.state]+=t.amount;}continue;}
       if(['pending','receivable'].includes(t.state)&&gfqIsCond(t)){sum.other++;continue;} // v0.7.2: a conditional floor is not money owed
       if(typeof t.amount!=='number'){if(['received','paid','receivable','pending'].includes(t.state))sum.unknown++;continue;}
       if(t.state in sum)sum[t.state]+=t.amount;
@@ -2511,8 +2663,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // v0.6.2: cash on hand = the starting amount the player entered + confirmed deposits − payments (원 only).
   // Promised or pending money is never counted.
   function gfqCash(w){
-    const sm=gfqLedgerSummary(w),base=typeof w.gfCashBase?.amount==='number'?w.gfCashBase.amount:null;
-    return {known:base!==null,base,net:sm.received-sm.paid,balance:base===null?null:base+sm.received-sm.paid,owed:sm.receivable+sm.pending};
+    const sm=gfqLedgerSummary(w),base=typeof w.gfCashBase?.amount==='number'&&(!w.gfCashBase.unit||w.gfCashBase.unit===sm.unit)?w.gfCashBase.amount:null;
+    return {unit:sm.unit,known:base!==null,base,net:sm.received-sm.paid,balance:base===null?null:base+sm.received-sm.paid,owed:sm.receivable+sm.pending};
   }
   function gfqTicket(w){
     const name=String(w.protagonist||w.gfHero?.name||'').trim(),world=w.gfDisplayName||data.world||'';
@@ -2530,7 +2682,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<h3 class="gfq-tk-name">'+(name?esc(name):'<span class="gfq-sub">이름 미설정</span>')+'</h3>'+
         (name?'':'<p class="gfq-sub">게임 상태를 받으면 주인공 이름을 채웁니다. 설정 탭에서 직접 입력할 수도 있습니다.</p>')+
         '<dl class="gfq-tk-rows">'+
-          '<dt>소지금</dt><dd class="gfq-cash">'+(()=>{const c=gfqCash(w);return c.known?'<b class="gfq-num">'+esc(gfqAmount(c.balance,'원'))+'</b><small>시작 '+esc(gfqAmount(c.base,'원'))+' + 입금 확인 − 지출'+(c.owed?' · 받을 돈 '+esc(gfqAmount(c.owed,'원'))+' 별도':'')+'</small><button class="gfq-link" data-action="cash-base">시작 금액 고치기</button>':'<span class="gfq-sub">확인된 순변동 '+esc((c.net>=0?'+':'')+gfqAmount(c.net,'원'))+'</span><button class="gfq-link" data-action="cash-base">시작 소지금 입력</button>';})()+'</dd>'+
+          '<dt>소지금</dt><dd class="gfq-cash">'+(()=>{const c=gfqCash(w);return c.known?'<b class="gfq-num">'+esc(gfqAmount(c.balance,c.unit))+'</b><small>시작 '+esc(gfqAmount(c.base,c.unit))+' + 입금 확인 − 지출'+(c.owed?' · 받을 돈 '+esc(gfqAmount(c.owed,c.unit))+' 별도':'')+'</small><button class="gfq-link" data-action="cash-base">시작 금액 고치기</button>':'<span class="gfq-sub">확인된 순변동 '+esc((c.net>=0?'+':'')+gfqAmount(c.net,c.unit))+'</span><button class="gfq-link" data-action="cash-base">시작 소지금 입력</button>';})()+'</dd>'+
           '<dt>명성</dt><dd>'+(repN===null?'<span class="gfq-sub">'+(rep?esc(rep.value+(rep.unit||'')):'아직 없음')+'</span>':dots+'<b class="gfq-num">'+repN+'</b><small>점</small>')+'</dd>'+
           '<dt>자격</dt><dd>'+(creds.map(f=>'<span class="gfq-stamp">'+esc(f.name.replace(/^보유 자격 · /,''))+(f.value?'<small>'+esc(String(f.value).replace(/^취득 · /,''))+'</small>':'')+'</span>').join('')||'<span class="gfq-sub">아직 없음</span>')+'</dd>'+
           '<dt>의뢰</dt><dd><b class="gfq-num">'+open+'</b><small> 진행 중 · 전체 '+w.quests.length+'</small></dd>'+
@@ -2560,7 +2712,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       const facts=[];
       facts.push(sel.state==='pending'?'아직 받지 않은 물품입니다. 스토리 반영에서 보유품으로 치지 않습니다.':sel.kind==='voucher'?(sel.qty>0?'남은 횟수 '+sel.qty+'회':'모두 사용했습니다.'):'보유 수량 '+sel.qty+'개');
       if(sel.timing)facts.push('수령 시점: '+gfqTimingText(sel.timing)+(gfqResolveTiming(w,sel.timing)?' → '+gfqResolveTiming(w,sel.timing):''));
-      if(sel.value)facts.push('가치: '+gfqAmount(sel.value,'원'));
+      if(sel.value)facts.push('가치: '+gfqAmount(sel.value,sel.valueUnit||gfqMainUnit(w)));
       if(sel.detail)facts.push(sel.detail);
       const acts=sel.state==='pending'?btn('수령 확인','receive-item',`data-id="${esc(sel.id)}" class="primary"`):sel.kind==='voucher'?btn('사용','use-voucher',`data-id="${esc(sel.id)}" class="primary" ${sel.qty>0?'':'disabled'}`):btn('수정','edit-item',`data-id="${esc(sel.id)}"`);
       detail='<article class="gfq-dossier"><div class="gfq-hd"><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">No.<br>'+gfqSerial(sel.id)+'</span></div>'+
@@ -2582,7 +2734,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '<div class="gfq-row"><button data-action="ledger-update" data-id="'+esc(t.id)+'">상태 수동 갱신</button><small class="gfq-sub">거래 ID '+esc(t.id)+'</small></div></details>').join('');
     return '<section class="gfq-receipt"><h3>거래 내역</h3><div class="gfq-rc-sub gfq-num">'+esc(c?'기준일 '+c.date.replace(/-/g,'/'):'기준일 미확인')+' · '+tx.length+'건</div>'+
       (rows||'<p class="gfq-sub">아직 기록된 거래가 없습니다. 돈을 받거나 쓰기로 한 장면이 분석되면 여기에 한 줄씩 쌓입니다.</p>')+
-      '<div class="gfq-rc-total"><div><span>입금 확인</span><b class="gfq-num">'+esc(gfqAmount(sm.received,'원'))+'</b></div><div><span>지출</span><b class="gfq-num">'+esc(gfqAmount(sm.paid,'원'))+'</b></div><div><span>받을 돈</span><b class="gfq-num">'+esc(gfqAmount(sm.receivable+sm.pending,'원'))+'</b></div></div>'+
+      '<div class="gfq-rc-total"><div><span>입금 확인</span><b class="gfq-num">'+esc(gfqAmount(sm.received,sm.unit))+'</b></div><div><span>지출</span><b class="gfq-num">'+esc(gfqAmount(sm.paid,sm.unit))+'</b></div><div><span>받을 돈</span><b class="gfq-num">'+esc(gfqAmount(sm.receivable+sm.pending,sm.unit))+'</b></div></div>'+
+      (Object.keys(sm.byUnit).length?'<div class="gfq-rc-other"><b>다른 화폐</b>'+Object.entries(sm.byUnit).map(([u,b])=>'<span>'+esc(u)+' · 입금 '+esc(gfqAmount(b.received,u))+' · 지출 '+esc(gfqAmount(b.paid,u))+(b.pending+b.receivable?' · 받을 돈 '+esc(gfqAmount(b.pending+b.receivable,u)):'')+'</span>').join('')+'</div>':'')+
       '<p class="gfq-sub">승인한 거래만 더합니다'+(sm.unknown?' · 금액 미확인 '+sm.unknown+'건 제외':'')+'. 받을 돈은 미수금과 지급 예정의 합입니다. 게임 재화는 바꾸지 않습니다.</p></section>';
   }
   function gfqFieldsHtml(w){
@@ -2751,16 +2904,16 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(due.length)gfqToast('오늘 예정',due.slice(0,3).map(e=>e.text).join(' · ')+(due.length>3?' 외 '+(due.length-3)+'개':''),'due');
   }
   // --- Chapter log: what each chapter changed, written when an event is applied. ---
-  function gfqChLog(w,source,kind,text,amount){
+  function gfqChLog(w,source,kind,text,amount,unit){
     const ch=Number(gfqChapterOfSource(source))||0;if(!ch||!text)return;
     const L=w.gfChLog&&typeof w.gfChLog==='object'?w.gfChLog:(w.gfChLog={});const list=L[ch]||(L[ch]=[]);
     if(list.some(e=>e.kind===kind&&e.text===text))return;
-    list.push({kind,text:String(text).slice(0,120),...(typeof amount==='number'?{amount}:{})});if(list.length>80)list.splice(0,list.length-80);
+    list.push({kind,text:String(text).slice(0,120),...(typeof amount==='number'?{amount,...(unit?{unit:gfqUnit(unit)}:{})}:{})});if(list.length>80)list.splice(0,list.length-80);
   }
   function gfqChLogProposal(w,x){
     const src=x.source,name=x.name;
     if(x.category==='quest'){const t=gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).title;gfqChLog(w,src,x.status==='completed'?'done':'quest',t);return;}
-    if(gfqMoney(x)&&x.role!=='component'){const k={received:'in',paid:'out',pending:'promise',receivable:'promise'}[x.financialStatus];if(k)gfqChLog(w,src,k,name,typeof x.amount==='number'?x.amount:undefined);}
+    if(gfqMoney(x)&&x.role!=='component'){const k={received:'in',paid:'out',pending:'promise',receivable:'promise'}[x.financialStatus];if(k)gfqChLog(w,src,k,name,typeof x.amount==='number'?x.amount:undefined,x.unit);}
     if(x.category==='item')gfqChLog(w,src,x.financialStatus==='pending'?'promise-item':'item',name);
     if(x.category==='benefit')gfqChLog(w,src,'benefit',name);
     if(x.category==='credential')gfqChLog(w,src,'cred',name);
@@ -2774,18 +2927,18 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const list=[...chs].filter(n=>n>0).sort((a,b)=>b-a);
     if(!list.length)return '';
     const card=(ch,i)=>{
-      const log=(w.gfChLog||{})[ch]||[],sum=k=>log.filter(e=>e.kind===k&&typeof e.amount==='number').reduce((n,e)=>n+e.amount,0);
+      const log=(w.gfChLog||{})[ch]||[],mainU=gfqMainUnit(w),sum=k=>log.filter(e=>e.kind===k&&typeof e.amount==='number'&&(e.unit||mainU)===mainU).reduce((n,e)=>n+e.amount,0);
       const places=Object.values(w.gfPlaces||{}).filter(p=>(p.chapters||[]).includes(ch)).map(p=>p.name);
       const people=gfqCastList(w).filter(c=>Object.keys(c.sc||{}).some(k=>k.startsWith(ch+':'))).map(c=>c.name);
       const started=[...new Set([...log.filter(e=>e.kind==='quest').map(e=>e.text),...(w.quests||[]).filter(q=>Number(gfqChapterOfSource(q.source))===ch).map(q=>q.title)])];
       const done=log.filter(e=>e.kind==='done').map(e=>e.text),steps=log.filter(e=>e.kind==='step').map(e=>e.text);
-      const got=log.filter(e=>['item','benefit','cred'].includes(e.kind)).map(e=>e.text),wait=log.filter(e=>['promise','promise-item'].includes(e.kind)).map(e=>e.text+(typeof e.amount==='number'?' '+gfqAmount(e.amount,'원'):''));
+      const got=log.filter(e=>['item','benefit','cred'].includes(e.kind)).map(e=>e.text),wait=log.filter(e=>['promise','promise-item'].includes(e.kind)).map(e=>e.text+(typeof e.amount==='number'?' '+gfqAmount(e.amount,e.unit||gfqMainUnit(w)):''));
       const d=w.gfDates?.[ch]?.date;
       const row=(k,v)=>v.length?'<div class="gfq-chrow"><dt>'+k+'</dt><dd>'+v.map(x=>'<span>'+esc(x)+'</span>').join('')+'</dd></div>':'';
       const inN=sum('in'),outN=sum('out');
       return '<details class="gfq-chcard"'+(i===0?' open':'')+'><summary><span class="gfq-chno gfq-num">'+String(ch).padStart(2,'0')+'</span><span class="gfq-chtitle">챕터 '+ch+(d?'<small class="gfq-num">'+esc(d)+'</small>':'')+'</span>'+
         '<span class="gfq-chstat">'+[done.length?'완료 '+done.length:'',started.length?'의뢰 '+started.length:'',places.length?'장소 '+places.length:'',people.length?'인물 '+people.length:''].filter(Boolean).join(' · ')+'</span></summary>'+
-        '<div class="gfq-chbody">'+(inN||outN?'<div class="gfq-chmoney"><div><span>입금 확인</span><b class="gfq-num">+'+esc(gfqAmount(inN,'원'))+'</b></div><div><span>지출</span><b class="gfq-num">−'+esc(gfqAmount(outN,'원'))+'</b></div></div>':'')+
+        '<div class="gfq-chbody">'+(inN||outN?'<div class="gfq-chmoney"><div><span>입금 확인</span><b class="gfq-num">+'+esc(gfqAmount(inN,gfqMainUnit(w)))+'</b></div><div><span>지출</span><b class="gfq-num">−'+esc(gfqAmount(outN,gfqMainUnit(w)))+'</b></div></div>':'')+
         '<dl>'+row('완료한 퀘스트',done)+row('시작한 퀘스트',started)+row('달성한 목표',steps)+row('얻은 것',got)+row('약속된 것',wait)+row('간 장소',places)+row('만난 인물',people.slice(0,12))+'</dl>'+
         (log.length?'':'<p class="gfq-sub">이 챕터는 v0.7.0 전에 반영되어 장소·인물·시작한 퀘스트만 보입니다.</p>')+'</div></details>';
     };
@@ -2803,9 +2956,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     ['c1','면허 소지','자격 1개 취득',w=>[w.fields.filter(f=>/^보유 자격 · /.test(f.name)).length,1]],
     ['c3','자격 수집가','자격 3개 취득',w=>[w.fields.filter(f=>/^보유 자격 · /.test(f.name)).length,3]],
     ['m0','첫 보수','입금 확인 1건',w=>[(w.gfLedger||[]).filter(t=>t.state==='received').length,1]],
-    ['m1','백만 원','입금 확인 누적 100만 원',w=>[gfqLedgerSummary(w).received,1e6]],
-    ['m5','오백만 원','입금 확인 누적 500만 원',w=>[gfqLedgerSummary(w).received,5e6]],
-    ['m10','천만 원','입금 확인 누적 1,000만 원',w=>[gfqLedgerSummary(w).received,1e7]],
+    ['m1','첫 목돈',w=>'입금 확인 누적 '+gfqAmount(gfqMoneyScale(gfqMainUnit(w)),gfqMainUnit(w)),w=>[gfqLedgerSummary(w).received,gfqMoneyScale(gfqMainUnit(w))]],
+    ['m5','큰손',w=>'입금 확인 누적 '+gfqAmount(5*gfqMoneyScale(gfqMainUnit(w)),gfqMainUnit(w)),w=>[gfqLedgerSummary(w).received,5*gfqMoneyScale(gfqMainUnit(w))]],
+    ['m10','재력가',w=>'입금 확인 누적 '+gfqAmount(10*gfqMoneyScale(gfqMainUnit(w)),gfqMainUnit(w)),w=>[gfqLedgerSummary(w).received,10*gfqMoneyScale(gfqMainUnit(w))]],
     ['p5','발걸음','장소 5곳',w=>[Object.keys(w.gfPlaces||{}).length,5]],
     ['p15','지리 통달','장소 15곳',w=>[Object.keys(w.gfPlaces||{}).length,15]],
     ['p30','도시의 지도','장소 30곳',w=>[Object.keys(w.gfPlaces||{}).length,30]],
@@ -2820,7 +2973,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   ];
   function gfqMaxChapter(w){return Math.max(0,...(w.gfStorySamples||[]).map(s=>Number(s.chapter)||0),...Object.keys(w.gfDates||{}).map(Number).filter(Number.isFinite),...Object.values(w.gfPlaces||{}).flatMap(p=>p.chapters||[]));}
   function gfqDaySpan(w){const ds=[...Object.values(w.gfDates||{}).map(d=>d?.date),w.gfDateManual?.date,w.gfReadingDate?.date].filter(Boolean).sort();return ds.length>1?Math.max(0,gfqDayDiff(ds[0],ds[ds.length-1])):0;}
-  function gfqAchState(w){return GFQ_ACH.map(([id,name,hint,f])=>{let cur=0,goal=1;try{[cur,goal]=f(w);}catch{}return {id,name,hint,cur:Math.min(cur,goal),goal,met:cur>=goal};});}
+  function gfqAchState(w){return GFQ_ACH.map(([id,name,hint,f])=>{let cur=0,goal=1,h=hint;try{[cur,goal]=f(w);if(typeof hint==='function')h=hint(w);}catch{}return {id,name,hint:h,cur:Math.min(cur,goal),goal,met:cur>=goal};});}
   // Called on every save. The first run records what is already met without announcing it.
   function gfqAchCheck(w){
     if(!w||!Array.isArray(w.quests)||!Array.isArray(w.fields))return;
@@ -2834,7 +2987,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function gfqAchHtml(w){
     const st=gfqAchState(w),got=w.gfAch?.got||{},n=st.filter(a=>got[a.id]||a.met).length;
     return '<section class="gfq-ach"><div class="gfq-items-head"><h3>업적</h3><span class="gfq-num gfq-ach-n">'+n+'<small>/'+st.length+'</small></span></div><div class="gfq-stamps">'+
-      st.map((a,i)=>{const g=got[a.id]||(a.met?{}:null);return '<div class="gfq-stamp2'+(g?' got':'')+'" style="--r:'+(((i*37)%9)-4)+'deg" title="'+esc(a.hint)+'"><span class="gfq-stamp2-in"><b>'+esc(a.name)+'</b><small>'+(g?esc(g.date||'달성'):esc(a.hint))+'</small>'+(g?'':'<em class="gfq-num">'+(a.goal>=1e6?Math.floor(a.cur/1e4).toLocaleString('ko-KR')+'/'+(a.goal/1e4).toLocaleString('ko-KR')+'만':a.cur+'/'+a.goal)+'</em>')+'</span></div>';}).join('')+'</div></section>';
+      st.map((a,i)=>{const g=got[a.id]||(a.met?{}:null);return '<div class="gfq-stamp2'+(g?' got':'')+'" style="--r:'+(((i*37)%9)-4)+'deg" title="'+esc(a.hint)+'"><span class="gfq-stamp2-in"><b>'+esc(a.name)+'</b><small>'+(g?esc(g.date||'달성'):esc(a.hint))+'</small>'+(g?'':'<em class="gfq-num">'+(a.goal>=1e5?Math.floor(a.cur/1e4).toLocaleString('ko-KR')+'/'+(a.goal/1e4).toLocaleString('ko-KR')+'만':a.cur.toLocaleString('ko-KR')+'/'+a.goal.toLocaleString('ko-KR'))+'</em>')+'</span></div>';}).join('')+'</div></section>';
   }
 
 
@@ -2963,7 +3116,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const toLedger=({r,i})=>r.kind==='money'&&!gfqIsCond(r)&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?'<button class="gfq-link" data-action="reward-to-ledger" data-id="'+esc(sel.id)+'" data-idx="'+i+'">거래 내역에 기록</button>':'';
     const rw=(sel.rewardDetails||[]).length?
       '<div class="gfq-rw">'+(tiles.length?'<div class="gfq-rw-tiles">'+tiles.map(({r})=>{const st=gfqRewardState(w,r);return '<div class="gfq-rw-tile t-'+st.tone+'" title="'+esc(r.name)+'">'+gfqThing(r.name,r.kind)+'<span class="gfq-rw-name">'+esc(r.name)+'</span><span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span></div>';}).join('')+'</div>':'')+
-        (big.length?'<div class="gfq-rw-rows">'+big.map(x=>{const st=gfqRewardState(w,x.r);return '<div class="gfq-rw-row'+(gfqIsCond(x.r)?' cond':'')+'" '+(gfqIsCond(x.r)?'title="철수·실패 같은 조건이 생길 때만 받는 최소 금액입니다. 다른 보수에 더해지지 않습니다."':'')+'><span class="gfq-rw-ic">'+gfqThing(x.r.name,x.r.kind)+'</span><span class="gfq-rw-rname">'+esc(x.r.name)+'<span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span>'+toLedger(x)+'</span><b class="gfq-num">'+esc(amount(x.r))+(x.r.kind==='money'?'<small>'+esc(x.r.unit||'원')+'</small>':'')+'</b></div>';}).join('')+'</div>':'')+'</div>':
+        (big.length?'<div class="gfq-rw-rows">'+big.map(x=>{const st=gfqRewardState(w,x.r);return '<div class="gfq-rw-row'+(gfqIsCond(x.r)?' cond':'')+'" '+(gfqIsCond(x.r)?'title="철수·실패 같은 조건이 생길 때만 받는 최소 금액입니다. 다른 보수에 더해지지 않습니다."':'')+'><span class="gfq-rw-ic">'+gfqThing(x.r.name,x.r.kind)+'</span><span class="gfq-rw-rname">'+esc(x.r.name)+'<span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span>'+toLedger(x)+'</span><b class="gfq-num">'+esc(amount(x.r))+(x.r.kind==='money'?'<small>'+esc(x.r.unit||gfqMainUnit(w))+'</small>':'')+'</b></div>';}).join('')+'</div>':'')+'</div>':
       '<p class="gfq-sub">기록된 보상이 없습니다. '+esc(sel.reward||'')+'</p>';
     const why=(sel.rewardDetails||[]).find(r=>r.kind==='reputation'&&r.assessed&&r.evidence);
     const detail='<article class="gfq-qdetail"><div class="gfq-qhead"><div class="gfq-qcrest" aria-hidden="true"><span>'+esc(String(sel.type||'의뢰').slice(0,2))+'</span></div><div class="gfq-qhead-t"><h3>'+esc(sel.title)+'</h3>'+
@@ -2985,10 +3138,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // v0.7.2: looks per world. Only colours, fonts and paper texture change; the layout stays the same.
   const GFQ_THEMES=[
     ['modern','현대','사건 파일 · 남색과 회색 종이',['#d7d4cd','#3b3f7a','#f0c02f']],
-    ['east','동양','한지 · 먹 · 주홍 낙관',['#e6dfcf','#2a2622','#b8352a']],
-    ['fantasy','판타지','양피지 · 진홍 · 금박',['#e3d3ae','#6a1e2b','#c9a227']],
-    ['sf','SF','관제 화면 · 청록 · 각진 카드',['#e1e6ea','#0f6a80','#16c6db']],
-    ['school','학원·일상','줄 노트 · 파랑 · 분홍',['#ecedf3','#3d63b0','#ff8fab']]
+    ['east','동양','한지 · 청록 · 단청 · 낙관',['#e9e2d2','#1d6a64','#c0392b']],
+    ['fantasy','판타지','양피지 · 진홍 · 금장식 · 밀랍',['#e3d3ae','#6a1e2b','#c9a227']],
+    ['sf','SF','관제 화면 · 육각 · 각진 카드',['#e1e6ea','#0f6a80','#16c6db']],
+    ['school','학원·일상','줄 노트 · 테이프 · 스티커',['#ecedf3','#3d63b0','#ff8fab']]
   ];
   const gfqTheme=w=>GFQ_THEMES.some(t=>t[0]===w?.gfTheme)?w.gfTheme:'modern';
   function gfqThemeHtml(w){
@@ -2998,14 +3151,14 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }
   function render(){if(!panel)return;let w=current();if(currentTab==='assets'||currentTab==='items')currentTab='profile';const tabs=[['quests','퀘스트'],['profile','프로필'],['cast','인물'],['places','장소'],['calendar','일정'],['history','기록'],['settings','설정']];if(!tabs.some(t=>t[0]===currentTab))currentTab='quests';const label=tabs.find(t=>t[0]===currentTab)[1];const today=w?gfqCurrentDate(w):null;const empty='<div class="gfq-empty"><strong>월드를 먼저 골라 주세요</strong><span class="gfq-sub">게임에서 월드를 열면 자동으로 연결됩니다.</span></div>';
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.2</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);for(const b of [toastBox,questBox])if(b)b.dataset.theme=gfqTheme(w);if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.3</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);for(const b of [toastBox,questBox])if(b)b.dataset.theme=gfqTheme(w);if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
   function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
   case 'cast':return gfqCastHtml(w);
   case 'calendar':return gfqCalendarHtml(w);
   case 'history':return `${gfqChapterCards(w)}${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
-  case 'settings':return `${gfqThemeHtml(w)}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
+  case 'settings':return `${gfqThemeHtml(w)}${gfqCurrencyHtml(w)}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
   const ask=(message,def='')=>prompt(message,def);
   const update=fn=>{const w=current();if(!w)return;fn(w);save();render();};
   const record=(w,text)=>{w.history.unshift({at:now(),text});w.history=w.history.slice(0,500);};
@@ -3016,9 +3169,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
   if(act==='select-quest'){selectedQuest=id;return render();}
+  if(act==='pick-unit'){return update(w=>{if(id)w.gfCurrency=id;else delete w.gfCurrency;record(w,'주 화폐: '+(id||'자동 ('+gfqMainUnit(w)+')'));});}
+  if(act==='pick-unit-custom'){const v=ask('주 화폐 단위를 적어 주세요. (예: 마석, 루피, 포인트)',w.gfCurrency||'');if(v===null)return;const u=String(v).trim().slice(0,12);return update(w=>{if(u)w.gfCurrency=u;else delete w.gfCurrency;record(w,'주 화폐: '+(u||'자동'));});}
   if(act==='pick-theme'){return update(w=>{w.gfTheme=id;record(w,'화면 테마: '+(GFQ_THEMES.find(t=>t[0]===id)?.[1]||id));});}
   if(act==='pick-world'){data.world=id;save();return render();}
-  if(act==='cash-base'){const cur=w.gfCashBase?.amount;const v=ask('이야기를 시작할 때 주인공이 가진 돈(원)을 숫자로 입력해 주세요. 거래 내역의 입금 확인과 지출을 더하고 빼서 현재 소지금을 계산합니다.',cur!=null?String(cur):'');if(v===null)return;const n=Number(String(v).replace(/[,\s원]/g,''));if(!Number.isFinite(n)||n<0)return alert('0 이상의 숫자로 입력해 주세요.');return update(w=>{w.gfCashBase={amount:Math.round(n),at:now()};record(w,'시작 소지금 설정: '+gfqAmount(Math.round(n),'원'));});}
+  if(act==='cash-base'){const cur=w.gfCashBase?.amount;const v=ask('이야기를 시작할 때 주인공이 가진 돈('+gfqMainUnit(w)+')을 숫자로 입력해 주세요. 거래 내역의 입금 확인과 지출을 더하고 빼서 현재 소지금을 계산합니다.',cur!=null?String(cur):'');if(v===null)return;const n=Number(String(v).replace(/[,\s원]/g,''));if(!Number.isFinite(n)||n<0)return alert('0 이상의 숫자로 입력해 주세요.');return update(w=>{w.gfCashBase={amount:Math.round(n),unit:gfqMainUnit(w),at:now()};record(w,'시작 소지금 설정: '+gfqAmount(Math.round(n),gfqMainUnit(w)));});}
   if(act==='place-page'){placePage=id;selectedPlace='';return render();}
   if(act==='cast-filter'){castFilter=id;selectedCast='';return render();}
   if(act==='select-cast'){selectedCast=id;return render();}
@@ -3061,10 +3216,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   if(act==='money-fill-ledger'){
     const m=(w.gfMissingMoney||[])[Number(el.dataset.idx)];if(!m)return;
     const open=(w.gfLedger||[]).filter(t=>t.amount===null);if(!open.length)return;
-    const ans=ask('이 금액('+gfqAmount(m.amount,'원')+')이 어느 거래의 금액인지 번호를 입력해 주세요. 상태(입금 여부)는 바뀌지 않습니다.\n'+m.sentence.slice(0,160)+'\n\n'+open.map((t,i)=>(i+1)+': '+t.name+' · '+gfqLabel('money',t.state)+(t.history?.[0]?.source?' · '+t.history[0].source:'')).join('\n'),'1');
+    const ans=ask('이 금액('+gfqAmount(m.amount,m.unit||'원')+')이 어느 거래의 금액인지 번호를 입력해 주세요. 상태(입금 여부)는 바뀌지 않습니다.\n'+m.sentence.slice(0,160)+'\n\n'+open.map((t,i)=>(i+1)+': '+t.name+' · '+gfqLabel('money',t.state)+(t.history?.[0]?.source?' · '+t.history[0].source:'')).join('\n'),'1');
     if(ans===null)return;const t=open[Number(ans)-1];if(!t)return alert('번호를 확인해 주세요.');
-    t.amount=m.amount;t.unit=t.unit||'원';t.history||=[];t.history.push({at:now(),state:t.state,amount:m.amount,evidence:m.sentence,source:m.source,note:'금액 보완'});
-    record(w,'거래 금액 보완: '+t.name+' → '+gfqAmount(m.amount,'원')+' · '+m.source);
+    t.amount=m.amount;t.unit=t.unit||m.unit||'원';t.history||=[];t.history.push({at:now(),state:t.state,amount:m.amount,evidence:m.sentence,source:m.source,note:'금액 보완'});
+    record(w,'거래 금액 보완: '+t.name+' → '+gfqAmount(m.amount,m.unit||'원')+' · '+m.source);
     w.gfMissingMoney=w.gfMissingMoney.filter(v=>v!==m);gfqRelinkQuestRewards(w);save();render();return;
   }
   if(act==='money-dismiss'){const m=(w.gfMissingMoney||[])[Number(el.dataset.idx)];if(!m)return;w.gfMoneyDismissed||=[];w.gfMoneyDismissed.push(m.amount);w.gfMissingMoney=w.gfMissingMoney.filter(v=>v!==m);save();render();return;}
@@ -3073,7 +3228,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const name=ask('거래 이름을 입력해 주세요.\n'+m.sentence,'');if(!name?.trim())return;
     const state=ask('상태 코드를 입력해 주세요.\npending: 지급 예정 / receivable: 미수금 / received: 입금 확인 / paid: 지출',"pending");
     if(state===null)return;if(!['pending','receivable','received','paid'].includes(state.trim()))return alert('올바른 상태 코드를 입력해 주세요.');
-    const p=gfqBuildProposal({category:'asset',name:name.trim(),status:'confirmed',financialStatus:state.trim(),amount:m.amount,unit:'원',owner:'player',source:m.source,eventKind:state.trim()==='paid'?'expense':'payment'},m.sentence,gfqRuleCtx(w));
+    const p=gfqBuildProposal({category:'asset',name:name.trim(),status:'confirmed',financialStatus:state.trim(),amount:m.amount,unit:m.unit||'원',owner:'player',source:m.source,eventKind:state.trim()==='paid'?'expense':'payment'},m.sentence,gfqRuleCtx(w));
     p.auditNote=[p.auditNote,'누락 의심 금액에서 직접 추가한 후보입니다.'].filter(Boolean).join(' ');
     w.aiProposals||=[];w.aiProposals.push(p);w.gfMissingMoney=w.gfMissingMoney.filter(v=>v!==m);save();render();return;
   }
