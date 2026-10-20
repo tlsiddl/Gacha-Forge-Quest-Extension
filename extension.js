@@ -1,4 +1,4 @@
-/* 퀘스트 v0.10.5 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.11.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -43,7 +43,115 @@
     render();alert('저장 기록을 복원했습니다. 로어북 반영 상태는 다시 확인해 주세요.');
   }
   let gfqSnapBytes=-1;function gfqSnapLen(){if(gfqSnapBytes<0){try{gfqSnapBytes=(localStorage.getItem(GFQ_AUTO_BACKUP_KEY)||'').length;}catch{gfqSnapBytes=0;}}return gfqSnapBytes;}
-  const save=()=>{try{gfqAutoSnapshot();try{gfqAchCheck(data.worlds?.[data.world]);}catch{}const json=JSON.stringify(data);try{localStorage.setItem(STORE,json);}catch(q){/* v0.10.1: snapshots must never cost the real save */localStorage.removeItem(GFQ_AUTO_BACKUP_KEY);gfqSnapBytes=0;localStorage.setItem(STORE,json);}gfqStorageWarn(json.length+gfqSnapLen());gfqInjectSchedule();return true;}catch(e){alert('저장하지 못했습니다: '+e.message);return false;}};
+  const save=()=>{try{gfqAutoSnapshot();try{gfqAchCheck(data.worlds?.[data.world]);}catch{}const cw=data.worlds?.[data.world];if(cw)cw.gfUpd=Date.now();const json=JSON.stringify(data);try{localStorage.setItem(STORE,json);}catch(q){/* v0.10.1: snapshots must never cost the real save */localStorage.removeItem(GFQ_AUTO_BACKUP_KEY);gfqSnapBytes=0;localStorage.setItem(STORE,json);}gfqStorageWarn(json.length+gfqSnapLen());gfqInjectSchedule();gfqSyncSchedule();return true;}catch(e){alert('저장하지 못했습니다: '+e.message);return false;}};
+
+  // v0.11.0: cross-device sync through Marinara's private extension storage (server side, 1,000,000 bytes per extension).
+  // localStorage stays the fast local copy; the server copy is gzip+base64 and is pushed a few seconds after edits.
+  // Pull happens at start-up, when the page becomes visible and when the panel opens. No polling timer.
+  var GFQ_SYNC_KEY='gf-quest-sync-v1',GFQ_SYNC_BACKUP='gf-quest-sync-backup-v1',GFQ_SYNC_MAX=900000;
+  var gfqSyncT=0,gfqSyncBusy=false,gfqSyncEdits=0,gfqSyncPulledAt=0,gfqSyncLastPush=0,gfqSyncNote='';
+  function gfqSyncHost(){try{const m=typeof marinara==='object'&&marinara?marinara:globalThis.marinara;return m&&m.storage&&typeof m.storage.get==='function'&&typeof m.storage.patch==='function'?m:null;}catch{return null;}}
+  function gfqSyncMeta(){try{const m=JSON.parse(localStorage.getItem(GFQ_SYNC_KEY)||'{}');return m&&typeof m==='object'?m:{};}catch{return {};}}
+  function gfqSyncSetMeta(patch){const m={...gfqSyncMeta(),...patch};try{localStorage.setItem(GFQ_SYNC_KEY,JSON.stringify(m));}catch{}return m;}
+  function gfqSyncSchedule(){
+    if(!gfqSyncHost())return;gfqSyncEdits++;
+    const m=gfqSyncMeta();if(!m.dirty)gfqSyncSetMeta({dirty:true});if(m.off)return;
+    if(gfqSyncT)clearTimeout(gfqSyncT);
+    const wait=Math.max(6000,20000-(Date.now()-gfqSyncLastPush));
+    gfqSyncT=setTimeout(()=>{gfqSyncT=0;gfqSyncPush();},wait);
+  }
+  async function gfqGzip(str){
+    if(typeof CompressionStream!=='function')return null;
+    const buf=new Uint8Array(await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer());
+    let bin='';for(let i=0;i<buf.length;i+=0x8000)bin+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));return btoa(bin);
+  }
+  async function gfqGunzip(b64){
+    const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    return await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  }
+  async function gfqSyncDecode(rec){
+    if(!rec||rec.v!==1||typeof rec.data!=='string')return null;
+    const json=rec.enc==='gzip-b64'?await gfqGunzip(rec.data):rec.data;
+    const d=JSON.parse(json);return d&&d.v===1&&d.worlds&&typeof d.worlds==='object'&&!Array.isArray(d.worlds)?d:null;
+  }
+  async function gfqSyncPush(force){
+    const host=gfqSyncHost();if(!host||gfqSyncBusy)return false;
+    const m=gfqSyncMeta();if(m.off||(!m.dirty&&!force))return false;
+    gfqSyncBusy=true;const edits=gfqSyncEdits;
+    try{
+      // Before overwriting, make sure nobody else pushed since our last sync (one read per push; pushes are at least 20s apart).
+      const cur=(await host.storage.get())?.gfq;
+      if(cur&&cur.rev&&cur.rev!==m.base){gfqSyncBusy=false;await gfqSyncPull('push',cur);return false;}
+      const json=JSON.stringify({...data,world:undefined});
+      let enc='gzip-b64',body=await gfqGzip(json);if(body===null){enc='json';body=json;}
+      if(body.length>GFQ_SYNC_MAX){gfqSyncSetMeta({err:'too-big',size:body.length});gfqSyncNote='기록이 서버 저장 한도(약 1MB)를 넘어 다른 기기로 보내지 못했습니다. 설정 탭에서 저장 공간을 정리해 주세요.';
+        if(!m.warnedBig){gfqSyncSetMeta({warnedBig:true});try{gfqToast('동기화 보류',gfqSyncNote,'warn');}catch{}}return false;}
+      const rev=Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+      await host.storage.patch({gfq:{v:1,rev,at:Date.now(),enc,data:body}});
+      gfqSyncLastPush=Date.now();
+      gfqSyncSetMeta({base:rev,dirty:gfqSyncEdits!==edits,at:gfqSyncLastPush,size:body.length,err:'',warnedBig:false});gfqSyncNote='';
+      if(gfqSyncEdits!==edits)gfqSyncSchedule();
+      if(panel&&currentTab==='settings')render();
+      return true;
+    }catch(e){gfqSyncSetMeta({err:String(e?.message||e).slice(0,120)});return false;}
+    finally{gfqSyncBusy=false;}
+  }
+  // Same world on two devices = same game run id (names can differ before the game reports them).
+  function gfqSyncMerge(local,remote,firstSync){
+    const idOf=(k,w)=>w?.gfRunId?'run:'+w.gfRunId:'key:'+k,size=w=>(w?.history?.length||0)+(w?.quests?.length||0)+(w?.gfLedger?.length||0)+(w?.items?.length||0);
+    const out={},taken=new Set(),kept=[];
+    const remoteBy=new Map(Object.entries(remote.worlds).map(([k,w])=>[idOf(k,w),[k,w]]));
+    for(const [rid,[rk,rw]] of remoteBy){
+      const lk=Object.keys(local.worlds).find(k=>idOf(k,local.worlds[k])===rid),lw=lk&&local.worlds[lk];
+      if(!lw){out[rk]=rw;continue;}
+      taken.add(lk);
+      const useLocal=firstSync?size(lw)>size(rw):(lw.gfUpd||0)>(rw.gfUpd||0);
+      out[rk]=useLocal?lw:rw;if(useLocal)kept.push(rk);
+    }
+    for(const [lk,lw] of Object.entries(local.worlds))if(!taken.has(lk)){let k=lk;if(out[k])k=lk+' (이 기기)';out[k]=lw;kept.push(k);}
+    return {worlds:out,kept};
+  }
+  async function gfqSyncPull(reason,known){
+    const host=gfqSyncHost();if(!host||gfqSyncBusy)return;
+    const m=gfqSyncMeta();if(m.off)return;
+    if(!known&&reason!=='manual'&&Date.now()-gfqSyncPulledAt<20000)return;
+    gfqSyncBusy=true;gfqSyncPulledAt=Date.now();
+    try{
+      const rec=known||(await host.storage.get())?.gfq;
+      if(!rec){if(Object.keys(data.worlds).length){gfqSyncSetMeta({dirty:true});gfqSyncBusy=false;await gfqSyncPush(true);}return;}
+      if(rec.rev===m.base){if(m.dirty){gfqSyncBusy=false;gfqSyncSchedule();}return;}
+      const remote=await gfqSyncDecode(rec);if(!remote)throw Error('서버 기록 형식을 읽지 못했습니다.');
+      const localEmpty=!Object.values(data.worlds).some(w=>(w.history?.length||0)+(w.quests?.length||0)>0);
+      const keepWorld=w=>w&&remote.worlds[w]?w:Object.keys(remote.worlds).find(k=>remote.worlds[k]?.gfRunId&&remote.worlds[k].gfRunId===data.worlds[w]?.gfRunId)||remote.world||Object.keys(remote.worlds)[0]||'';
+      if(localEmpty||(!m.dirty&&m.base)){
+        // Nothing new here: take the other device's copy as it is.
+        const world=keepWorld(data.world);data={...remote,world};
+        try{localStorage.setItem(STORE,JSON.stringify(data));}catch{}
+        gfqSyncSetMeta({base:rec.rev,dirty:false,err:''});
+      }else{
+        // Both sides changed: keep a copy of this device's records, then merge world by world.
+        try{localStorage.setItem(GFQ_SYNC_BACKUP,JSON.stringify({at:Date.now(),json:JSON.stringify(data)}));}catch{}
+        const r=gfqSyncMerge(data,remote,!m.base);
+        const world=keepWorld(data.world);data={...remote,...data,worlds:r.worlds};data.world=r.worlds[world]?world:(r.worlds[data.world]?data.world:Object.keys(r.worlds)[0]||'');
+        try{localStorage.setItem(STORE,JSON.stringify(data));}catch{}
+        gfqSyncSetMeta({base:rec.rev,dirty:true,err:''});
+        try{gfqToast('다른 기기 기록과 합쳤습니다',r.kept.length?'이 기기 쪽이 더 최신인 월드: '+r.kept.slice(0,3).join(', ')+(r.kept.length>3?' 외 '+(r.kept.length-3)+'개':''):'다른 기기의 기록을 불러왔습니다. 합치기 전 기록은 설정 탭에서 되돌릴 수 있습니다.','info');}catch{}
+        gfqSyncBusy=false;gfqSyncSchedule();
+      }
+      if(panel)render();
+    }catch(e){gfqSyncSetMeta({err:String(e?.message||e).slice(0,120)});}
+    finally{gfqSyncBusy=false;}
+  }
+  function gfqSyncHtml(){
+    if(!gfqSyncHost())return '<div class="gfq-card"><b>다른 기기와 동기화</b><p class="gfq-muted">이 마리나라 버전에서는 확장 서버 저장소를 찾지 못해 동기화할 수 없습니다. 기록은 이 브라우저에만 저장됩니다. 백업 내보내기·가져오기로 옮겨 주세요.</p></div>';
+    const m=gfqSyncMeta(),t=m.at?new Date(m.at).toLocaleString('ko-KR'):'아직 없음',pct=m.size?Math.min(100,Math.round(m.size/1e6*100)):0;
+    const state=m.off?'꺼짐':m.err==='too-big'?'보류(용량 초과)':m.err?'오류':m.dirty?'올릴 변경 있음':'최신';
+    return '<div class="gfq-card"><b>다른 기기와 동기화</b><p class="gfq-muted">기록을 마리나라 서버의 확장 전용 저장소에도 보관해, 같은 서버에 접속한 다른 기기·브라우저에서 이어서 볼 수 있습니다. 편집 몇 초 뒤 올리고, 확장을 켤 때와 화면으로 돌아올 때 받아 옵니다.</p>'+
+      '<p>상태: <b>'+esc(state)+'</b> · 마지막으로 올린 시각 '+esc(t)+(m.size?' · 서버 사용량 '+pct+'% (1MB 중)':'')+'</p>'+
+      (m.err&&m.err!=='too-big'?'<p class="gfq-muted">최근 오류: '+esc(m.err)+'</p>':'')+(gfqSyncNote?'<p class="gfq-muted">'+esc(gfqSyncNote)+'</p>':'')+
+      '<div class="gfq-row">'+btn('지금 동기화','sync-now',m.off?'disabled':'')+btn(m.off?'동기화 켜기':'이 기기 동기화 끄기','sync-toggle')+(localStorage.getItem(GFQ_SYNC_BACKUP)?btn('합치기 전 기록으로 되돌리기','sync-undo'):'')+'</div>'+
+      '<p class="gfq-muted">두 기기에서 같은 월드를 동시에 고치면 더 늦게 고친 쪽이 남습니다. 합치기 직전 이 기기의 기록은 따로 보관됩니다.</p></div>';
+  }
   const now=()=>new Date().toLocaleString('ko-KR');
   const current=()=>{if(!data.world || !data.worlds[data.world]) return null;return data.worlds[data.world];};
   let root, panel, currentTab='quests', activeFilter='전체';
@@ -988,7 +1096,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
     placeButton();
   }
-  function openPanel(){if(panel){panel.close();panel.remove();panel=null;mount();return;}panel=document.createElement('dialog');panel.id=ID+'-panel';panel.setAttribute('aria-label','퀘스트');document.body.append(panel);panel.addEventListener('cancel',e=>{e.preventDefault();openPanel();});render();panel.showModal();mount();}
+  function openPanel(){if(panel){panel.close();panel.remove();panel=null;mount();return;}gfqSyncPull('open');panel=document.createElement('dialog');panel.id=ID+'-panel';panel.setAttribute('aria-label','퀘스트');document.body.append(panel);panel.addEventListener('cancel',e=>{e.preventDefault();openPanel();});render();panel.showModal();mount();}
   // Story context preview. Does not intercept or modify official Gacha Forge model calls.
   function buildQuestContext(){
     const w=current();if(!w)return '';
@@ -3769,14 +3877,14 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
     // v0.7.7: a background re-render (new story data) must not wipe what the player is typing in the quest form.
     const f0=questEdit&&panel.querySelector('.gfq-qform'),draft=f0?{id:f0.dataset.id,v:[...f0.querySelectorAll('[data-f]')].map(e=>e.type==='checkbox'?e.checked:e.value)}:null;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.10.5</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>${gfqSyncHost()&&!gfqSyncMeta().off?'다른 기기와 동기화':'이 브라우저에만 저장'} · v0.11.0</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
   function content(w){switch(currentTab){case 'quests':return gfqLinkAuditHtml(w)+gfqRewardInbox(w)+gfqQuestsHtml(w);
   case 'profile':return gfqChangeCompareHtml(w)+gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
   case 'cast':return gfqCastHtml(w);
   case 'calendar':return gfqDueAuditHtml(w)+gfqCalendarHtml(w);
   case 'history':return `${gfqChapterCards(w)}${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
-  case 'settings':return `${gfqThemeHtml(w)}${gfqCurrencyHtml(w)}${gfqStorageHtml(w)}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')+btn('자동 복원 지점','restore-auto')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
+  case 'settings':return `${gfqThemeHtml(w)}${gfqCurrencyHtml(w)}${gfqStorageHtml(w)}${gfqSyncHtml()}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')+btn('자동 복원 지점','restore-auto')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
   const ask=(message,def='')=>prompt(message,def);
   const update=fn=>{const w=current();if(!w)return;fn(w);save();render();};
   const record=(w,text)=>{w.history.unshift({at:now(),text});w.history=w.history.slice(0,500);};
@@ -3864,6 +3972,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   if(act==='pick-tone'){return update(w=>{w.gfEastTone=id;record(w,'동양 테마 색조: '+(GFQ_TONES.find(t=>t[0]===id)?.[1]||id));});}
   if(act==='pick-theme'){return update(w=>{w.gfTheme=id;record(w,'화면 테마: '+(GFQ_THEMES.find(t=>t[0]===id)?.[1]||id));});}
   if(act==='pick-world'){data.world=id;save();return render();}
+  if(act==='sync-now'){gfqSyncNote='';(async()=>{await gfqSyncPull('manual');await gfqSyncPush(true);render();})();return;}
+  if(act==='sync-toggle'){const off=!gfqSyncMeta().off;gfqSyncSetMeta({off});if(!off)gfqSyncPull('manual');return render();}
+  if(act==='sync-undo'){let b;try{b=JSON.parse(localStorage.getItem(GFQ_SYNC_BACKUP)||'null');}catch{}if(!b?.json)return alert('되돌릴 기록이 없습니다.');if(!confirm(new Date(b.at).toLocaleString('ko-KR')+'에 합치기 직전 이 기기 기록으로 되돌리시겠습니까? 되돌린 기록이 서버에도 올라갑니다.'))return;let d;try{d=JSON.parse(b.json);}catch{return alert('보관된 기록을 읽지 못했습니다.');}const prev=data;data=d;if(!save()){data=prev;return;}localStorage.removeItem(GFQ_SYNC_BACKUP);gfqSyncPush(true);return render();}
   if(act==='storage-clean'){const pl=gfqStoragePlan(w);if(!pl.samples&&!pl.history)return alert('정리할 항목이 없습니다.');if(!confirm('스토리 장면 '+pl.samples+'개와 오래된 변경 기록 '+pl.history+'개를 지우시겠습니까?\n퀘스트·거래·인물·장소는 지우지 않습니다. 먼저 백업 내보내기를 권해 드립니다.'))return;return update(w=>{if(pl.samples){const keep=new Set(pl.keep);w.gfStorySamples=(w.gfStorySamples||[]).filter(x=>keep.has(Number(x.chapter)));}record(w,'저장 공간 정리: 장면 '+pl.samples+'개, 기록 '+pl.history+'개');w.history=w.history.slice(0,200);});}
   if(act==='cash-base'){const cur=w.gfCashBase?.amount;const v=ask('이야기를 시작할 때 주인공이 가진 돈('+gfqMainUnit(w)+')을 숫자로 입력해 주세요. 거래 내역의 입금 확인과 지출을 더하고 빼서 현재 소지금을 계산합니다.',cur!=null?String(cur):'');if(v===null)return;const n=Number(String(v).replace(/[,\s원]/g,''));if(!Number.isFinite(n)||n<0)return alert('0 이상의 숫자로 입력해 주세요.');return update(w=>{w.gfCashBase={amount:Math.round(n),unit:gfqMainUnit(w),at:now()};record(w,'시작 소지금 설정: '+gfqAmount(Math.round(n),gfqMainUnit(w)));});}
   if(act==='place-page'){placePage=id;selectedPlace='';return render();}
@@ -3979,7 +4090,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const at=now();t.state=state;t.updatedAt=at;t.history||=[];t.history.push({at,state,amount:t.amount,evidence:evidence.trim(),source:'수동 확인'});save();render();return;
   }if(act==='invoke-quest-bridge')return invokeQuestBridge();if(act==='prepare-ai-prompt')return prepareAiPrompt();if(act==='import-ai-result')return importAiResult();if(act==='approve-ai-proposal')return approveAiProposal(id);if(act==='remove-ai-proposal'){w.aiProposals=w.aiProposals.filter(x=>x.id!==id);save();render();return;}if(act==='refresh-ai-connections')return refreshAiConnections();if(act==='context-preview')return copyQuestContext();if(act==='export')return exportData();if(act==='import')return importData();if(act==='delete-world'){if(!confirm('현재 월드의 퀘스트 데이터를 삭제하시겠습니까? 게임 원본 저장 데이터에는 영향을 주지 않습니다.'))return;delete data.worlds[data.world];data.world=Object.keys(data.worlds)[0]||'';save();render();}
   });
-  mount();setTimeout(refreshAiConnections,900);setTimeout(syncWorld,1200);worldSyncTimer=null;const mo=new MutationObserver(()=>{if(!document.hidden&&findHost()!==gameHost)mount();});mo.observe(document.documentElement,{childList:true,subtree:false});
+  mount();setTimeout(()=>gfqSyncPull('start'),600);document.addEventListener('visibilitychange',()=>{if(document.hidden){if(gfqSyncMeta().dirty&&!gfqSyncBusy){if(gfqSyncT){clearTimeout(gfqSyncT);gfqSyncT=0;}gfqSyncPush();}}else gfqSyncPull('visible');});setTimeout(refreshAiConnections,900);setTimeout(syncWorld,1200);worldSyncTimer=null;const mo=new MutationObserver(()=>{if(!document.hidden&&findHost()!==gameHost)mount();});mo.observe(document.documentElement,{childList:true,subtree:false});
   const sync=setInterval(()=>{if(document.hidden)return;if(!gameHost || !gameHost.isConnected || !getButton())mount();},12000);
   // Re-promote dialog to the browser top layer after entering or exiting fullscreen.
   let fsRefresh=null;
