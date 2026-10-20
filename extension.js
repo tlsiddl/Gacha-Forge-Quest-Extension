@@ -1,4 +1,4 @@
-/* 퀘스트 v0.9.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.10.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -2756,7 +2756,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(x.equipOptions&&x.equipEvidence){
       const prior=String(item.equipOptions||'').trim(),incoming=String(x.equipOptions).trim();
       // Accumulate evidence-backed options; never erase manually entered data.
-      if(incoming&&!prior.includes(incoming))item.equipOptions=(prior?prior+'\n':'')+incoming;
+      if(incoming&&!prior.includes(incoming)){
+        const change=/(교체|대체|변경|강화 후|개조 후|상향)/.test(x.equipEvidence||'');
+        if(change&&prior){item.gearOptionVersions||=[];item.gearOptionVersions.push({at:now(),before:prior,after:incoming,evidence:x.equipEvidence});item.gearOptionVersions=item.gearOptionVersions.slice(-25);item.equipOptions=incoming;}
+        else item.equipOptions=(prior?prior+'\n':'')+incoming;
+      }
       item.equipOptions=item.equipOptions.slice(0,1600);
       item.equipEvidence=x.equipEvidence;
       gfqGearStage(item,x,'옵션 확정');
@@ -2943,6 +2947,38 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     return '<span class="gfq-glyph">'+ic+'</span>';
   }
 
+  function gfqLinkAudit(w){
+    const issues=[];
+    for(const q of w.quests||[])for(const r of q.rewardDetails||[]){
+      if(r.txId&&!(w.gfLedger||[]).some(t=>t.id===r.txId))issues.push(q.title+' / '+r.name+': 연결된 거래를 찾지 못했습니다.');
+      if(r.kind==='item'&&r.chainKey){
+        const hits=(w.items||[]).filter(i=>i.chainKey===r.chainKey||i.id===r.chainKey);
+        if(hits.length>1)issues.push(q.title+' / '+r.name+': 같은 연결 키에 물품이 여러 개 있습니다.');
+      }
+    }
+    for(const t of w.gfLedger||[])if(t.sourceKey&&w.gfLedger.filter(x=>x.sourceKey===t.sourceKey&&x.id!==t.id&&x.unit===t.unit&&x.amount===t.amount).length)
+      issues.push('거래 '+t.name+': 동일 계약 키·금액 기록이 여러 개입니다.');
+    return [...new Set(issues)].slice(0,35);
+  }
+  function gfqLinkAuditHtml(w){
+    const issues=gfqLinkAudit(w);
+    return '<details class="gfq-card"><summary><b>퀘스트·장비·거래 연결 검증 ('+issues.length+'건)</b></summary>'+
+      (issues.length?issues.map(t=>'<p class="gfq-muted">'+esc(t)+'</p>').join(''):'<p class="gfq-muted">검사 가능한 연결 기록에서 문제가 발견되지 않았습니다. 동일 사건임을 완전히 보증하는 것은 아닙니다.</p>')+
+      '</details>';
+  }
+  function gfqChangeCompareHtml(w){
+    const history=(w.history||[]).filter(h=>/장비|소지품|물품|거래|자산|명성|보상/.test(h.text||'')).slice(0,30);
+    return '<details class="gfq-card"><summary><b>자산·소지품 변경 기록 ('+history.length+'개 표시)</b></summary>'+
+      (history.map(h=>'<p class="gfq-muted">'+esc(h.at)+' · '+esc(h.text)+'</p>').join('')||'<p class="gfq-muted">기록된 변경이 없습니다.</p>')+
+      '<p class="gfq-muted">이 목록은 저장된 변경 이력이며, 모든 필드의 이전값 비교나 개별 복구를 대신하지 않습니다.</p></details>';
+  }
+  function gfqDueAuditHtml(w){
+    const today=gfqCurrentDate(w)?.date||'';
+    const list=today?gfqSchedule(w).filter(e=>e.open&&e.date<=today).slice(0,30):[];
+    return '<details class="gfq-card"><summary><b>세계관 날짜 기준 확인 필요 ('+list.length+'건)</b></summary>'+
+      (today?'<p class="gfq-muted">현재 세계관 날짜: '+esc(today)+' · 날짜 도달은 지급·수령 완료의 근거가 아닙니다.</p>':'<p class="gfq-muted">세계관 날짜가 확인되지 않았습니다.</p>')+
+      (list.map(e=>'<p>'+esc(e.date)+' · '+esc(e.text)+' — 미이행 여부 확인이 필요합니다.</p>').join('')||'<p class="gfq-muted">현재 확인할 기한이 없습니다.</p>')+'</details>';
+  }
   function gfqRewardInbox(w){
     const rows=[];
     for(const q of w.quests||[])for(const [i,r] of (q.rewardDetails||[]).entries()){
@@ -2966,12 +3002,13 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '<p class="gfq-muted">장착 부위: '+esc(i.equipSlot||'미지정')+'</p>'+
       '<p>옵션: '+esc(i.equipOptions||'미기록')+'</p>'+
       '<p><b>'+(equipped?'현재 착용 중':'미착용')+'</b> · 제작·수령 상태: '+esc(i.gearStage||(i.state==='pending'?'수령 예정':'보유'))+'</p>'+ 
+      ((i.gearOptionVersions||[]).length?'<details><summary>강화·옵션 변경 비교 ('+i.gearOptionVersions.length+')</summary>'+i.gearOptionVersions.slice(-10).map(v=>'<p class="gfq-muted">이전: '+esc(v.before)+' → 변경: '+esc(v.after)+'<br>근거: '+esc(v.evidence)+'</p>').join('')+'</details>':'')+
       ((i.gearHistory||[]).length?'<details><summary>제작·옵션·수령 이력 ('+i.gearHistory.length+')</summary>'+i.gearHistory.slice(-15).map(h=>'<p class="gfq-muted">'+esc(h.stage)+' · '+esc(h.evidence)+'</p>').join('')+'</details>':'')+
       btn('장비 정보 수정','equip-edit','data-id="'+esc(i.id)+'"')+
       (i.state!=='pending'?btn(equipped?'착용 해제':'착용하기','equip-toggle','data-id="'+esc(i.id)+'"'):'<p class="gfq-muted">수령 예정 물품은 착용할 수 없습니다.</p>')+'</section>';
   }
   function gfqItemsHtml(w){
-    const groups={'전체':()=>true,'보유':i=>i.state!=='pending'&&i.kind!=='voucher','장비':i=>gfqIsEquipment(i),'착용 중':i=>i.equipped===true&&i.state!=='pending','수령 예정':i=>i.state==='pending','이용권':i=>i.kind==='voucher'};
+    const groups={'전체':()=>true,'보유':i=>i.state!=='pending'&&i.kind!=='voucher','장비':i=>gfqIsEquipment(i),'옵션 등록':i=>gfqIsEquipment(i)&&!!i.equipOptions,'착용 중':i=>i.equipped===true&&i.state!=='pending','수령 예정':i=>i.state==='pending','이용권':i=>i.kind==='voucher'};
     if(!groups[itemFilter])itemFilter='전체';
     const list=w.items.filter(groups[itemFilter]);
     const sel=list.find(i=>i.id===selectedItem)||list[0]||null;
@@ -2992,8 +3029,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<div class="gfq-row">'+acts+btn('삭제','delete-item',`data-id="${esc(sel.id)}"`)+'</div>'+gfqEquipPanel(w,sel)+(sel.kind!=='voucher'?btn('물품 종류 지정','equip-type','data-id="'+esc(sel.id)+'"'):'')+'</article>';
     }
     const worn=w.items.filter(i=>i.equipped===true&&i.state!=='pending'&&gfqIsEquipment(i));
+    const gearCatalog='<details class="gfq-card"><summary><b>장비 도감 ('+w.items.filter(gfqIsEquipment).length+'개)</b></summary>'+w.items.filter(gfqIsEquipment).map(i=>'<p><button class="gfq-link" data-action="select-item" data-id="'+esc(i.id)+'">'+esc(i.name)+'</button> · '+esc(gfqEquipType(i))+' · '+esc(i.equipOptions||'옵션 미기록')+'</p>').join('')+'</details>';
     const wornInfo='<details class="gfq-card" open><summary><b>현재 착용 장비 ('+worn.length+'개)</b></summary>'+(worn.map(i=>'<p><b>'+esc(i.name)+'</b> · '+esc(i.equipSlot||'부위 미지정')+'<br><span class="gfq-muted">'+esc(i.equipOptions||'옵션 미기록')+'</span></p>').join('')||'<p class="gfq-muted">착용 중인 장비가 없습니다.</p>')+'</details>';
-    return '<section class="gfq-items">'+wornInfo+'<div class="gfq-items-head"><h3>소지품</h3>'+tabs+btn('＋ 소지품','add-item')+'</div>'+
+    return '<section class="gfq-items">'+wornInfo+gearCatalog+'<div class="gfq-items-head"><h3>소지품</h3>'+tabs+btn('＋ 소지품','add-item')+'</div>'+
       (w.items.length?'<div class="gfq-items-body"><div class="gfq-slots">'+(grid||'<p class="gfq-sub">이 분류에는 물품이 없습니다.</p>')+'</div>'+detail+'</div>':'<div class="gfq-empty"><strong>소지품이 비어 있습니다</strong><span class="gfq-sub">스토리에서 얻은 물품을 직접 추가하거나 AI 분석으로 채울 수 있습니다.</span></div>')+'</section>';
   }
   // Money as a receipt: one line per transaction, totals in the black band.
@@ -3530,11 +3568,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     // v0.7.7: a background re-render (new story data) must not wipe what the player is typing in the quest form.
     const f0=questEdit&&panel.querySelector('.gfq-qform'),draft=f0?{id:f0.dataset.id,v:[...f0.querySelectorAll('[data-f]')].map(e=>e.type==='checkbox'?e.checked:e.value)}:null;
     panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.8.3</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
-  function content(w){switch(currentTab){case 'quests':return gfqRewardInbox(w)+gfqQuestsHtml(w);
-  case 'profile':return gfqProfileHtml(w);
+  function content(w){switch(currentTab){case 'quests':return gfqLinkAuditHtml(w)+gfqRewardInbox(w)+gfqQuestsHtml(w);
+  case 'profile':return gfqChangeCompareHtml(w)+gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
   case 'cast':return gfqCastHtml(w);
-  case 'calendar':return gfqCalendarHtml(w);
+  case 'calendar':return gfqDueAuditHtml(w)+gfqCalendarHtml(w);
   case 'history':return `${gfqChapterCards(w)}${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
   case 'settings':return `${gfqThemeHtml(w)}${gfqCurrencyHtml(w)}${gfqStorageHtml(w)}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')+btn('자동 복원 지점','restore-auto')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
   const ask=(message,def='')=>prompt(message,def);
@@ -3555,7 +3593,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(note===null)return;
     return update(w=>{
       q.branchHistory||=[];
-      q.branchHistory.push({at:now(),choice:choice.trim().slice(0,200),note:note.trim().slice(0,400)});
+      q.branchHistory.push({at:now(),choice:choice.trim().slice(0,200),note:note.trim().slice(0,400),status:'확인된 선택'});
       q.branchHistory=q.branchHistory.slice(-40);
       record(w,'스토리 선택 기록: '+q.title+' · '+choice.trim().slice(0,100));
     });
@@ -3635,7 +3673,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(slot===null)return;
     const options=ask('장비 옵션 및 효과를 입력해 주세요. (예: 방어력 +5, 냉기 저항)',it.equipOptions||'');
     if(options===null)return;
-    return update(w=>{it.equipSlot=slot.trim().slice(0,60);it.equipOptions=options.trim().slice(0,1200);record(w,'장비 옵션 수정: '+it.name);});
+    return update(w=>{it.equipSlot=slot.trim().slice(0,60);const old=it.equipOptions||'',next=options.trim().slice(0,1200);if(old!==next){it.gearOptionVersions||=[];it.gearOptionVersions.push({at:now(),before:old,after:next,evidence:'사용자 직접 변경'});it.gearOptionVersions=it.gearOptionVersions.slice(-25);}it.equipOptions=next;record(w,'장비 옵션 수정: '+it.name);});
   }
   if(act==='equip-toggle'){
     const it=w.items.find(x=>x.id===id);if(!it||it.kind==='voucher'||it.state==='pending'||!gfqIsEquipment(it))return;
