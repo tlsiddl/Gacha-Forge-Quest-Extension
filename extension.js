@@ -3455,6 +3455,32 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       w.gfQuestLinkReviews||={};w.gfQuestLinkReviews[q.id]=accepted;w.gfQuestLinkChecked||={};w.gfQuestLinkChecked[q.id]={at:now(),count:accepted.length};save();render();
     }catch(err){alert('퀘스트 연결 검토에 실패했습니다: '+String(err?.message||err));}
   }
+  async function gfqBranchReview(w,q){
+    const connectionId=String(data.aiConnectionId||'').trim();
+    if(!connectionId)return alert('설정에서 AI 연결을 먼저 선택해 주세요.');
+    if(gfqBusy)return alert('다른 AI 분석이 진행 중입니다. 완료 후 다시 시도해 주세요.');
+    const records=gfqStoryRecords(w).filter(t=>t.text&&t.text.length>=15).slice(-30);
+    const source=records.map(t=>'['+t.source+'] '+t.text.slice(0,1300)).join('\n').slice(-14000);
+    if(!source)return alert('분석할 스토리 원문이 없습니다.');
+    const system='RPG 플레이어의 실제 선택을 보수적으로 판정합니다. 선택하지 않은 행동, NPC의 발언, 가상의 분기는 제외하세요. JSON만 반환하세요.';
+    const prompt='현재 퀘스트 '+q.title+'\n'+(q.detail||'')+'\n아래 실제 기록에서 플레이어가 직접 선택한 행동과 퀘스트에 생긴 결과를 찾으세요. 원문 그대로의 연속 인용이 없으면 빈 배열을 반환하세요. 추정해서 새 퀘스트나 완료 보상을 생성하지 마세요.\nJSON 형식 {"branches":[{"choice":"선택한 행동","note":"확인된 결과(없으면 빈 문자열)","quote":"원문 그대로 연속 인용"}]}\n'+source;
+    try{
+      const host=typeof marinara==='object'&&marinara?marinara:globalThis.marinara||{};
+      const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),90000);let raw;
+      try{raw=await gfqGenerate(host,connectionId,'gfq-branch-'+Date.now(),system,prompt,1300,ctrl.signal);}finally{clearTimeout(timeout);}
+      const parsed=gfqParseEvents(raw,'branches');
+      if(!parsed||parsed.partial)throw Error('분기 분석 응답 형식을 확인하지 못했습니다.');
+      const candidates=[];
+      for(const x of parsed.events.slice(0,8)){
+        const quote=String(x.quote||'').trim(),choice=String(x.choice||'').trim(),note=String(x.note||'').trim();
+        if(quote.length<8||choice.length<3||!records.some(r=>r.text.includes(quote)))continue;
+        if((q.branchHistory||[]).some(h=>h.quote===quote))continue;
+        candidates.push({choice:choice.slice(0,180),note:note.slice(0,400),quote:quote.slice(0,250)});
+      }
+      if(current()!==w||!w.quests.includes(q))return;
+      w.gfBranchCandidates||={};w.gfBranchCandidates[q.id]=candidates;save();render();
+    }catch(e){alert('AI 분기 검토에 실패했습니다: '+String(e.message||e));}
+  }
   function gfqQuestsHtml(w){
     const groups={'진행 중':q=>!gfqQuestDone(q),'완료':gfqQuestDone,'전체':()=>true};
     if(!groups[questFilter])questFilter='진행 중';
@@ -3499,7 +3525,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         '<section class="gfq-card"><h4>스토리 선택·분기 이력</h4>'+
         '<p class="gfq-muted">플레이어가 실제로 선택한 행동만 기록합니다. 선택하지 않은 분기는 완료 처리하지 않습니다.</p>'+
         (Array.isArray(sel.branchHistory)?sel.branchHistory.slice(-12).map(h=>'<p>'+esc(h.at)+' · '+esc(h.choice)+(h.note?' — '+esc(h.note):'')+'</p>').join(''):'')+
-        btn('선택 기록 추가','quest-branch-add','data-id="'+esc(sel.id)+'"')+'</section>'+
+        btn('선택 기록 추가','quest-branch-add','data-id="'+esc(sel.id)+'"')+btn('AI 선택 검토','quest-branch-review','data-id="'+esc(sel.id)+'"')+
+        (w.gfBranchCandidates?.[sel.id]?.length?'<div>'+w.gfBranchCandidates[sel.id].map((v,i)=>'<p class="gfq-muted">선택: '+esc(v.choice)+' · 근거: '+esc(v.quote)+' '+btn('선택 확인·반영','quest-branch-accept','data-id="'+esc(sel.id)+'" data-idx="'+i+'"')+'</p>').join('')+'</div>':'')+'</section>'+
         family+'<section class="gfq-qrw"><h4>보상</h4>'+rw+(why?'<p class="gfq-sub">명성 평가: '+esc(String(why.evidence).replace(/^확장 명성 규칙 제안:?\s*/,''))+'</p>':'')+'</section>'+
       '</div><footer class="gfq-qfoot">'+btn('삭제','delete-quest',`data-id="${esc(sel.id)}" class="gfq-ghost"`)+btn('고치기','quest-edit',`data-id="${esc(sel.id)}"`)+(Array.isArray(sel.steps)&&sel.steps.length?'':btn('＋1 진행','increment',`data-id="${esc(sel.id)}" ${done?'disabled':''}`))+btn(done?'완료됨':'완료 처리','complete',`data-id="${esc(sel.id)}" class="primary" ${done?'disabled':''}`)+'</footer></article>';
     return '<div class="gfq-quests">'+side+detail+'</div>';
@@ -3585,6 +3612,17 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
   if(act==='quest-review-links'){const q=w.quests.find(x=>x.id===id);if(q)return gfqReviewQuestLinks(w,q);return;}
+  if(act==='quest-branch-review'){const q=w.quests.find(v=>v.id===id);if(q)return gfqBranchReview(w,q);return;}
+  if(act==='quest-branch-accept'){
+    const q=w.quests.find(v=>v.id===id),i=Number(el.dataset.idx),x=w.gfBranchCandidates?.[id]?.[i];
+    if(!q||!x)return;
+    if(!confirm('스토리 원문과 실제 플레이어 선택을 확인하셨습니까?\n'+x.choice+'\n근거: '+x.quote))return;
+    return update(w=>{
+      q.branchHistory||=[];if(!q.branchHistory.some(h=>h.quote===x.quote))q.branchHistory.push({at:now(),...x,status:'사용자 확인'});
+      q.branchHistory=q.branchHistory.slice(-40);
+      w.gfBranchCandidates[id].splice(i,1);record(w,'스토리 선택 승인: '+q.title+' · '+x.choice);
+    });
+  }
   if(act==='quest-branch-add'){
     const q=w.quests.find(x=>x.id===id);if(!q)return;
     const choice=ask('스토리에서 실제로 선택한 행동을 적어 주세요.','');
