@@ -1,9 +1,9 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.11.0",
+    "version": "0.11.1",
     "description": "다른 기기와 기록 동기화(마리나라 확장 저장소), 모바일 가로 화면 대응",
     "runtime": "client",
     "enabled": false,

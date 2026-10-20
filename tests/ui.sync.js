@@ -4,13 +4,13 @@ const src=fs.readFileSync(process.argv[2]||require('path').join(__dirname,'..','
 const server={value:{},gets:0,patches:0};
 const storage={get:async()=>{server.gets++;return JSON.parse(JSON.stringify(server.value));},patch:async v=>{server.patches++;const n={...server.value,...JSON.parse(JSON.stringify(v))};if(JSON.stringify(n).length>1e6)throw Error('too big');server.value=n;return n;}};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-function device(local){
+function device(local,extId='ext-1',meta){
   const dom=new JSDOM('<!doctype html><body></body>',{url:'https://local.test/gacha-forge',runScripts:'outside-only'});
   const win=dom.window,doc=win.document;
   win.HTMLDialogElement.prototype.showModal=function(){this.open=true};win.HTMLDialogElement.prototype.close=function(){this.open=false};
   win.alert=()=>{};win.confirm=()=>true;win.prompt=()=>null;
   win.fetch=async()=>({ok:true,status:200,headers:{get:()=>'application/json'},clone(){return this},json:async()=>({})});
-  win.marinara={storage};
+  win.marinara={storage,extension:{id:extId}};if(meta)win.localStorage.setItem('gf-quest-sync-v1',JSON.stringify(meta));
   if(local)win.localStorage.setItem('gf-quest-v1',JSON.stringify(local));
   const host=doc.createElement('marinara-capability-gacha-forge');doc.body.append(host);
   host.attachShadow({mode:'open'}).innerHTML='<div><button class="gf-fs-bar icon-button">⛶</button></div>';
@@ -52,5 +52,11 @@ const world=(name,run,q,h)=>({quests:q.map((t,i)=>({id:'q'+i+name,title:t,type:'
   const p0=server.patches;A.click('[data-action="sync-toggle"]');A.click('[data-tab="quests"]');A.click('[data-action="toggle-step"]');await sleep(100);
   A.click('[data-tab="settings"]');assert.ok(A.doc.querySelector('[data-action="sync-now"][disabled]'),'sync now disabled when off');
   assert.strictEqual(server.patches,p0,'no upload while off');
+  // The extension record was re-created (new id, empty store): the device notices and uploads again.
+  server.value={};
+  const D=device({v:1,world:'은빛 항구',worlds:{'은빛 항구':world('은빛 항구','run-1',['등대 수리'],['기록 1'])}},'ext-2',{extId:'ext-1',base:'old'});await sleep(900);
+  const dm=JSON.parse(D.win.localStorage.getItem('gf-quest-sync-v1'));assert.strictEqual(dm.extId,'ext-2');assert.strictEqual(dm.prevExtId,'ext-1');
+  assert.ok(server.value.gfq,'re-uploaded after id change');
+  D.click('[data-tab="settings"]');assert.ok(D.doc.getElementById('gfq-01-panel').textContent.includes('이전 ID ext-1'),'id change shown');
   console.log('UI sync OK');process.exit(0);
 })().catch(e=>{console.error(e);process.exit(1);});

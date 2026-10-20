@@ -1,4 +1,4 @@
-/* 퀘스트 v0.11.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.11.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -51,6 +51,15 @@
   var GFQ_SYNC_KEY='gf-quest-sync-v1',GFQ_SYNC_BACKUP='gf-quest-sync-backup-v1',GFQ_SYNC_MAX=900000;
   var gfqSyncT=0,gfqSyncBusy=false,gfqSyncEdits=0,gfqSyncPulledAt=0,gfqSyncLastPush=0,gfqSyncNote='';
   function gfqSyncHost(){try{const m=typeof marinara==='object'&&marinara?marinara:globalThis.marinara;return m&&m.storage&&typeof m.storage.get==='function'&&typeof m.storage.patch==='function'?m:null;}catch{return null;}}
+  function gfqExtId(){try{const m=typeof marinara==='object'&&marinara?marinara:globalThis.marinara;return String(m?.extension?.id||m?.extensionId||'');}catch{return '';}}
+  // v0.11.1: remember which Marinara extension record owns the server copy. Deleting and re-importing the extension
+  // gives it a new id and an empty store; an update of the same record keeps the id (and the store).
+  function gfqSyncCheckId(){
+    const id=gfqExtId();if(!id)return;const m=gfqSyncMeta();
+    if(m.extId&&m.extId!==id){gfqSyncSetMeta({extId:id,prevExtId:m.extId,idChangedAt:Date.now(),base:undefined,dirty:true});
+      try{gfqToast('확장 ID가 바뀌었습니다','마리나라가 이 확장을 새로 등록했습니다. 서버 저장소가 비어 있으면 이 기기 기록을 다시 올립니다. 다른 기기도 한 번 열어 주세요.','warn');}catch{}}
+    else if(!m.extId)gfqSyncSetMeta({extId:id});
+  }
   function gfqSyncMeta(){try{const m=JSON.parse(localStorage.getItem(GFQ_SYNC_KEY)||'{}');return m&&typeof m==='object'?m:{};}catch{return {};}}
   function gfqSyncSetMeta(patch){const m={...gfqSyncMeta(),...patch};try{localStorage.setItem(GFQ_SYNC_KEY,JSON.stringify(m));}catch{}return m;}
   function gfqSyncSchedule(){
@@ -146,8 +155,8 @@
     if(!gfqSyncHost())return '<div class="gfq-card"><b>다른 기기와 동기화</b><p class="gfq-muted">이 마리나라 버전에서는 확장 서버 저장소를 찾지 못해 동기화할 수 없습니다. 기록은 이 브라우저에만 저장됩니다. 백업 내보내기·가져오기로 옮겨 주세요.</p></div>';
     const m=gfqSyncMeta(),t=m.at?new Date(m.at).toLocaleString('ko-KR'):'아직 없음',pct=m.size?Math.min(100,Math.round(m.size/1e6*100)):0;
     const state=m.off?'꺼짐':m.err==='too-big'?'보류(용량 초과)':m.err?'오류':m.dirty?'올릴 변경 있음':'최신';
-    return '<div class="gfq-card"><b>다른 기기와 동기화</b><p class="gfq-muted">기록을 마리나라 서버의 확장 전용 저장소에도 보관해, 같은 서버에 접속한 다른 기기·브라우저에서 이어서 볼 수 있습니다. 편집 몇 초 뒤 올리고, 확장을 켤 때와 화면으로 돌아올 때 받아 옵니다.</p>'+
-      '<p>상태: <b>'+esc(state)+'</b> · 마지막으로 올린 시각 '+esc(t)+(m.size?' · 서버 사용량 '+pct+'% (1MB 중)':'')+'</p>'+
+    return '<div class="gfq-card"><b>다른 기기와 동기화</b><p class="gfq-muted">기록을 마리나라 서버의 확장 전용 저장소에도 보관해, 같은 서버에 접속한 다른 기기·브라우저에서 이어서 볼 수 있습니다. 따로 누를 필요 없이 자동으로 맞춥니다. 편집 몇 초 뒤 올리고, 게임을 켤 때·월드에 들어갈 때·화면으로 돌아올 때·창을 열 때, 그리고 게임 화면을 보고 있는 동안 2분마다 받아 옵니다.</p>'+
+      '<p>상태: <b>'+esc(state)+'</b> · 마지막으로 올린 시각 '+esc(t)+(m.size?' · 서버 사용량 '+pct+'% (1MB 중)':'')+'</p>'+(gfqExtId()?'<p class="gfq-muted">확장 ID <code>'+esc(gfqExtId())+'</code>'+(m.prevExtId?' · 이전 ID '+esc(m.prevExtId)+'에서 바뀜('+esc(new Date(m.idChangedAt).toLocaleString('ko-KR'))+')':' · 업데이트 뒤에도 이 값이 같으면 서버 기록이 그대로 이어집니다.')+'</p>':'')+
       (m.err&&m.err!=='too-big'?'<p class="gfq-muted">최근 오류: '+esc(m.err)+'</p>':'')+(gfqSyncNote?'<p class="gfq-muted">'+esc(gfqSyncNote)+'</p>':'')+
       '<div class="gfq-row">'+btn('지금 동기화','sync-now',m.off?'disabled':'')+btn(m.off?'동기화 켜기':'이 기기 동기화 끄기','sync-toggle')+(localStorage.getItem(GFQ_SYNC_BACKUP)?btn('합치기 전 기록으로 되돌리기','sync-undo'):'')+'</div>'+
       '<p class="gfq-muted">두 기기에서 같은 월드를 동시에 고치면 더 늦게 고친 쪽이 남습니다. 합치기 직전 이 기기의 기록은 따로 보관됩니다.</p></div>';
@@ -1158,7 +1167,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(!data.worlds[key]?.gfRunId)data.worlds[key].gfRunId=runId;
     if(observed.name&&data.worlds[key].gfDisplayName!==observed.name){data.worlds[key].gfDisplayName=observed.name;save();if(panel)render();}
     const changed=data.world!==key;data.world=key;linkedRunId=runId;lastSyncError='';
-    if(changed)save();
+    if(changed){save();gfqSyncPull('world');}
     if(panel&&changed)render();
   }
   // Read the metadata of successful game responses only; never make unauthorised chapter requests.
@@ -3877,7 +3886,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
     // v0.7.7: a background re-render (new story data) must not wipe what the player is typing in the quest form.
     const f0=questEdit&&panel.querySelector('.gfq-qform'),draft=f0?{id:f0.dataset.id,v:[...f0.querySelectorAll('[data-f]')].map(e=>e.type==='checkbox'?e.checked:e.value)}:null;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>${gfqSyncHost()&&!gfqSyncMeta().off?'다른 기기와 동기화':'이 브라우저에만 저장'} · v0.11.0</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>${gfqSyncHost()&&!gfqSyncMeta().off?'다른 기기와 동기화':'이 브라우저에만 저장'} · v0.11.1</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);panel.dataset.tone=gfqTone(w);for(const b of [toastBox,questBox])if(b){b.dataset.theme=gfqTheme(w);b.dataset.tone=gfqTone(w);}if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}if(draft){const f1=panel.querySelector('.gfq-qform');const els=f1&&f1.dataset.id===draft.id?[...f1.querySelectorAll('[data-f]')]:[];if(els.length===draft.v.length)els.forEach((e,i)=>{if(e.type==='checkbox')e.checked=draft.v[i];else e.value=draft.v[i];});}}
   function content(w){switch(currentTab){case 'quests':return gfqLinkAuditHtml(w)+gfqRewardInbox(w)+gfqQuestsHtml(w);
   case 'profile':return gfqChangeCompareHtml(w)+gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
@@ -4090,7 +4099,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const at=now();t.state=state;t.updatedAt=at;t.history||=[];t.history.push({at,state,amount:t.amount,evidence:evidence.trim(),source:'수동 확인'});save();render();return;
   }if(act==='invoke-quest-bridge')return invokeQuestBridge();if(act==='prepare-ai-prompt')return prepareAiPrompt();if(act==='import-ai-result')return importAiResult();if(act==='approve-ai-proposal')return approveAiProposal(id);if(act==='remove-ai-proposal'){w.aiProposals=w.aiProposals.filter(x=>x.id!==id);save();render();return;}if(act==='refresh-ai-connections')return refreshAiConnections();if(act==='context-preview')return copyQuestContext();if(act==='export')return exportData();if(act==='import')return importData();if(act==='delete-world'){if(!confirm('현재 월드의 퀘스트 데이터를 삭제하시겠습니까? 게임 원본 저장 데이터에는 영향을 주지 않습니다.'))return;delete data.worlds[data.world];data.world=Object.keys(data.worlds)[0]||'';save();render();}
   });
-  mount();setTimeout(()=>gfqSyncPull('start'),600);document.addEventListener('visibilitychange',()=>{if(document.hidden){if(gfqSyncMeta().dirty&&!gfqSyncBusy){if(gfqSyncT){clearTimeout(gfqSyncT);gfqSyncT=0;}gfqSyncPush();}}else gfqSyncPull('visible');});setTimeout(refreshAiConnections,900);setTimeout(syncWorld,1200);worldSyncTimer=null;const mo=new MutationObserver(()=>{if(!document.hidden&&findHost()!==gameHost)mount();});mo.observe(document.documentElement,{childList:true,subtree:false});
+  mount();setTimeout(()=>{gfqSyncCheckId();gfqSyncPull('start');},600);(function gfqSyncLoop(){/* v0.11.1: slow automatic check, only while the game page is visible (2 min) */setTimeout(()=>{if(!document.hidden&&!gfqSyncMeta().off)gfqSyncPull('auto');gfqSyncLoop();},120000);})();document.addEventListener('visibilitychange',()=>{if(document.hidden){if(gfqSyncMeta().dirty&&!gfqSyncBusy){if(gfqSyncT){clearTimeout(gfqSyncT);gfqSyncT=0;}gfqSyncPush();}}else gfqSyncPull('visible');});setTimeout(refreshAiConnections,900);setTimeout(syncWorld,1200);worldSyncTimer=null;const mo=new MutationObserver(()=>{if(!document.hidden&&findHost()!==gameHost)mount();});mo.observe(document.documentElement,{childList:true,subtree:false});
   const sync=setInterval(()=>{if(document.hidden)return;if(!gameHost || !gameHost.isConnected || !getButton())mount();},12000);
   // Re-promote dialog to the browser top layer after entering or exiting fullscreen.
   let fsRefresh=null;
