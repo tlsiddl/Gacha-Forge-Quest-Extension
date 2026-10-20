@@ -2906,9 +2906,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
     const pending=rows.filter(x=>x.state.tone!=='ok');
     const renderRow=x=>'<div class="gfq-card"><b>'+esc(x.q.title)+'</b><p>'+esc(x.r.name)+(typeof x.r.amount==='number'?' · '+esc(gfqAmount(x.r.amount,x.r.unit)):'')+'</p><span class="gfq-muted">'+esc(x.state.text)+'</span> '+btn('퀘스트 보기','open-quest','data-id="'+esc(x.q.id)+'"')+'</div>';
-    return '<section class="gfq-card"><h3>보상 수령함</h3><p class="gfq-muted">퀘스트 완료와 보상 수령은 별개입니다. 실제 지급·소유가 확인된 경우에만 수령 완료로 표시합니다.</p>'+
+    return '<details class="gfq-card"><summary><b>보상 수령함 · 확인 필요 '+pending.length+'건</b></summary><p class="gfq-muted">퀘스트 완료와 보상 수령은 별개입니다. 실제 지급·소유가 확인된 경우에만 수령 완료로 표시합니다.</p>'+
       '<details open><summary>수령 대기·확인 필요 ('+pending.length+')</summary>'+pending.map(renderRow).join('')+'</details>'+
-      '<details><summary>수령·적용 기록 ('+(rows.length-pending.length)+')</summary>'+rows.filter(x=>x.state.tone==='ok').map(renderRow).join('')+'</details></section>';
+      '<details><summary>수령·적용 기록 ('+(rows.length-pending.length)+')</summary>'+rows.filter(x=>x.state.tone==='ok').map(renderRow).join('')+'</details></details>';
   }
   function gfqEquipPanel(w,i){
     if(i.kind==='voucher')return '';
@@ -2941,7 +2941,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
         (sel.evidence||sel.source?'<p class="gfq-quote"><mark>'+esc(String(sel.evidence||'').slice(0,40))+'</mark>'+esc(String(sel.evidence||'').slice(40,200))+(sel.source?' <small>'+esc(sel.source)+'</small>':'')+'</p>':'')+
         '<div class="gfq-row">'+acts+btn('삭제','delete-item',`data-id="${esc(sel.id)}"`)+'</div>'+gfqEquipPanel(w,sel)+'</article>';
     }
-    return '<section class="gfq-items"><div class="gfq-items-head"><h3>소지품</h3>'+tabs+btn('＋ 소지품','add-item')+'</div>'+
+    const worn=w.items.filter(i=>i.equipped===true&&i.state!=='pending');
+    const wornInfo='<details class="gfq-card" open><summary><b>현재 착용 장비 ('+worn.length+'개)</b></summary>'+(worn.map(i=>'<p><b>'+esc(i.name)+'</b> · '+esc(i.equipSlot||'부위 미지정')+'<br><span class="gfq-muted">'+esc(i.equipOptions||'옵션 미기록')+'</span></p>').join('')||'<p class="gfq-muted">착용 중인 장비가 없습니다.</p>')+'</details>';
+    return '<section class="gfq-items">'+wornInfo+'<div class="gfq-items-head"><h3>소지품</h3>'+tabs+btn('＋ 소지품','add-item')+'</div>'+
       (w.items.length?'<div class="gfq-items-body"><div class="gfq-slots">'+(grid||'<p class="gfq-sub">이 분류에는 물품이 없습니다.</p>')+'</div>'+detail+'</div>':'<div class="gfq-empty"><strong>소지품이 비어 있습니다</strong><span class="gfq-sub">스토리에서 얻은 물품을 직접 추가하거나 AI 분석으로 채울 수 있습니다.</span></div>')+'</section>';
   }
   // Money as a receipt: one line per transaction, totals in the black band.
