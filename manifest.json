@@ -1,9 +1,9 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "description": "월드별 퀘스트 상하위 연결·후보 제안·연결 해제",
     "runtime": "client",
     "enabled": false,
