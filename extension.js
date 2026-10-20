@@ -1,4 +1,4 @@
-/* 퀘스트 v0.9.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.9.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -2732,15 +2732,35 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }
   }
   // v0.3.8: items promised for later are kept as '수령 예정' and become owned when a linked receipt is approved.
+  function gfqGearStage(item,x,stage){
+    if(!item||!gfqIsEquipment(item))return;
+    item.gearHistory=Array.isArray(item.gearHistory)?item.gearHistory:[];
+    const text=String(x.equipEvidence||x.evidence||'').trim().slice(0,500);
+    if(!text||item.gearHistory.some(h=>h.stage===stage&&h.evidence===text))return;
+    item.gearHistory.push({at:now(),stage,evidence:text,source:String(x.source||'').slice(0,120)});
+    item.gearHistory=item.gearHistory.slice(-30);
+    item.gearStage=stage;
+  }
+  function gfqGearFromStory(x){
+    const t=String(x.evidence||'');
+    if(/제작 완료|완성됐|완성되었|완성했습니다|제작을 마쳤/.test(t))return '제작 완료';
+    if(/옵션 확정|성능 확정|옵션을 확정/.test(t))return '옵션 확정';
+    return '제작 계약·예정';
+  }
   function gfqApplyEquipmentCandidate(w,x,item){
-    if(!item||!x.equipOptions||!x.equipEvidence)return;
+    if(!item)return;
     const kind=['무기','방어구','장신구','도구'].includes(x.equipType)?x.equipType:'';
-    if(!kind)return;
-    item.equipType=item.equipType||kind;
+    if(kind&&!gfqIsEquipment(item))item.equipType=kind;
+    if(!gfqIsEquipment(item))return;
     if(!item.equipSlot&&x.equipSlot)item.equipSlot=x.equipSlot;
-    // Explicitly confirmed story evidence only; never equip or alter game statistics automatically.
-    if(!item.equipOptions)item.equipOptions=x.equipOptions;
-    item.equipEvidence=x.equipEvidence;
+    if(x.equipOptions&&x.equipEvidence){
+      const prior=String(item.equipOptions||'').trim(),incoming=String(x.equipOptions).trim();
+      // Accumulate evidence-backed options; never erase manually entered data.
+      if(incoming&&!prior.includes(incoming))item.equipOptions=(prior?prior+'\n':'')+incoming;
+      item.equipOptions=item.equipOptions.slice(0,1600);
+      item.equipEvidence=x.equipEvidence;
+      gfqGearStage(item,x,'옵션 확정');
+    }
   }
   function gfqApplyItem(w,x){
     const chain=String(x.chainKey||'').trim();
@@ -2754,20 +2774,23 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(waiting&&receiving){
       delete waiting.state;waiting.receivedAt=now();if(qtyOk)waiting.qty=x.amount;
       gfqApplyEquipmentCandidate(w,x,waiting);
+      gfqGearStage(waiting,x,'수령 완료');
       record(w,'물품 수령 확인: '+waiting.name+' · '+x.evidence);return true;
     }
     if(!receiving){
-      if(waiting){record(w,'수령 예정 물품 추가 근거: '+waiting.name+' · '+x.evidence);return true;}
+      if(waiting){gfqApplyEquipmentCandidate(w,x,waiting);gfqGearStage(waiting,x,gfqGearFromStory(x));record(w,'수령 예정 물품 추가 근거: '+waiting.name+' · '+x.evidence);return true;}
       const value=typeof x.value==='number'?x.value:(gfqIsMoneyUnit(x.unit)&&typeof x.amount==='number'?x.amount:null);
       w.items.push({id:uid(),name:String(x.name||'').slice(0,100),qty:qtyOk?x.amount:1,state:'pending',chainKey:chain||x.id,timing:gfqTiming(x),
         ...(value!==null?{value,valueUnit:x.valueUnit||(gfqIsMoneyUnit(x.unit)?gfqUnit(x.unit):'')}:{})});
       gfqApplyEquipmentCandidate(w,x,w.items[w.items.length-1]);
+      gfqGearStage(w.items[w.items.length-1],x,gfqGearFromStory(x));
       record(w,'수령 예정 물품 등록: '+x.name+(gfqTiming(x)?' · '+gfqTimingText(gfqTiming(x)):''));return true;
     }
     // Never add an owned item from a mention without a confirmed quantity.
     if(x.status!=='confirmed'||!qtyOk)return false;
     const item=w.items.find(i=>i.name===x.name&&i.state!=='pending'&&i.kind!=='voucher');if(item)item.qty+=x.amount;else w.items.push({id:uid(),name:x.name,qty:x.amount});
     gfqApplyEquipmentCandidate(w,x,item||w.items[w.items.length-1]);
+    gfqGearStage(item||w.items[w.items.length-1],x,'수령 완료');
     return true;
   }
   // v0.3.11: benefits. One-off discounts become vouchers in the inventory; lasting ones are an asset field.
@@ -2942,7 +2965,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     return '<section class="gfq-card"><h5>장비 옵션·착용 정보</h5>'+
       '<p class="gfq-muted">장착 부위: '+esc(i.equipSlot||'미지정')+'</p>'+
       '<p>옵션: '+esc(i.equipOptions||'미기록')+'</p>'+
-      '<p><b>'+(equipped?'현재 착용 중':'미착용')+'</b></p>'+
+      '<p><b>'+(equipped?'현재 착용 중':'미착용')+'</b> · 제작·수령 상태: '+esc(i.gearStage||(i.state==='pending'?'수령 예정':'보유'))+'</p>'+ 
+      ((i.gearHistory||[]).length?'<details><summary>제작·옵션·수령 이력 ('+i.gearHistory.length+')</summary>'+i.gearHistory.slice(-15).map(h=>'<p class="gfq-muted">'+esc(h.stage)+' · '+esc(h.evidence)+'</p>').join('')+'</details>':'')+
       btn('장비 정보 수정','equip-edit','data-id="'+esc(i.id)+'"')+
       (i.state!=='pending'?btn(equipped?'착용 해제':'착용하기','equip-toggle','data-id="'+esc(i.id)+'"'):'<p class="gfq-muted">수령 예정 물품은 착용할 수 없습니다.</p>')+'</section>';
   }
@@ -3618,7 +3642,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     return update(w=>{
       if(!it.equipped&&it.equipSlot)for(const other of w.items)if(other.id!==it.id&&other.equipSlot===it.equipSlot&&other.equipped){other.equipped=false;record(w,'장비 교체·착용 해제: '+other.name);}
       it.equipped=!it.equipped;
-      record(w,'장비 '+(it.equipped?'착용':'해제')+': '+it.name);
+      it.gearHistory||=[];it.gearHistory.push({at:now(),stage:it.equipped?'착용':'착용 해제',evidence:'사용자 직접 확인',source:'수동'});it.gearHistory=it.gearHistory.slice(-30);record(w,'장비 '+(it.equipped?'착용':'해제')+': '+it.name);
     });
   }
   if(act==='restore-auto')return gfqRestoreSnapshots();
