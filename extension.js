@@ -2340,6 +2340,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function gfqDeliver(w,p,at,events){
     const list=gfqEvidenceList(p),last=list.length-1;
     if(p.category!=='quest'){
+      if(at==='flush'){
+        p.deferred=false;
+        p.auditNote='챕터 이동·마지막 줄만으로 자산·소지품·보상 수령이 확정되지 않습니다. 원문 근거를 검토해 주세요.';
+        events.push({kind:'review',title:'자산·보상 확인 필요',text:String(p.name||'후보')+' · 수령·소유 근거 확인 필요'});
+        return;
+      }
       p.deferred=false;const count=(w.quests||[]).length;
       if(approveAiProposal(p.id,true))events.push(...gfqEventsFor(w,p,new Map(),count));
       return;
