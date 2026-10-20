@@ -11,6 +11,7 @@ let extra=null;
 win.fetch=async(url)=>{const u=String(url);if(extra){const r=extra(u);if(r)return r;}
   if(u.includes('/api/gacha-forge/beat'))return reply({ok:true,segments:[{speaker:'',text:'바람이 분다.'},{speaker:'한도윤',text:'가자.',place:'제1공방'},{speaker:'한도윤',text:'서둘러.',place:'제1공방'},{speaker:'홍길동',text:'응.'},{speaker:'공방장',text:'늦었군.',place:'제1공방'}],cast:[{name:'한도윤',art:'/p/han.png',prota:false},{name:'홍길동',art:'/p/me.png',prota:true}]});
   if(u.includes('/api/gacha-forge/roster'))return reply({ok:true,cards:[{id:'u1',name:'한도윤',kind:'character',rarity:4,role:'방어 담당',portrait:'/p/han2.png',level:12,bond:3},{id:'u2',name:'성검',kind:'weapon'},{id:'u3',name:'홍길동',isProtagonist:true}]});
+  if(u.includes('/api/gacha-forge/unit'))return reply({ok:true,unit:{name:'한도윤',kind:'character',portrait:'/p/base.png',wornOutfit:'',outfits:[{id:'o1',name:'정장',url:'/p/suit.png'},{id:'o2',name:'전투복',url:'/p/combat.png'}]}});
   return reply({});};
 const W0={quests:[],fields:[],items:[],history:[],gfRunId:'run-x',protagonist:'홍길동',gfDisplayName:'월드',
   gfPlaces:{'제1공방':{name:'제1공방',chapters:[3],scenes:[],url:'/bg/a.png'},'관리국':{name:'관리국',chapters:[3],scenes:[],url:'/bg/b.png'}},gfPlaceNow:{key:'관리국'},
@@ -20,7 +21,7 @@ const host=doc.createElement('marinara-capability-gacha-forge');doc.body.append(
 const sr=host.attachShadow({mode:'open'});sr.innerHTML='<div><button class="gf-fs-bar icon-button">⛶</button></div>';
 win.eval(src);
 const W=()=>JSON.parse(win.localStorage.getItem('gf-quest-v1')).worlds.w;
-const toasts=()=>[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast')].map(e=>e.textContent);
+const toasts=()=>[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast,#gfq-01-qtoasts .gfq-toast')].map(e=>e.textContent);
 (async()=>{
   // Characters from a scene: speakers counted once per scene, narration and the protagonist skipped.
   const beat=()=>win.fetch('/api/gacha-forge/beat',{method:'POST',body:JSON.stringify({runId:'run-x',chapter:3,storyIndex:0})});
@@ -32,6 +33,12 @@ const toasts=()=>[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast')].map(e=>e
   sr.querySelector('button[data-gfq="top"]').click();
   const panel=doc.getElementById('gfq-01-panel');const click=sel=>{const e=panel.querySelector(sel);assert.ok(e,'missing '+sel);e.dispatchEvent(new win.MouseEvent('click',{bubbles:true}));};
   click('[data-tab="cast"]');assert.strictEqual(panel.querySelectorAll('.gfq-face').length,2);assert.ok(panel.querySelector('.gfq-castcard h4').textContent==='한도윤');
+  await sleep(50);
+  assert.strictEqual(W().gfCast['한도윤'].outfits.length,2,'outfits fetched once for a roster hero');
+  assert.strictEqual(panel.querySelectorAll('[data-action="cast-outfit"]').length,4,'game look, base and two outfits');
+  click('[data-action="cast-outfit"][data-o="o1"]');assert.strictEqual(W().gfCast['한도윤'].pick,'o1');
+  assert.ok(panel.querySelector('.gfq-face.on img').getAttribute('src')==='/p/suit.png','picked outfit shown');
+  click('[data-action="cast-outfit"][data-o=""]');assert.strictEqual(W().gfCast['한도윤'].pick,undefined);
   answer='믿을 만한 동료';click('[data-action="cast-note"]');assert.strictEqual(W().gfCast['한도윤'].note,'믿을 만한 동료');
   click('[data-action="cast-filter"][data-id="등장인물"]');assert.strictEqual(panel.querySelectorAll('.gfq-face').length,1);
   // Place check-in: a new scene background announces the place.

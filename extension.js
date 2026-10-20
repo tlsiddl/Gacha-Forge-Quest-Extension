@@ -1,4 +1,4 @@
-/* 퀘스트 v0.7.0 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.7.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -434,23 +434,43 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-stamp2.got .gfq-stamp2-in{border:3px double var(--ind);color:var(--ind);background:radial-gradient(circle,transparent 58%,#3b3f7a12 59%);transform:rotate(var(--r));box-shadow:inset 0 0 0 5px var(--card),inset 0 0 0 6px #3b3f7a66}
 #gfq-01-panel .gfq-stamp2.got .gfq-stamp2-in small{color:var(--ind);opacity:.85}
 @media(max-width:760px){#gfq-01-panel .gfq-faces{grid-template-columns:repeat(3,minmax(0,1fr))}#gfq-01-panel .gfq-cal{padding:10px}#gfq-01-panel .gfq-cal-day{min-height:52px;padding:3px}#gfq-01-panel .gfq-cal-day i{font-size:0;height:5px;padding:0}#gfq-01-panel .gfq-cal-pad{min-height:52px}#gfq-01-panel .gfq-chbody{padding:12px 14px}#gfq-01-panel .gfq-chrow{grid-template-columns:1fr}#gfq-01-panel .gfq-stamps{grid-template-columns:repeat(3,minmax(0,1fr))}#gfq-01-panel .gfq-tabs{flex-wrap:nowrap}#gfq-01-panel .gfq-tabs button{flex:1 1 0;min-width:0}#gfq-01-panel .gfq-tab-l{font-size:11px;white-space:nowrap}#gfq-01-panel .gfq-brand{display:none}}
+
+/* v0.7.1 */
+#gfq-01-panel .gfq-outfits{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:0 14px}
+#gfq-01-panel .gfq-outfits button{display:flex;flex-direction:column;gap:3px;padding:3px;background:#fbfaf7;border:1px solid var(--line);font-weight:600}
+#gfq-01-panel .gfq-of-img{display:block;aspect-ratio:3/4;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px);overflow:hidden}
+#gfq-01-panel .gfq-of-img img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;display:block}
+#gfq-01-panel .gfq-outfits small{font-size:10px;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gfq-01-panel .gfq-outfits button[aria-pressed=true]{border:2px solid var(--mark);background:var(--ind);color:#fff;box-shadow:0 0 0 1px var(--ind)}
 `;
   style.textContent+=`
-#${ID}-toasts{position:fixed;inset:16px 16px auto auto;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;gap:8px;z-index:2147483002;max-width:min(380px,calc(100vw - 32px))}
-#${ID}-toasts:not(:popover-open){display:none}
-#${ID}-toasts .gfq-toast{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;text-align:left;padding:10px 14px;border:1px solid #4d6f99;border-left:4px solid #a5d7ff;border-radius:2px;background:linear-gradient(110deg,#13233a,#1a2c46);color:#eaf2ff;font:13px/1.45 system-ui,"Noto Sans KR",sans-serif;box-shadow:0 10px 28px #000b;cursor:pointer;animation:gfq-toast-in .25s ease-out}
-#${ID}-toasts .gfq-toast b{font-size:11px;letter-spacing:.12em;color:#a5d7ff}
-#${ID}-toasts .gfq-toast-quest,#${ID}-toasts .gfq-toast-step{border-left-color:#f2c86b}#${ID}-toasts .gfq-toast-quest b,#${ID}-toasts .gfq-toast-step b{color:#f2c86b}
-#${ID}-toasts .gfq-toast-money,#${ID}-toasts .gfq-toast-rep{border-left-color:#7fd69b}#${ID}-toasts .gfq-toast-money b,#${ID}-toasts .gfq-toast-rep b{color:#7fd69b}
-#${ID}-toasts .gfq-toast-offer{cursor:default;border-color:#c9a55a;box-shadow:0 0 0 1px #f2c86b55,0 12px 32px #000c}
-#${ID}-toasts .gfq-offer-row{display:flex;gap:8px;margin-top:6px}#${ID}-toasts .gfq-offer-row button{font:600 12px system-ui,"Noto Sans KR",sans-serif;padding:6px 14px;border-radius:2px;border:1px solid #f2c86b;background:#f2c86b;color:#1b2232;cursor:pointer}#${ID}-toasts .gfq-offer-row button[data-o=later]{background:transparent;color:#f2c86b}
-#${ID}-toasts .gfq-toast-date{border-left-color:#c7a6ff}#${ID}-toasts .gfq-toast-date b{color:#c7a6ff}#${ID}-toasts .gfq-toast-date span{font-size:15px;font-weight:700;letter-spacing:.04em}
-#${ID}-toasts .gfq-toast-review{border-left-color:#f0a35e}#${ID}-toasts .gfq-toast-review b{color:#f0a35e}
-#${ID}-toasts .gfq-toast-place{border-left-color:#8fb8ff}#${ID}-toasts .gfq-toast-place b{color:#8fb8ff}
-#${ID}-toasts .gfq-toast-due{border-left-color:#f0a35e}#${ID}-toasts .gfq-toast-due b{color:#f0a35e}
-#${ID}-toasts .gfq-toast-ach{border-left-color:#f2c86b;background:linear-gradient(110deg,#262950,#3b3f7a)}#${ID}-toasts .gfq-toast-ach b{color:#f2c86b}
-@keyframes gfq-toast-in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){#${ID}-toasts .gfq-toast{animation:none}}
+#${ID}-toasts,#${ID}-qtoasts{position:fixed;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:stretch;gap:10px;z-index:2147483002;pointer-events:none;--paper:#f1efea;--ink:#202229;--sub:#67655f;--k:#3b3f7a;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;--sans:"Pretendard","Noto Sans KR",system-ui,sans-serif}
+#${ID}-toasts{inset:16px 16px auto auto;width:min(360px,calc(100vw - 32px))}
+#${ID}-qtoasts{inset:0;margin:auto;width:min(440px,calc(100vw - 32px));height:fit-content;max-height:calc(100dvh - 32px)}
+#${ID}-toasts:not(:popover-open),#${ID}-qtoasts:not(:popover-open){display:none}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast{pointer-events:auto;position:relative;display:grid;grid-template-columns:64px minmax(0,1fr);width:100%;padding:0;border:1.5px solid var(--ink);border-radius:0;background:var(--paper);color:var(--ink);text-align:left;font:14px/1.5 var(--sans);box-shadow:0 18px 50px #000a,6px 6px 0 #00000040;cursor:pointer;animation:gfq-toast-in .28s cubic-bezier(.2,.9,.3,1.2)}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-t-stub{display:grid;place-items:center;background:var(--k);color:#fff;border-right:2px dashed var(--paper);position:relative}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-t-stub svg{width:28px;height:28px}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-t-body{display:flex;flex-direction:column;gap:2px;padding:14px 18px 14px 20px;min-width:0}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-t-body b{font:700 12px/1.3 var(--sans);letter-spacing:.06em;color:var(--k)}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-t-body span{font:700 17px/1.45 var(--serif);color:var(--ink);overflow-wrap:anywhere}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast:hover{box-shadow:0 18px 50px #000a,6px 6px 0 #00000055;transform:translateY(-1px)}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast:focus-visible{outline:3px solid #f0c02f;outline-offset:2px}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-quest,:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-step{--k:#3b3f7a}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-money,:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-rep{--k:#2f6a4e}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-item,:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-benefit,:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-credential{--k:#4c5196}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-date,:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-due{--k:#5d4a86}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-place{--k:#2f5a82}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-review,:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-info{--k:#94552c}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-ach{--k:#a37a22}:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-ach .gfq-t-body{background:radial-gradient(circle at 100% 0,#f0c02f33,transparent 60%)}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast-offer{cursor:default;border-width:2px;box-shadow:0 0 0 6px #f0c02f55,0 18px 50px #000b}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row{display:flex;gap:8px;margin-top:10px}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button{font:700 13px var(--sans);padding:8px 18px;border-radius:0;border:1.5px solid var(--ink);background:var(--k);color:#fff;cursor:pointer}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button[data-o=later]{background:transparent;color:var(--ink)}
+:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button:focus-visible{outline:3px solid #f0c02f;outline-offset:2px}
+@keyframes gfq-toast-in{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast{animation:none}}
+#${ID}-toasts .gfq-toast{grid-template-columns:46px minmax(0,1fr);box-shadow:0 10px 28px #0008,4px 4px 0 #00000033}#${ID}-toasts .gfq-t-stub svg{width:22px;height:22px}#${ID}-toasts .gfq-t-body{padding:10px 14px 10px 14px}#${ID}-toasts .gfq-t-body span{font-size:14px}#${ID}-toasts .gfq-t-body b{font-size:11px}
 `;
   document.head.append(style);
   function allowed(){return !!document.querySelector('[data-agent-id="gacha-forge"], [data-package-id="gacha-forge"], [class*="gacha-forge"], [id*="gacha-forge"], [class*="gf-shell"], [class*="gf-app"]') || /gacha.forge/i.test(document.title) || /gacha-forge/i.test(location.pathname+location.hash);}
@@ -751,7 +771,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       }
       if(req.runId)attachObservedRun(req.runId);
       req.url=url.pathname;
-      if(result?.then && /\/(?:state|runs|chapters|chapter-plan|locations|roster|continuity|beat|story|run)(?:\/|$)/.test(url.pathname))result.then(response=>absorbGameReply(req,response)).catch(()=>{});
+      if(result?.then && /\/(?:state|runs|chapters|chapter-plan|locations|roster|unit|continuity|beat|story|run)(?:\/|$)/.test(url.pathname))result.then(response=>absorbGameReply(req,response)).catch(()=>{});
     }catch{}
     return result;
   };
@@ -1842,29 +1862,37 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     return ev;
   }
   // v0.4.0: quest notifications. A top-layer popover so they also show in fullscreen.
-  let toastBox=null;
-  function gfqToastHide(){if(toastBox&&!toastBox.children.length){try{toastBox.hidePopover?.();}catch{}}}
-  function gfqToastBox(){
-    if(!toastBox){toastBox=document.createElement('div');toastBox.id=ID+'-toasts';toastBox.setAttribute('popover','manual');document.body.append(toastBox);}
-    try{if(toastBox.showPopover&&!toastBox.matches(':popover-open'))toastBox.showPopover();}catch{}
-    return toastBox;
+  let toastBox=null,questBox=null; // v0.7.1: quest popups in the middle, everything else top right
+  // v0.7.1: popups are small tickets in the middle of the screen; the stub icon says what kind of event it is.
+  function gfqToastStub(kind){
+    const k={quest:'qm',step:'badge',money:'coin',rep:'star',item:'box',benefit:'ticket',credential:'badge',date:'cal',due:'cal',place:'pin',ach:'star',review:'card',info:'card'}[kind]||'card';
+    const extra={qm:'<path d="M12 2.8 20.6 12 12 21.2 3.4 12z"/><path d="M12 7.8v5.4"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/>',cal:'<rect x="4" y="5.5" width="16" height="14"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',pin:'<path d="M12 21s-6.5-6.4-6.5-11a6.5 6.5 0 0 1 13 0c0 4.6-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'};
+    return '<span class="gfq-t-stub" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">'+(extra[k]||GFQ_ICONS[k])+'</svg></span>';
   }
-  function gfqToastTrim(){const plain=[...toastBox.children].filter(e=>!e.classList.contains('gfq-toast-offer'));while(plain.length>4)plain.shift().remove();}
+  function gfqToastHide(){for(const b of [toastBox,questBox])if(b&&!b.children.length){try{b.hidePopover?.();}catch{}}}
+  function gfqToastBox(center=false){
+    if(!toastBox){toastBox=document.createElement('div');toastBox.id=ID+'-toasts';toastBox.setAttribute('popover','manual');document.body.append(toastBox);}
+    if(!questBox){questBox=document.createElement('div');questBox.id=ID+'-qtoasts';questBox.className='gfq-center';questBox.setAttribute('popover','manual');document.body.append(questBox);}
+    const box=center?questBox:toastBox;
+    try{if(box.showPopover&&!box.matches(':popover-open'))box.showPopover();}catch{}
+    return box;
+  }
+  function gfqToastTrim(box=toastBox){const plain=[...box.children].filter(e=>!e.classList.contains('gfq-toast-offer'));while(plain.length>3)plain.shift().remove();}
   // v0.4.2: a quest offer waits for the player's answer (no auto-hide).
   function gfqToastOffer(title,text,onAccept,onLater){
     if(!document.body)return;
-    const box=gfqToastBox(),el=document.createElement('div');el.className='gfq-toast gfq-toast-quest gfq-toast-offer';
-    el.innerHTML=gfqNoMatch('<b>'+esc(title)+'</b><span>'+esc(text)+'</span>')+'<div class="gfq-offer-row"><button type="button" data-o="yes">수락</button><button type="button" data-o="later">나중에</button></div>';
+    const box=gfqToastBox(true),el=document.createElement('div');el.className='gfq-toast gfq-toast-quest gfq-toast-offer';
+    el.innerHTML=gfqToastStub('quest')+'<span class="gfq-t-body">'+gfqNoMatch('<b>'+esc(title)+'</b><span>'+esc(text)+'</span>')+'<span class="gfq-offer-row"><button type="button" data-o="yes">수락</button><button type="button" data-o="later">나중에</button></span></span>';
     el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;el.remove();gfqToastHide();(b.dataset.o==='yes'?onAccept:onLater)();});
     box.append(el);
   }
   function gfqToast(title,text,kind='info'){
     if(!document.body)return;
-    gfqToastBox();
+    const center=kind==='quest'||kind==='step',box=gfqToastBox(center);
     const el=document.createElement('button');el.type='button';el.className='gfq-toast gfq-toast-'+kind;
-    el.innerHTML=gfqNoMatch('<b>'+esc(title)+'</b><span>'+esc(text)+'</span>');
+    el.innerHTML=gfqToastStub(kind)+gfqNoMatch('<span class="gfq-t-body"><b>'+esc(title)+'</b><span>'+esc(text)+'</span></span>');
     el.addEventListener('click',()=>{el.remove();gfqToastHide();currentTab=kind==='place'?'places':kind==='due'?'calendar':['date','money','item','benefit','credential','rep','ach'].includes(kind)?'profile':['review','info'].includes(kind)?'history':'quests';if(!panel)openPanel();else render();});
-    toastBox.append(el);gfqToastTrim();
+    box.append(el);gfqToastTrim(box);
     setTimeout(()=>{el.remove();gfqToastHide();},kind==='review'?12000:7000);
   }
   function gfqNotifyChanges(events,info){
@@ -2555,8 +2583,16 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const set=(c,f,val)=>{if(val===undefined||val===null||val==='')return;if(c[f]!==val){c[f]=val;changed=true;}};
     if(/\/roster$/.test(path)&&Array.isArray(v.cards)){
       for(const u of v.cards){if(!u||u.isProtagonist||u.kind==='weapon')continue;const c=put(u.name);if(!c)continue;
-        set(c,'roster',true);set(c,'art',u.portrait?String(u.portrait).slice(0,400):undefined);set(c,'rarity',Number(u.rarity)||undefined);set(c,'role',String(u.role||'').slice(0,40)||undefined);set(c,'affinity',String(u.affinity||'').slice(0,30)||undefined);set(c,'level',Number(u.level)||undefined);
+        set(c,'roster',true);set(c,'unitId',String(u.id||'').slice(0,160)||undefined);set(c,'art',u.portrait?String(u.portrait).slice(0,400):undefined);set(c,'rarity',Number(u.rarity)||undefined);set(c,'role',String(u.role||'').slice(0,40)||undefined);set(c,'affinity',String(u.affinity||'').slice(0,30)||undefined);set(c,'level',Number(u.level)||undefined);
         const b=typeof u.bond==='number'?u.bond:Number(u.bond?.level??u.bond?.rank);set(c,'bond',Number.isFinite(b)?b:undefined);}
+    }
+    // v0.7.1: a character's outfits (the game asks for /unit when a hero is opened; so does this tab, once).
+    if(/\/unit$/.test(path)&&v.unit&&typeof v.unit==='object'&&!v.unit.isProtagonist&&v.unit.kind!=='weapon'){
+      const c=put(v.unit.name);
+      if(c){set(c,'unitId',String(req.unitId||c.unitId||'').slice(0,160)||undefined);set(c,'base',v.unit.portrait?String(v.unit.portrait).slice(0,400):undefined);
+        const fits=(Array.isArray(v.unit.outfits)?v.unit.outfits:[]).filter(o=>o&&o.id&&o.url).slice(0,24).map(o=>({id:String(o.id).slice(0,80),name:String(o.name||'').slice(0,40),url:String(o.url).slice(0,400)}));
+        if(JSON.stringify(c.outfits||[])!==JSON.stringify(fits)){c.outfits=fits;changed=true;}
+        if(c.pick&&c.pick!=='base'&&!fits.some(o=>o.id===c.pick)){delete c.pick;changed=true;}}
     }
     if(/\/beat$/.test(path)){
       if(Array.isArray(v.cast))for(const u of v.cast){if(!u||u.prota)continue;const c=put(u.name);if(c&&u.art)set(c,'art',String(u.art).slice(0,400));}
@@ -2571,6 +2607,14 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       }
     }
     if(changed){save();if(panel&&currentTab==='cast')render();}
+  }
+  // The portrait shown here: the outfit picked in this tab, else the one the game shows.
+  function gfqCastArt(c){if(c.pick==='base'&&c.base)return c.base;const o=c.pick&&(c.outfits||[]).find(x=>x.id===c.pick);return o?o.url:c.art;}
+  const gfqUnitTried=new Set();
+  function gfqCastOutfits(w,c){
+    if(!c.unitId||!w.gfRunId||c.outfits||gfqUnitTried.has(c.unitId))return;
+    gfqUnitTried.add(c.unitId);
+    gfqApi('/api/gacha-forge/unit','POST',{runId:w.gfRunId,unitId:c.unitId}).then(r=>{if(r&&r.ok)gfqRememberCast(w.gfRunId,r,'/api/gacha-forge/unit',{unitId:c.unitId});else throw 0;}).catch(()=>{const x=Object.values(w.gfCast||{}).find(v=>v.unitId===c.unitId);if(x&&!x.outfits){x.outfits=[];if(panel&&currentTab==='cast')render();}});
   }
   const gfqScKey=k=>{const [a,b]=String(k).split(':').map(Number);return (a||0)*1000+(b||0);};
   function gfqCastList(w){
@@ -2589,7 +2633,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const list=all.filter(groups[castFilter]),sel=list.find(c=>c.key===selectedCast)||list[0];
     const seg='<div class="gfq-seg" role="group" aria-label="인물 분류">'+Object.keys(groups).map(k=>'<button data-action="cast-filter" data-id="'+k+'" aria-pressed="'+(k===castFilter)+'">'+k+' <small class="gfq-num">'+all.filter(groups[k]).length+'</small></button>').join('')+'</div>';
     const cards=list.map(c=>'<button class="gfq-face'+(sel&&c.key===sel.key?' on':'')+'" data-action="select-cast" data-id="'+esc(c.key)+'" aria-pressed="'+(!!(sel&&c.key===sel.key))+'">'+
-      '<span class="gfq-face-img">'+(gfqImgSrc(c.art)?'<img src="'+esc(c.art)+'" alt="" loading="lazy">':'<i aria-hidden="true">'+esc([...c.name][0]||'?')+'</i>')+(c.rarity?'<em class="gfq-num">'+'★'.repeat(Math.min(6,c.rarity))+'</em>':'')+'</span>'+
+      '<span class="gfq-face-img">'+(gfqImgSrc(gfqCastArt(c))?'<img src="'+esc(gfqCastArt(c))+'" alt="" loading="lazy">':'<i aria-hidden="true">'+esc([...c.name][0]||'?')+'</i>')+(c.rarity?'<em class="gfq-num">'+'★'.repeat(Math.min(6,c.rarity))+'</em>':'')+'</span>'+
       '<span class="gfq-face-name">'+esc(c.name)+'</span><small>'+(c.last?esc(gfqScText(c.last).replace('번째 장면','')):'대사 없음')+'</small></button>').join('');
     let detail='<div class="gfq-dossier empty"><p class="gfq-sub">이 분류에는 인물이 없습니다.</p></div>';
     if(sel){
@@ -2602,7 +2646,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       if(sel.last&&sel.last!==sel.first)facts.push('마지막 대사: '+gfqScText(sel.last));
       facts.push('대사 '+sel.lines+'줄 · 장면 '+sel.scenes+'곳');
       detail='<article class="gfq-dossier gfq-castcard"><div class="gfq-hd"><span class="gfq-pin" aria-hidden="true"></span><h4>'+esc(sel.name)+'</h4><span class="gfq-no gfq-num">'+(sel.roster?'동료':'인물')+'</span></div>'+
-        '<div class="gfq-plate photo tall">'+(gfqImgSrc(sel.art)?'<img src="'+esc(sel.art)+'" alt="'+esc(sel.name)+' 초상화" loading="lazy">':'<span class="gfq-glyph-big">'+esc([...sel.name][0]||'?')+'</span>')+(sel.rarity?'<span class="gfq-plate-tag">'+'★'.repeat(Math.min(6,sel.rarity))+'</span>':'')+'</div>'+
+        '<div class="gfq-plate photo tall">'+(gfqImgSrc(gfqCastArt(sel))?'<img src="'+esc(gfqCastArt(sel))+'" alt="'+esc(sel.name)+' 초상화" loading="lazy">':'<span class="gfq-glyph-big">'+esc([...sel.name][0]||'?')+'</span>')+(sel.rarity?'<span class="gfq-plate-tag">'+'★'.repeat(Math.min(6,sel.rarity))+'</span>':'')+'</div>'+
+        (()=>{gfqCastOutfits(w,sel);const fits=sel.outfits||[];if(!fits.length)return sel.unitId&&!sel.outfits?'<p class="gfq-sub gfq-pad">의상 목록을 불러오는 중입니다.</p>':'';
+          const opts=[...(sel.base&&sel.base!==sel.art?[{id:'base',name:'기본',url:sel.base}]:[]),...fits.filter(o=>o.url!==sel.art)];
+          return '<h5>초상화 의상</h5><div class="gfq-outfits">'+'<button data-action="cast-outfit" data-id="'+esc(sel.key)+'" data-o="" aria-pressed="'+(!sel.pick)+'" title="게임에서 입은 의상"><span class="gfq-of-img">'+(gfqImgSrc(sel.art)?'<img src="'+esc(sel.art)+'" alt="" loading="lazy">':'')+'</span><small>게임 그대로</small></button>'+
+            opts.map(o=>'<button data-action="cast-outfit" data-id="'+esc(sel.key)+'" data-o="'+esc(o.id)+'" aria-pressed="'+(sel.pick===o.id)+'"><span class="gfq-of-img"><img src="'+esc(o.url)+'" alt="" loading="lazy"></span><small>'+esc(o.name||'의상')+'</small></button>').join('')+'</div><p class="gfq-sub gfq-pad">이 확장 화면에만 적용됩니다. 게임 속 의상은 바뀌지 않습니다.</p>';})()+
         '<h5>요약</h5><ul class="gfq-facts">'+facts.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+
         (sel.places.length?'<h5>자주 나온 장소</h5><ul class="gfq-facts">'+sel.places.slice(0,4).map(p=>{const k=gfqPlaceKey(p);return '<li>'+(w.gfPlaces?.[k]?'<button class="gfq-link" data-action="select-place" data-id="'+esc(k)+'">'+esc(p)+'</button>':esc(p))+'</li>';}).join('')+'</ul>':'')+
         (quests.length?'<h5>관련 퀘스트</h5><ul class="gfq-facts">'+quests.map(q=>'<li><button class="gfq-link" data-action="open-quest" data-id="'+esc(q.id)+'">'+esc(q.title)+'</button>'+(q.claimed?' · 완료':'')+'</li>').join('')+'</ul>':'')+
@@ -2882,7 +2930,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }
   function render(){if(!panel)return;let w=current();if(currentTab==='assets'||currentTab==='items')currentTab='profile';const tabs=[['quests','퀘스트'],['profile','프로필'],['cast','인물'],['places','장소'],['calendar','일정'],['history','기록'],['settings','설정']];if(!tabs.some(t=>t[0]===currentTab))currentTab='quests';const label=tabs.find(t=>t[0]===currentTab)[1];const today=w?gfqCurrentDate(w):null;const empty='<div class="gfq-empty"><strong>월드를 먼저 골라 주세요</strong><span class="gfq-sub">게임에서 월드를 열면 자동으로 연결됩니다.</span></div>';
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.0</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.1</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
   function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
@@ -2905,6 +2953,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   if(act==='place-page'){placePage=id;selectedPlace='';return render();}
   if(act==='cast-filter'){castFilter=id;selectedCast='';return render();}
   if(act==='select-cast'){selectedCast=id;return render();}
+  if(act==='cast-outfit'){const c=w.gfCast?.[id];if(!c)return;const o=el.dataset.o||'';return update(w=>{if(o)w.gfCast[id].pick=o;else delete w.gfCast[id].pick;});}
   if(act==='cast-note'){const c=w.gfCast?.[id];if(!c)return;const v=ask(c.name+'에 대한 메모를 적어 주세요. (비우면 지워집니다)',c.note||'');if(v===null)return;return update(w=>{const t=String(v).trim().slice(0,300);if(t)w.gfCast[id].note=t;else delete w.gfCast[id].note;});}
   if(act==='cal-day'){calDay=id;return render();}
   if(act==='cal-month'){calMonth=id;calDay=el.dataset.day||'';return render();}
@@ -2996,7 +3045,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   // Re-promote dialog to the browser top layer after entering or exiting fullscreen.
   let fsRefresh=null;
   function refreshFullscreenDialog(){
-    try{if(toastBox&&toastBox.matches(':popover-open')){toastBox.hidePopover();toastBox.showPopover();}}catch{}
+    for(const b of [toastBox,questBox]){try{if(b&&b.matches(':popover-open')){b.hidePopover();b.showPopover();}}catch{}}
     if(!panel||!panel.isConnected)return;
     if(fsRefresh)clearTimeout(fsRefresh);
     fsRefresh=setTimeout(()=>{fsRefresh=null;if(!panel||!panel.isConnected)return;try{if(panel.open)panel.close();panel.showModal();}catch(e){console.warn('[퀘스트] 전체화면 팝업 복원 실패',e);}},75);

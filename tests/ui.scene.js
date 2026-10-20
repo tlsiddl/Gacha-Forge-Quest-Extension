@@ -32,7 +32,7 @@ root.innerHTML='<div class="bar"><button class="gf-fs-bar icon-button">⛶</butt
 win.eval(src);
 const show=async(line,n)=>{root.querySelector('.vn-line').textContent=line;root.querySelector('.vn-count').textContent=String(n).padStart(2,'0')+' / 10';await sleep(400);};
 const state=()=>{const d=JSON.parse(win.localStorage.getItem('gf-quest-v1'));return d.worlds[d.world];};
-const toasts=()=>[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast')].map(e=>e.textContent);
+const toasts=()=>[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast,#gfq-01-qtoasts .gfq-toast')].map(e=>e.textContent);
 (async()=>{
   // The whole chapter is generated (observed traffic), then analysed while the reader is still on line 1.
   for(const [i,t] of [L0,L1,L2].entries()){nextBody={beat:{chapter:3,storyIndex:i+1,segments:[{text:t}]}};await win.fetch('/api/gacha-forge/beat',{method:'POST',body:JSON.stringify({runId:'run-x',chapter:3,storyIndex:i+1})});await sleep(20);}
@@ -42,7 +42,7 @@ const toasts=()=>[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast')].map(e=>e
   assert.strictEqual(w.gfLastAnalysis.deferred,2);assert.ok(w.aiProposals.every(p=>p.deferred));
   // Line with the commission: a quest offer appears.
   await show(L0,2);
-  const offer=doc.querySelector('#gfq-01-toasts .gfq-toast-offer');assert.ok(offer,'quest offer shown: '+toasts().join(' | '));
+  const offer=doc.querySelector('#gfq-01-qtoasts .gfq-toast-offer');assert.ok(offer,'quest offer shown: '+toasts().join(' | '));
   assert.match(offer.textContent,/새 퀘스트제1공방 긴급 방어 작전/);
   offer.querySelector('[data-o="yes"]').click();
   w=state();assert.strictEqual(w.quests.length,1);const q=w.quests[0];

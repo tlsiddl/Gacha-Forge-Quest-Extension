@@ -67,7 +67,7 @@ win.eval(src);
   assert.strictEqual(q.rewardDetails.find(r=>r.kind==='money').txId,w.gfLedger[0].id,'reward linked to ledger');
   assert.strictEqual(w.items[0].state,'pending');
   assert.strictEqual(w.aiProposals.length,0);assert.ok(w.gfUndo);
-  const toasts=[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast')].map(e=>e.textContent);
+  const toasts=[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast,#gfq-01-qtoasts .gfq-toast')].map(e=>e.textContent);
   assert.ok(toasts.some(t=>t.startsWith('퀘스트 완료제1공방 긴급 방어 작전')),'quest toast: '+toasts.join(' | '));
   assert.ok(toasts.some(t=>t.includes('지급 예정')&&t.includes('1,400,000')));
   // Undo restores the state before the automatic application.
