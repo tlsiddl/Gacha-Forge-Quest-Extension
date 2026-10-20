@@ -1,4 +1,4 @@
-/* 퀘스트 v0.7.7 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.7.8 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -2497,9 +2497,22 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     let lore=w.gfRunLore;
     if(!lore){const st=await gfqApi('/api/gacha-forge/state','GET');gfqRememberLore(w.gfRunId,st);lore=w.gfRunLore;}
     if(!lore)throw Error('게임에서 이 월드의 로어북 설정을 읽지 못했습니다.');
+    // Refresh remote configuration before writing, to avoid replacing another extension's changes.
+    try{
+      const latest=await gfqApi('/api/gacha-forge/state','GET');
+      gfqRememberLore(w.gfRunId,latest);
+      if(w.gfRunLore)lore=w.gfRunLore;
+    }catch(e){
+      throw Error('월드 로어북 최신 설정을 확인하지 못해 변경하지 않았습니다: '+String(e.message||e));
+    }
     let next;
-    if(connect){if(!g.prevLore)g.prevLore=gfqCleanLore(lore);next=gfqMergeLore(lore,g.lorebookId,true);}
-    else{const prev=g.prevLore?gfqCleanLore(g.prevLore):null;next={...gfqMergeLore(lore,g.lorebookId,false),beat:prev?prev.beat:gfqCleanLore(lore).beat};}
+    if(connect){
+      if(!g.prevLore)g.prevLore=gfqCleanLore(lore);
+      next=gfqMergeLore(lore,g.lorebookId,true);
+    }else{
+      // Only remove the extension's own book. Preserve all other books and current beat setting.
+      next=gfqMergeLore(lore,g.lorebookId,false);
+    }
     const r=await gfqApi('/api/gacha-forge/run/lorebooks','POST',{runId:w.gfRunId,lore:next});
     if(r&&r.ok===false)throw Error(String(r.error||'게임이 설정 변경을 거부했습니다.'));
     w.gfRunLore=gfqCleanLore(r?.lore||next);g.connected=connect;if(!connect)delete g.prevLore;w.gfInject=g;
