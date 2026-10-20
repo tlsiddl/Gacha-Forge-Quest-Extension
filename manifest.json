@@ -1,10 +1,10 @@
 {
   "kind": "marinara.personal-extension",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "config": {
     "name": "가챠 포지 퀘스트 확장",
-    "version": "0.10.2",
-    "description": "모바일 퀘스트 창 높이·터치 스크롤 개선",
+    "version": "0.10.3",
+    "description": "모바일 가로모드 메뉴 높이 및 본문 스크롤 수정",
     "runtime": "client",
     "enabled": false,
     "capabilities": [
