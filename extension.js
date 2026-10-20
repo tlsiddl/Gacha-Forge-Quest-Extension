@@ -1,4 +1,4 @@
-/* 퀘스트 v0.7.1 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
+/* 퀘스트 v0.7.2 — standalone, local-only manual companion; no modification to Gacha Forge saves. */
 (() => {
   'use strict';
   if (globalThis.__gfQuestExtension01) return;
@@ -26,7 +26,7 @@
 
   /* v0.6.0 case-file layout (paper, indigo, ticket and receipt shapes): scoped to the panel; toasts keep their own style */
   style.textContent += `
-#gfq-01-panel{--paper:#d7d4cd;--paper2:#e4e1db;--card:#f1efea;--ink:#202229;--sub:#67655f;--line:#b1aca2;--ind:#3b3f7a;--ind2:#4c5196;--indd:#262950;--mark:#f0c02f;--red:#a9433a;--grn:#3b7556;
+#gfq-01-panel{--paper:#d7d4cd;--paper2:#e4e1db;--card:#f1efea;--ink:#202229;--sub:#67655f;--line:#b1aca2;--ind:#3b3f7a;--ind2:#4c5196;--indd:#262950;--mark:#f0c02f;--card2:#fbfaf7;--hi:#ffffff;--onacc:#c9cbe0;--board:#e9e6df;--hatch1:#c9c5bd;--hatch2:#d8d5cf;--red:#a9433a;--grn:#3b7556;
 --sans:"Pretendard","Noto Sans KR",system-ui,sans-serif;--cond:"Bahnschrift SemiCondensed","Bahnschrift","Roboto Condensed","Arial Narrow","Pretendard","Noto Sans KR",sans-serif;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;
 position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 32px));height:min(820px,calc(100dvh - 32px));max-height:none;padding:0;overflow:hidden;border:0;border-radius:0;color:var(--ink);background:var(--paper);box-shadow:0 30px 90px #000b;font:14px/1.55 var(--sans)}
 #gfq-01-panel::backdrop{background:#0d0f1ccc;backdrop-filter:blur(3px)}
@@ -40,13 +40,13 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-brand{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;padding:0 20px 26px;color:#fff}
 #gfq-01-panel .gfq-brand-mark{grid-row:span 2;width:30px;height:30px;border:2px solid #fff;transform:rotate(45deg) scale(.8);box-shadow:inset 0 0 0 4px var(--ind),inset 0 0 0 7px #fff}
 #gfq-01-panel .gfq-brand h2{margin:0;font:700 26px/1 var(--cond);letter-spacing:.04em}
-#gfq-01-panel .gfq-brand small{font-size:11px;color:#c9cbe0;letter-spacing:.06em}
+#gfq-01-panel .gfq-brand small{font-size:11px;color:var(--onacc);letter-spacing:.06em}
 #gfq-01-panel .gfq-tabs{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:0 0 0 14px;margin:0}
 #gfq-01-panel .gfq-tabs button{display:flex;align-items:center;gap:0;padding:0;border:0;background:none;color:var(--ind);cursor:pointer;text-align:left}
 #gfq-01-panel .gfq-tab-ic{position:relative;z-index:1;display:grid;place-items:center;flex:none;width:44px;height:44px;background:var(--card);border:1.5px solid var(--ind);box-shadow:2px 2px 0 #0000001f}
 #gfq-01-panel .gfq-tab-ic svg{width:22px;height:22px}
 #gfq-01-panel .gfq-tab-l{flex:1;margin-left:-6px;padding:9px 26px 9px 18px;background:var(--card);border:1.5px solid #c9c5bc;border-left:0;font:700 16px/1.1 var(--cond);letter-spacing:.06em;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:5px;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 50%,calc(100% - 18px) 100%,0 100%)}
-#gfq-01-panel .gfq-tabs button:hover .gfq-tab-l{background:#fff}
+#gfq-01-panel .gfq-tabs button:hover .gfq-tab-l{background:var(--hi)}
 #gfq-01-panel .gfq-tabs button.primary .gfq-tab-ic{background:var(--ind);color:#fff;border-color:#fff;transform:rotate(-7deg);box-shadow:3px 3px 0 #00000033}
 #gfq-01-panel .gfq-tabs button.primary .gfq-tab-l{background:var(--ind);color:#fff;border-color:var(--ind);text-decoration:none}
 #gfq-01-panel .gfq-tabs button:focus-visible{outline:none}#gfq-01-panel .gfq-tabs button:focus-visible .gfq-tab-l{outline:2px solid var(--mark);outline-offset:-4px}
@@ -62,7 +62,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-close{width:38px;height:38px;padding:0;font-size:16px}
 #gfq-01-panel button,#gfq-01-panel select,#gfq-01-panel input,#gfq-01-panel textarea{border-radius:0;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);font-family:var(--sans)}
 #gfq-01-panel button{font-weight:700;padding:6px 12px;cursor:pointer}
-#gfq-01-panel button:hover:not(:disabled):not(.on):not([aria-pressed=true]):not(.primary){background:#fff}
+#gfq-01-panel button:hover:not(:disabled):not(.on):not([aria-pressed=true]):not(.primary){background:var(--hi)}
 #gfq-01-panel button:disabled{opacity:.45;cursor:default}
 #gfq-01-panel button:focus-visible,#gfq-01-panel select:focus-visible,#gfq-01-panel input:focus-visible,#gfq-01-panel summary:focus-visible{outline:2px solid var(--ind2);outline-offset:2px}
 #gfq-01-panel button.primary{background:var(--ind);border-color:var(--ind);color:#fff}
@@ -86,10 +86,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-tk-main::before,#gfq-01-panel .gfq-tk-stub::before{top:-13px;clip-path:inset(50% 0 0 0)}
 #gfq-01-panel .gfq-tk-main::after,#gfq-01-panel .gfq-tk-stub::after{bottom:-13px;clip-path:inset(0 0 50% 0)}
 #gfq-01-panel .gfq-tk-photo{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 16px 16px}
-#gfq-01-panel .gfq-photo{position:relative;width:138px;height:164px;padding:8px 8px 26px;background:#fff;box-shadow:0 3px 10px #00000030;transform:rotate(-3deg)}
+#gfq-01-panel .gfq-photo{position:relative;width:138px;height:164px;padding:8px 8px 26px;background:var(--hi);box-shadow:0 3px 10px #00000030;transform:rotate(-3deg)}
 #gfq-01-panel .gfq-photo::after{content:"";position:absolute;top:-10px;left:50%;width:64px;height:20px;margin-left:-32px;background:#d8cfb6c0;transform:rotate(4deg)}
 #gfq-01-panel .gfq-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:contrast(1.05)}
-#gfq-01-panel .gfq-photo span{display:grid;place-items:center;width:100%;height:100%;font:700 64px var(--serif);color:var(--ind);background:radial-gradient(#3b3f7a38 1.2px,transparent 1.6px) 0 0/7px 7px,#e9e8f2}
+#gfq-01-panel .gfq-photo span{display:grid;place-items:center;width:100%;height:100%;font:700 64px var(--serif);color:var(--ind);background:radial-gradient(#3b3f7a38 1.2px,transparent 1.6px) 0 0/7px 7px,var(--card2)}
 #gfq-01-panel .gfq-tk-photo small{font-size:11px;color:var(--sub);text-align:center}
 #gfq-01-panel .gfq-tk-main{padding:18px 26px 18px 30px;min-width:0}
 #gfq-01-panel .gfq-tk-top{display:flex;justify-content:space-between;gap:10px;font:700 12px var(--cond);letter-spacing:.06em;color:var(--sub);padding-bottom:6px;border-bottom:1.5px solid var(--ink)}
@@ -122,7 +122,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-seg{display:flex;padding:3px;gap:3px;background:var(--card);border:1.5px solid var(--ink);border-radius:999px}
 #gfq-01-panel .gfq-seg button{border:0;border-radius:999px;padding:4px 14px;background:none;font:700 13px var(--cond);letter-spacing:.04em}
 #gfq-01-panel .gfq-seg button small{color:var(--sub);margin-left:2px}
-#gfq-01-panel .gfq-seg button[aria-pressed=true]{background:var(--ind);color:#fff}#gfq-01-panel .gfq-seg button[aria-pressed=true] small{color:#c9cbe0}
+#gfq-01-panel .gfq-seg button[aria-pressed=true]{background:var(--ind);color:#fff}#gfq-01-panel .gfq-seg button[aria-pressed=true] small{color:var(--onacc)}
 #gfq-01-panel .gfq-items-body{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
 #gfq-01-panel .gfq-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
 #gfq-01-panel .gfq-slot{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px 10px;background:linear-gradient(#20222910 1px,transparent 1px) 0 0/100% 14px,var(--card);border:1px solid var(--line);font-weight:600}
@@ -145,7 +145,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-pin{flex:none;width:14px;height:14px;border-radius:50%;background:var(--ind);box-shadow:0 0 0 3px #3b3f7a33;transform:translateY(-1px)}
 #gfq-01-panel .gfq-dossier h4{flex:1;margin:0;font:700 19px/1.25 var(--cond);color:var(--ind);letter-spacing:.03em;overflow-wrap:anywhere}
 #gfq-01-panel .gfq-no{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding:0 14px;border-left:1px solid var(--line);font-size:13px;line-height:1.1;color:var(--sub)}
-#gfq-01-panel .gfq-plate{position:relative;display:grid;place-items:center;height:150px;margin:14px;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px);border:1px solid var(--line);overflow:hidden}
+#gfq-01-panel .gfq-plate{position:relative;display:grid;place-items:center;height:150px;margin:14px;background:repeating-linear-gradient(90deg,var(--hatch1) 0 2px,var(--hatch2) 2px 9px);border:1px solid var(--line);overflow:hidden}
 #gfq-01-panel .gfq-plate .gfq-glyph{font-size:72px;color:var(--ind);text-shadow:3px 3px 0 #fff}
 #gfq-01-panel .gfq-plate .gfq-glyph.v{font-size:16px;background:var(--card)}
 #gfq-01-panel .gfq-plate.photo{height:170px;padding:0}#gfq-01-panel .gfq-plate img{width:100%;height:100%;object-fit:cover;filter:grayscale(.25) contrast(1.05)}
@@ -186,16 +186,16 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-board-wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
 #gfq-01-panel .gfq-board{position:relative;min-height:320px;background:
  repeating-radial-gradient(circle at 62% 46%,transparent 0 58px,#3b3f7a1f 59px 60px,transparent 61px 118px),
- linear-gradient(#2022290f 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,#2022290f 1px,transparent 1px) 0 0/40px 40px,#e9e6df;border:1.5px solid var(--ink);box-shadow:5px 5px 0 #0000001a;overflow:hidden}
+ linear-gradient(#2022290f 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,#2022290f 1px,transparent 1px) 0 0/40px 40px,var(--board);border:1.5px solid var(--ink);box-shadow:5px 5px 0 #0000001a;overflow:hidden}
 #gfq-01-panel .gfq-board::before,#gfq-01-panel .gfq-board::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--ind);pointer-events:none}
 #gfq-01-panel .gfq-board::before{left:8px;top:8px;border-right:0;border-bottom:0}#gfq-01-panel .gfq-board::after{right:8px;bottom:8px;border-left:0;border-top:0}
 #gfq-01-panel .gfq-route{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #gfq-01-panel .gfq-route polyline{fill:none;stroke:var(--ind);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-dasharray:6 4}
 #gfq-01-panel .gfq-pinbox{position:absolute;z-index:1;display:flex;align-items:center;gap:8px;max-width:190px;padding:0;border:0;background:none;transform:translateX(-22px);text-align:left}
 #gfq-01-panel .gfq-pinbox:hover:not(:disabled){background:none}
-#gfq-01-panel .gfq-pinbox img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 6px #0004;background:#fff}
+#gfq-01-panel .gfq-pinbox img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 6px #0004;background:var(--hi)}
 #gfq-01-panel .gfq-pin-dot{flex:none;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,var(--ind) 0 7px,#fff 7.5px 11px,var(--ind) 11.5px 13px,transparent 13.5px),#ffffffb0;border:1.5px solid var(--ind)}
-#gfq-01-panel .gfq-pin-text{display:flex;text-align:left;flex-direction:column;padding:6px 12px;background:#fff;border:1px solid var(--line);box-shadow:2px 2px 0 #0000001a;min-width:0}
+#gfq-01-panel .gfq-pin-text{display:flex;text-align:left;flex-direction:column;padding:6px 12px;background:var(--hi);border:1px solid var(--line);box-shadow:2px 2px 0 #0000001a;min-width:0}
 #gfq-01-panel .gfq-pin-text b{font:700 14px/1.25 var(--cond);color:var(--ind);letter-spacing:.02em;overflow-wrap:anywhere}
 #gfq-01-panel .gfq-pin-text small{font-size:11px;color:var(--sub);white-space:nowrap}
 #gfq-01-panel .gfq-pin-text em{font-style:normal;margin-left:4px;padding:0 6px;background:var(--mark);color:var(--ink);border-radius:999px;font-weight:700}
@@ -207,10 +207,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-side{flex-direction:row;align-items:center;padding:8px 8px 8px 12px;background:var(--ind);border:0;gap:8px}
 #gfq-01-panel .gfq-brand{padding:0;grid-template-columns:auto}#gfq-01-panel .gfq-brand h2,#gfq-01-panel .gfq-brand small{display:none}
 #gfq-01-panel .gfq-tabs{flex-direction:row;flex:1;gap:4px;padding:0;overflow-x:auto}
-#gfq-01-panel .gfq-tabs button{flex:1;flex-direction:column;gap:2px;min-width:52px;color:#c9cbe0}
+#gfq-01-panel .gfq-tabs button{flex:1;flex-direction:column;gap:2px;min-width:52px;color:var(--onacc)}
 #gfq-01-panel .gfq-tab-ic{width:30px;height:30px;background:none;border:0;box-shadow:none}#gfq-01-panel .gfq-tab-ic svg{width:20px;height:20px}
 #gfq-01-panel .gfq-tab-l{margin:0;padding:0;background:none;border:0;clip-path:none;font-size:12px;text-decoration:none}
-#gfq-01-panel .gfq-tabs button.primary .gfq-tab-ic{background:#fff;color:var(--ind);transform:none}#gfq-01-panel .gfq-tabs button.primary .gfq-tab-l{background:none;color:#fff}
+#gfq-01-panel .gfq-tabs button.primary .gfq-tab-ic{background:var(--hi);color:var(--ind);transform:none}#gfq-01-panel .gfq-tabs button.primary .gfq-tab-l{background:none;color:#fff}
 #gfq-01-panel .gfq-side-foot{display:none}
 #gfq-01-panel .gfq-main{padding:0 14px 28px}#gfq-01-panel .gfq-top{margin:0 -14px 14px;padding:10px 14px;flex-wrap:wrap}#gfq-01-panel .gfq-top h2{font-size:24px}#gfq-01-panel .gfq-worldbar{order:3;flex-basis:100%}#gfq-01-panel #gfq-world{max-width:none;margin:0}#gfq-01-panel .gfq-close{margin-left:auto}
 #gfq-01-panel .gfq-ticket{grid-template-columns:1fr}
@@ -261,7 +261,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-qside .gfq-seg{align-self:flex-start}
 #gfq-01-panel .gfq-qlist{display:flex;flex-direction:column;gap:6px;max-height:calc(100dvh - 300px);overflow-y:auto;padding:2px 4px 4px 2px}
 #gfq-01-panel .gfq-qitem{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--card);border:1px solid var(--line);text-align:left;box-shadow:2px 2px 0 #00000012}
-#gfq-01-panel .gfq-qitem:hover:not(:disabled){background:#fff}
+#gfq-01-panel .gfq-qitem:hover:not(:disabled){background:var(--hi)}
 #gfq-01-panel .gfq-qemb{flex:none;display:grid;place-items:center;width:38px;height:38px;font:700 12px var(--cond);color:var(--ind);border:1.5px solid var(--ind);transform:rotate(45deg) scale(.78)}
 #gfq-01-panel .gfq-qemb{position:relative;border:0;transform:none;font-size:11px}#gfq-01-panel .gfq-qemb::before{content:"";position:absolute;inset:5px;border:1.5px solid currentColor;transform:rotate(45deg)}
 #gfq-01-panel .gfq-worldbar{display:flex;align-items:center}
@@ -273,7 +273,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-pips{display:flex;gap:3px}
 #gfq-01-panel .gfq-pips i{width:14px;height:4px;background:#00000022}
 #gfq-01-panel .gfq-pips i.on{background:var(--ind)}
-#gfq-01-panel .gfq-qitem.on .gfq-pips i{background:#ffffff40}#gfq-01-panel .gfq-qitem.on .gfq-pips i.on{background:var(--mark)}
+#gfq-01-panel .gfq-qitem.on .gfq-pips i{background:var(--hi)fff40}#gfq-01-panel .gfq-qitem.on .gfq-pips i.on{background:var(--mark)}
 #gfq-01-panel .gfq-qadd{align-self:flex-start;font-size:13px}
 #gfq-01-panel .gfq-qdetail{background:var(--card);border:1px solid var(--line);box-shadow:5px 5px 0 #0000001a;min-width:0}
 #gfq-01-panel .gfq-qdetail.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:260px;padding:30px;text-align:center}
@@ -287,10 +287,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-qplace{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:0;border:0;background:none;color:#dfe0ef;font-weight:600;font-size:13px}
 #gfq-01-panel .gfq-qplace svg{width:15px;height:15px}
 #gfq-01-panel .gfq-qplace:hover:not(:disabled){background:none;color:#fff;text-decoration:underline}
-#gfq-01-panel .gfq-qmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:12px;color:#c9cbe0}
-#gfq-01-panel .gfq-qmeta i{width:4px;height:4px;background:#c9cbe080;transform:rotate(45deg)}
+#gfq-01-panel .gfq-qmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:12px;color:var(--onacc)}
+#gfq-01-panel .gfq-qmeta i{width:4px;height:4px;background:var(--onacc)80;transform:rotate(45deg)}
 #gfq-01-panel .gfq-qbody{padding:20px 26px 6px}
-#gfq-01-panel .gfq-objs{border:1px solid var(--line);background:#fbfaf7}
+#gfq-01-panel .gfq-objs{border:1px solid var(--line);background:var(--card2)}
 #gfq-01-panel .gfq-objs-h{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--line);font:700 13px var(--cond);letter-spacing:.05em;color:var(--sub)}
 #gfq-01-panel .gfq-obj{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:0;border-bottom:1px solid #00000010;background:none;text-align:left;font-weight:600;font-size:14px}
 #gfq-01-panel .gfq-obj:last-child{border-bottom:0}
@@ -307,11 +307,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-qrw h4::before{content:"";width:8px;height:8px;background:var(--ind);transform:rotate(45deg)}
 #gfq-01-panel .gfq-rw{display:flex;flex-direction:column-reverse;gap:12px}
 #gfq-01-panel .gfq-rw-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
-#gfq-01-panel .gfq-rw-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 10px;background:linear-gradient(160deg,#fff,#ebe9e3);border:1px solid var(--line);text-align:center}
+#gfq-01-panel .gfq-rw-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 10px;background:linear-gradient(160deg,var(--hi),var(--card));border:1px solid var(--line);text-align:center}
 #gfq-01-panel .gfq-rw-tile .gfq-ico{width:40px;height:40px;color:var(--ind)}
 #gfq-01-panel .gfq-rw-name{font-size:12px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 #gfq-01-panel .gfq-rw-rows{display:flex;flex-direction:column;gap:8px}
-#gfq-01-panel .gfq-rw-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fbfaf7;border:1px solid var(--line);border-left:4px solid var(--ind)}
+#gfq-01-panel .gfq-rw-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--ind)}
 #gfq-01-panel .gfq-rw-ic{flex:none;width:34px;height:34px;color:var(--ind)}
 #gfq-01-panel .gfq-rw-rname{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;font-weight:600;line-height:1.35}
 #gfq-01-panel .gfq-rw-row b{font-size:22px;white-space:nowrap}#gfq-01-panel .gfq-rw-row b small{font-size:13px;margin-left:2px;color:var(--sub)}
@@ -332,7 +332,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-placecard{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);margin-top:22px;background:var(--card);border:1px solid var(--line);border-top:4px double var(--ind);box-shadow:5px 5px 0 #0000001a;scroll-margin-top:90px}
 #gfq-01-panel .gfq-placephoto{min-height:300px;background:var(--ink)}
 #gfq-01-panel .gfq-placephoto img{width:100%;height:100%;min-height:300px;max-height:460px;object-fit:cover;display:block}
-#gfq-01-panel .gfq-placephoto.none{display:grid;place-items:center;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px)}
+#gfq-01-panel .gfq-placephoto.none{display:grid;place-items:center;background:repeating-linear-gradient(90deg,var(--hatch1) 0 2px,var(--hatch2) 2px 9px)}
 #gfq-01-panel .gfq-placeinfo{padding-bottom:16px;min-width:0}
 #gfq-01-panel .gfq-placeinfo .gfq-hd{display:flex;align-items:center;gap:10px;padding:14px 0 14px 16px;border-bottom:1px solid var(--line)}
 #gfq-01-panel .gfq-placeinfo h4{flex:1;margin:0;font:800 21px/1.3 var(--serif);color:var(--ind);overflow-wrap:anywhere}
@@ -353,13 +353,13 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-pager-tabs button{flex:none;padding:6px 14px;font:700 14px var(--serif);background:var(--card)}
 #gfq-01-panel .gfq-pager-tabs button small{color:var(--sub);font-family:var(--cond);margin-left:3px}
 #gfq-01-panel .gfq-pager-tabs button[aria-pressed=true]{background:var(--ind);border-color:var(--ind);color:#fff}
-#gfq-01-panel .gfq-pager-tabs button[aria-pressed=true] small{color:#c9cbe0}
+#gfq-01-panel .gfq-pager-tabs button[aria-pressed=true] small{color:var(--onacc)}
 #gfq-01-panel .gfq-pager-n{font-size:20px;font-weight:700;color:var(--ind);white-space:nowrap}#gfq-01-panel .gfq-pager-n small{font-size:13px;color:var(--sub)}
 #gfq-01-panel .gfq-pager-tabs button[aria-pressed=true]:hover:not(:disabled){background:var(--ind2)}
 /* v0.7.0 */
 #gfq-01-panel .gfq-faces{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
 #gfq-01-panel .gfq-face{display:flex;flex-direction:column;padding:0;background:var(--card);border:1px solid var(--line);text-align:left;box-shadow:2px 2px 0 #00000012;overflow:hidden}
-#gfq-01-panel .gfq-face-img{position:relative;display:block;aspect-ratio:3/4;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px)}
+#gfq-01-panel .gfq-face-img{position:relative;display:block;aspect-ratio:3/4;background:repeating-linear-gradient(90deg,var(--hatch1) 0 2px,var(--hatch2) 2px 9px)}
 #gfq-01-panel .gfq-face-img img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;display:block}
 #gfq-01-panel .gfq-face-img i{display:grid;place-items:center;height:100%;font:800 46px var(--serif);font-style:normal;color:var(--ind)}
 #gfq-01-panel .gfq-face-img em{position:absolute;left:6px;bottom:6px;padding:0 6px;background:#262950d0;color:var(--mark);font-size:11px;font-style:normal;letter-spacing:-.05em}
@@ -367,12 +367,12 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-face small{padding:2px 10px 9px;font-size:11px;color:var(--sub)}
 #gfq-01-panel .gfq-face.on{border:3px solid var(--mark);box-shadow:0 0 0 1px var(--ind),3px 3px 0 #00000026}
 #gfq-01-panel .gfq-face.on .gfq-face-name,#gfq-01-panel .gfq-face.on small{background:var(--ind);color:#fff}
-#gfq-01-panel .gfq-face.on small{color:#c9cbe0}
-#gfq-01-panel .gfq-face:hover:not(:disabled):not(.on){background:#fff}
+#gfq-01-panel .gfq-face.on small{color:var(--onacc)}
+#gfq-01-panel .gfq-face:hover:not(:disabled):not(.on){background:var(--hi)}
 #gfq-01-panel .gfq-plate.tall{height:300px}#gfq-01-panel .gfq-castsec{margin-top:4px}
 #gfq-01-panel .gfq-plate.tall img{object-position:50% 15%}
 #gfq-01-panel .gfq-glyph-big{font:800 96px var(--serif);color:var(--ind);text-shadow:3px 3px 0 #fff}
-#gfq-01-panel .gfq-note{margin:0 14px;padding:10px 12px;background:#fbfaf7;border-left:3px solid var(--mark);font:14px/1.7 var(--serif)}
+#gfq-01-panel .gfq-note{margin:0 14px;padding:10px 12px;background:var(--card2);border-left:3px solid var(--mark);font:14px/1.7 var(--serif)}
 #gfq-01-panel .gfq-castcard h5{margin-top:16px}
 #gfq-01-panel .gfq-late{margin:0 0 16px;padding:12px 16px;background:#f6e3df;border:1px solid #d9a69e;border-left:5px solid var(--red)}
 #gfq-01-panel .gfq-late b{color:var(--red)}#gfq-01-panel .gfq-late ul{margin:6px 0;padding-left:18px}#gfq-01-panel .gfq-late li{font-weight:600}
@@ -383,7 +383,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-cal-week,#gfq-01-panel .gfq-cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 #gfq-01-panel .gfq-cal-week span{text-align:center;font:700 12px var(--cond);color:var(--sub);padding:4px 0}
 #gfq-01-panel .gfq-cal-week span:first-child{color:var(--red)}
-#gfq-01-panel .gfq-cal-day{display:flex;flex-direction:column;align-items:stretch;gap:2px;min-height:82px;padding:5px 6px;background:#fbfaf7;border:1px solid #00000014;text-align:left;font-weight:500;overflow:hidden}
+#gfq-01-panel .gfq-cal-day{display:flex;flex-direction:column;align-items:stretch;gap:2px;min-height:82px;padding:5px 6px;background:var(--card2);border:1px solid #00000014;text-align:left;font-weight:500;overflow:hidden}
 #gfq-01-panel .gfq-cal-day b{font-size:15px}
 #gfq-01-panel .gfq-cal-day i{display:block;font-style:normal;font-size:11px;line-height:1.3;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#e2e2ea;color:#3e4060}
 #gfq-01-panel .gfq-cal-day i.k-pay,#gfq-01-panel .gfq-cal-day i.k-item{background:#f3e5c2;color:#6e5212}
@@ -392,7 +392,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-cal-day small{font-size:10px;color:var(--sub)}
 #gfq-01-panel .gfq-cal-day.today{box-shadow:inset 0 0 0 2px var(--ind)}#gfq-01-panel .gfq-cal-day.today b{color:var(--ind)}
 #gfq-01-panel .gfq-cal-day.late{background:#f8ece9}
-#gfq-01-panel .gfq-cal-day.on{background:#fff;border-color:var(--mark);box-shadow:inset 0 0 0 2px var(--mark)}
+#gfq-01-panel .gfq-cal-day.on{background:var(--hi);border-color:var(--mark);box-shadow:inset 0 0 0 2px var(--mark)}
 #gfq-01-panel .gfq-cal-day.on.today{box-shadow:inset 0 0 0 2px var(--mark),inset 0 0 0 4px var(--ind)}
 #gfq-01-panel .gfq-cal-pad{min-height:82px}
 #gfq-01-panel .gfq-cal-list{margin-top:18px}
@@ -422,7 +422,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 #gfq-01-panel .gfq-chrow{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;padding:5px 0}
 #gfq-01-panel .gfq-chrow dt{font:700 12px var(--cond);color:var(--sub);letter-spacing:.04em;padding-top:3px}
 #gfq-01-panel .gfq-chrow dd{margin:0;display:flex;flex-wrap:wrap;gap:4px}
-#gfq-01-panel .gfq-chrow dd span{padding:2px 8px;background:#fbfaf7;border:1px solid #00000014;font-size:13px}
+#gfq-01-panel .gfq-chrow dd span{padding:2px 8px;background:var(--card2);border:1px solid #00000014;font-size:13px}
 #gfq-01-panel .gfq-ach{margin-top:30px}
 #gfq-01-panel .gfq-ach-n{margin-left:auto;font-size:22px;font-weight:700;color:var(--ind)}#gfq-01-panel .gfq-ach-n small{font-size:14px;color:var(--sub)}
 #gfq-01-panel .gfq-stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px 10px;padding:16px;background:var(--card);border:1px solid var(--line);box-shadow:5px 5px 0 #0000001a}
@@ -437,11 +437,40 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 
 /* v0.7.1 */
 #gfq-01-panel .gfq-outfits{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:0 14px}
-#gfq-01-panel .gfq-outfits button{display:flex;flex-direction:column;gap:3px;padding:3px;background:#fbfaf7;border:1px solid var(--line);font-weight:600}
-#gfq-01-panel .gfq-of-img{display:block;aspect-ratio:3/4;background:repeating-linear-gradient(90deg,#c9c5bd 0 2px,#d8d5cf 2px 9px);overflow:hidden}
+#gfq-01-panel .gfq-outfits button{display:flex;flex-direction:column;gap:3px;padding:3px;background:var(--card2);border:1px solid var(--line);font-weight:600}
+#gfq-01-panel .gfq-of-img{display:block;aspect-ratio:3/4;background:repeating-linear-gradient(90deg,var(--hatch1) 0 2px,var(--hatch2) 2px 9px);overflow:hidden}
 #gfq-01-panel .gfq-of-img img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;display:block}
 #gfq-01-panel .gfq-outfits small{font-size:10px;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #gfq-01-panel .gfq-outfits button[aria-pressed=true]{border:2px solid var(--mark);background:var(--ind);color:#fff;box-shadow:0 0 0 1px var(--ind)}
+
+/* v0.7.2 themes: each world can pick a look. Only colours, fonts and paper texture change. */
+#gfq-01-panel[data-theme=east]{--paper:#e6dfcf;--paper2:#ddd3bf;--card:#f6f1e5;--card2:#fbf8ef;--hi:#fffdf6;--ink:#1d1a17;--sub:#6a6154;--line:#bdb199;--ind:#2a2622;--ind2:#463f37;--indd:#141210;--mark:#b8352a;--onacc:#d9cfbf;--board:#efe8d8;--hatch1:#d6ccb7;--hatch2:#e4dccb;--red:#a3271c}
+#gfq-01-panel[data-theme=east] .gfq-main{background:linear-gradient(90deg,#b8352a12 1px,transparent 1px) 0 0/34px 100%,radial-gradient(ellipse at 20% 0,#ffffff80,transparent 60%),var(--paper)}
+#gfq-01-panel[data-theme=east] .gfq-side{background:radial-gradient(ellipse 140% 60% at 0 0,var(--ind) 0 38%,#2a262200 62%),repeating-radial-gradient(circle at 70% 90%,transparent 0 30px,#2a262212 31px 32px,transparent 33px 50px),var(--paper2)}
+#gfq-01-panel[data-theme=east] .gfq-brand-mark{border-color:#b8352a;box-shadow:inset 0 0 0 4px var(--ind),inset 0 0 0 7px #b8352a}
+#gfq-01-panel[data-theme=east] .gfq-stamp2.got .gfq-stamp2-in,#gfq-01-panel[data-theme=east] .gfq-stamp{color:#a3271c;border-color:#a3271c}
+#gfq-01-panel[data-theme=fantasy]{--paper:#e3d3ae;--paper2:#d9c497;--card:#f3e7c9;--card2:#f8efd8;--hi:#fffaee;--ink:#2a1c10;--sub:#6c5839;--line:#b49b6c;--ind:#6a1e2b;--ind2:#8a2b3a;--indd:#3d0e16;--mark:#c9a227;--onacc:#e8cfa8;--board:#efe2c2;--hatch1:#d3bf93;--hatch2:#e2d2ad}
+#gfq-01-panel[data-theme=fantasy] .gfq-main{background:radial-gradient(ellipse at 50% 40%,transparent 55%,#7a5a2a2e),radial-gradient(circle at 15% 20%,#ffffff55,transparent 40%),var(--paper)}
+#gfq-01-panel[data-theme=fantasy] .gfq-side{background:linear-gradient(158deg,var(--ind) 0 40%,transparent 40.2%),repeating-radial-gradient(circle at 34% 88%,transparent 0 34px,#c9a2272a 35px 36px,transparent 37px 60px),var(--paper2)}
+#gfq-01-panel[data-theme=fantasy] .gfq-top{border-bottom-color:#c9a227}
+#gfq-01-panel[data-theme=fantasy] .gfq-tab-ic,#gfq-01-panel[data-theme=fantasy] .gfq-ticket,#gfq-01-panel[data-theme=fantasy] .gfq-qcrest{border-color:#8a6a2a}
+#gfq-01-panel[data-theme=fantasy] .gfq-stamp2.got .gfq-stamp2-in{color:#8a2b3a;border-color:#8a2b3a;background:radial-gradient(circle,#8a2b3a14 55%,#8a2b3a2a 56%)}
+#gfq-01-panel[data-theme=sf]{--paper:#e1e6ea;--paper2:#d4dbe1;--card:#f3f6f8;--card2:#f9fbfc;--hi:#ffffff;--ink:#121820;--sub:#566270;--line:#a7b3be;--ind:#0f6a80;--ind2:#1488a4;--indd:#09303b;--mark:#16c6db;--onacc:#bfe6ee;--board:#eaf0f3;--hatch1:#c7d0d7;--hatch2:#d9e0e5;--serif:"Bahnschrift","DIN Alternate","Roboto Condensed","Pretendard","Noto Sans KR",sans-serif}
+#gfq-01-panel[data-theme=sf] .gfq-main{background:linear-gradient(#0f6a8012 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,#0f6a8012 1px,transparent 1px) 0 0/16px 16px,var(--paper)}
+#gfq-01-panel[data-theme=sf] .gfq-side{background:linear-gradient(158deg,var(--indd) 0 40%,transparent 40.2%),repeating-linear-gradient(135deg,transparent 0 10px,#0f6a800c 10px 11px),var(--paper2)}
+#gfq-01-panel[data-theme=sf] .gfq-ticket,#gfq-01-panel[data-theme=sf] .gfq-qdetail,#gfq-01-panel[data-theme=sf] .gfq-dossier{clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))}
+#gfq-01-panel[data-theme=school]{--paper:#ecedf3;--paper2:#e1e3ee;--card:#fbfbfe;--card2:#ffffff;--hi:#ffffff;--ink:#23263a;--sub:#6a6e86;--line:#c3c7da;--ind:#3d63b0;--ind2:#5a7fcc;--indd:#22397a;--mark:#ff8fab;--onacc:#d8e2f6;--board:#f6f7fc;--hatch1:#dfe2ef;--hatch2:#eceef7}
+#gfq-01-panel[data-theme=school] .gfq-main{background:linear-gradient(#3d63b01a 1px,transparent 1px) 0 0/100% 30px,linear-gradient(90deg,transparent 46px,#ff8fab55 46px 47px,transparent 47px),var(--paper)}
+#gfq-01-panel[data-theme=school] .gfq-side{background:linear-gradient(158deg,var(--ind) 0 40%,transparent 40.2%),radial-gradient(#3d63b022 1.2px,transparent 1.6px) 0 0/14px 14px,var(--paper2)}
+#gfq-01-panel[data-theme=school] .gfq-ticket,#gfq-01-panel[data-theme=school] .gfq-card,#gfq-01-panel[data-theme=school] .gfq-qdetail{border-radius:10px}
+#gfq-01-panel .gfq-themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:8px 0}
+#gfq-01-panel .gfq-theme{display:flex;flex-direction:column;gap:6px;padding:8px;text-align:left;background:var(--card2)}
+#gfq-01-panel .gfq-theme-sw{display:grid;grid-template-columns:2fr 1fr 1fr;height:42px;border:1px solid #0002}
+#gfq-01-panel .gfq-theme-sw i{display:block}
+#gfq-01-panel .gfq-theme b{font:700 14px var(--serif)}#gfq-01-panel .gfq-theme small{font-size:11px;color:var(--sub);font-weight:500}
+#gfq-01-panel .gfq-card .gfq-theme[aria-pressed=true],#gfq-01-panel .gfq-card .gfq-theme[aria-pressed=true]:hover{outline:3px solid var(--mark);outline-offset:-1px;background:var(--hi);color:var(--ink);border-color:var(--ind)}
+
+#gfq-01-panel .gfq-rw-row.cond{border-left-style:dashed;background:transparent}#gfq-01-panel .gfq-rw-row.cond b{color:var(--sub);font-size:18px}
 `;
   style.textContent+=`
 #${ID}-toasts,#${ID}-qtoasts{position:fixed;margin:0;padding:0;border:0;background:transparent;overflow:visible;display:flex;flex-direction:column;align-items:stretch;gap:10px;z-index:2147483002;pointer-events:none;--paper:#f1efea;--ink:#202229;--sub:#67655f;--k:#3b3f7a;--serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo","Batang",serif;--sans:"Pretendard","Noto Sans KR",system-ui,sans-serif}
@@ -468,6 +497,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button{font:700 13px var(--sans);padding:8px 18px;border-radius:0;border:1.5px solid var(--ink);background:var(--k);color:#fff;cursor:pointer}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button[data-o=later]{background:transparent;color:var(--ink)}
 :is(#${ID}-toasts,#${ID}-qtoasts) .gfq-offer-row button:focus-visible{outline:3px solid #f0c02f;outline-offset:2px}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east]{--paper:#f6f1e5;--ink:#1d1a17}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=east] :is(.gfq-toast-quest,.gfq-toast-step){--k:#2a2622}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy]{--paper:#f3e7c9;--ink:#2a1c10}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=fantasy] :is(.gfq-toast-quest,.gfq-toast-step){--k:#6a1e2b}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf]{--paper:#f3f6f8;--ink:#121820;--serif:"Bahnschrift","DIN Alternate","Roboto Condensed","Pretendard","Noto Sans KR",sans-serif}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=sf] :is(.gfq-toast-quest,.gfq-toast-step){--k:#0f6a80}
+:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school]{--paper:#fbfbfe;--ink:#23263a}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] :is(.gfq-toast-quest,.gfq-toast-step){--k:#3d63b0}:is(#${ID}-toasts,#${ID}-qtoasts)[data-theme=school] .gfq-toast{border-radius:10px;overflow:hidden}
 @keyframes gfq-toast-in{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){:is(#${ID}-toasts,#${ID}-qtoasts) .gfq-toast{animation:none}}
 #${ID}-toasts .gfq-toast{grid-template-columns:46px minmax(0,1fr);box-shadow:0 10px 28px #0008,4px 4px 0 #00000033}#${ID}-toasts .gfq-t-stub svg{width:22px;height:22px}#${ID}-toasts .gfq-t-body{padding:10px 14px 10px 14px}#${ID}-toasts .gfq-t-body span{font-size:14px}#${ID}-toasts .gfq-t-body b{font-size:11px}
@@ -1002,6 +1035,9 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       Object.assign(result,{category:'asset',financialStatus:['received','receivable','pending'].includes(result.financialStatus)?result.financialStatus:'pending',
         auditNote:'금전 보수이므로 혜택이 아닌 거래로 분류했습니다.'+(mixed?' 함께 언급된 할인·감면 혜택은 별도 항목으로 확인해 주세요.':'')});
     }
+    if(['asset','contract'].includes(result.category)&&gfqIsCond(result)){
+      Object.assign(result,{financialStatus:'conditional',auditNote:'조건부 보장입니다(철수·실패 같은 조건이 생길 때만 받는 최소 금액). 총액에 더하지 않고 거래 내역·받을 돈에도 넣지 않습니다.'});
+    }
     if(result.category==='benefit'){
       // Voucher: a discount you can use later. Record: a waiver/free service already applied to a specific job. Permanent: ongoing perk.
       const future=/(감면|할인|우대)/u.test(name+' '+q)&&(String(result.unit||'')==='%'||/퍼센트|%|\d+\s*회|이용권|쿠폰|할인권|감면권/u.test(name+' '+q))&&!/(무상 적용|면제합니다|적용되며|적용됩니다)/u.test(q);
@@ -1176,8 +1212,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   const GFQ_LABELS={
     category:{quest:'퀘스트',asset:'자산·거래',item:'소지품',credential:'자격·면허',contract:'계약',benefit:'혜택'},
     status:{completed:'완료',active:'진행 중',confirmed:'확인됨',uncertain:'불확실'},
-    money:{received:'입금 확인',paid:'지출',pending:'지급 예정',receivable:'미수금(확정·미입금)',waived:'면제',ownership:'지분·소유',not_applicable:'금전 무관',uncertain:'미확인'},
-    certainty:{received:'수령 확인',confirmed:'확정·미수령',pending:'지급 예정',suggested:'제안·미지급',uncertain:'미확인'}
+    money:{received:'입금 확인',paid:'지출',pending:'지급 예정',receivable:'미수금(확정·미입금)',waived:'면제',ownership:'지분·소유',conditional:'조건부 보장',not_applicable:'금전 무관',uncertain:'미확인'},
+    certainty:{conditional:'조건부 보장',received:'수령 확인',confirmed:'확정·미수령',pending:'지급 예정',suggested:'제안·미지급',uncertain:'미확인'}
   };
   const gfqLabel=(kind,v)=>v?(GFQ_LABELS[kind]?.[v]||String(v)):'구분 전';
   const gfqAmount=(amount,unit)=>typeof amount==='number'&&Number.isFinite(amount)?amount.toLocaleString('ko-KR')+(unit?' '+unit:''):'미확인';
@@ -1196,7 +1232,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '<label for="gfq-ai-range">분석 범위</label><select id="gfq-ai-range"><option value="new" '+((data.aiRange||'new')==='new'?'selected':'')+'>새로 추가·변경된 챕터만</option><option value="all" '+(data.aiRange==='all'?'selected':'')+'>전체 챕터</option><option value="pick" '+(data.aiRange==='pick'?'selected':'')+'>챕터 직접 지정</option></select> '+
       '<button data-action="invoke-quest-bridge">AI 분석 실행</button> <button data-action="prepare-ai-prompt">분석 지침 복사</button> <button data-action="import-ai-result">AI 분석 JSON 가져오기</button>'+
       (rows.length?'<div class="gfq-row"><button data-action="select-all-ai">전체 선택</button><button data-action="unselect-all-ai">선택 해제</button><button data-action="approve-selected-ai">선택 승인</button><button data-action="delete-selected-ai">선택 삭제</button><button data-action="delete-all-ai" class="gfq-danger">전체 삭제</button></div>':'')+
-      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(gfqLabel('category',x.category))+' · '+esc(x.name)+'</b><small>'+esc(gfqLabel('status',x.status))+(x.category==='quest'?'':' · '+esc(gfqLabel('money',x.financialStatus)))+'</small></div><p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(gfqAmount(x.amount,x.unit))+' · 출처: '+esc(x.source||'미확인')+'</div>'+(gfqTiming(x)?'<div class="gfq-muted">'+(x.category==='quest'?'기한·시점':'지급·수령 시점')+': '+esc(gfqTimingText(gfqTiming(x)))+(gfqResolveTiming(w,gfqTiming(x))?' → '+esc(gfqResolveTiming(w,gfqTiming(x))):'')+'</div>':'')+(x.value?'<div class="gfq-muted">물품 가치: '+esc(gfqAmount(x.value,'원'))+' (현금 아님)</div>':'')+gfqClearedHint(w,x)+(x.date?'<div class="gfq-muted">세계관 날짜: '+esc(x.date)+(x.endDate&&x.endDate!==x.date?' ~ '+esc(x.endDate):'')+'</div>':'')+gfqProposalLinkExtra(x)+(x.deferred?'<div class="gfq-muted"><b>장면 도달 대기</b> · 해당 대사가 나오면 자동으로 반영합니다. 지금 반영하려면 [확인 후 반영]을 눌러 주세요.</div>':'')+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).objective)+'</div>'+gfqProposalQuestExtra(w,x)+'<div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).rewardList.map(gfqRewardText).join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
+      (rows.map(x=>'<div class="gfq-card"><div class="gfq-row"><input type="checkbox" class="gfq-ai-check" aria-label="분석 후보 선택" value="'+esc(x.id)+'" style="width:17px;height:17px;flex:none"><b class="gfq-fill">'+esc(gfqLabel('category',x.category))+' · '+esc(x.name)+'</b><small>'+esc(gfqLabel('status',x.status))+(x.category==='quest'?'':' · '+esc(gfqLabel('money',['asset','contract'].includes(x.category)&&gfqIsCond(x)?'conditional':x.financialStatus)))+'</small></div>'+(['asset','contract'].includes(x.category)&&gfqIsCond(x)?'<p class="gfq-muted"><b>조건부 보장</b> · 철수·실패 같은 조건이 생길 때만 받는 최소 금액입니다. 승인해도 거래 내역과 받을 돈에 더하지 않고 기록만 남깁니다.'+((w.aiProposals||[]).some(q=>q.category==='quest'&&(q.questRewards||[]).some(r=>r&&r.name===x.name))||(w.quests||[]).some(q=>(q.rewardDetails||[]).some(r=>r.name===x.name))?' 같은 내용이 퀘스트 보상에 이미 들어 있으니 제외해도 됩니다.':'')+'</p>':'')+(x.linkedQuest?'<p class="gfq-muted">퀘스트 \''+esc(x.linkedQuest)+'\'의 보상으로 연결됨 · 승인하면 거래 내역에 기록되고 그 퀘스트 보상과 이어집니다.</p>':'')+'<p>'+esc(x.evidence)+'</p><div class="gfq-muted">수량·금액: '+esc(gfqAmount(x.amount,x.unit))+' · 출처: '+esc(x.source||'미확인')+'</div>'+(gfqTiming(x)?'<div class="gfq-muted">'+(x.category==='quest'?'기한·시점':'지급·수령 시점')+': '+esc(gfqTimingText(gfqTiming(x)))+(gfqResolveTiming(w,gfqTiming(x))?' → '+esc(gfqResolveTiming(w,gfqTiming(x))):'')+'</div>':'')+(x.value?'<div class="gfq-muted">물품 가치: '+esc(gfqAmount(x.value,'원'))+' (현금 아님)</div>':'')+gfqClearedHint(w,x)+(x.date?'<div class="gfq-muted">세계관 날짜: '+esc(x.date)+(x.endDate&&x.endDate!==x.date?' ~ '+esc(x.endDate):'')+'</div>':'')+gfqProposalLinkExtra(x)+(x.deferred?'<div class="gfq-muted"><b>장면 도달 대기</b> · 해당 대사가 나오면 자동으로 반영합니다. 지금 반영하려면 [확인 후 반영]을 눌러 주세요.</div>':'')+(x.category==='quest'?'<div class="gfq-muted">목표: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).objective)+'</div>'+gfqProposalQuestExtra(w,x)+'<div class="gfq-muted">보상 후보: '+esc(gfqQuestPresentation(gfqSafeProposal(x,gfqRuleCtx(w))).rewardList.map(gfqRewardText).join(' · '))+'</div>':'')+(x.auditNote?'<p class="gfq-muted">검토 주의: '+esc(x.auditNote)+'</p>':'')+'<div class="gfq-row"><button data-action="approve-ai-proposal" data-id="'+esc(x.id)+'">확인 후 반영</button><button data-action="remove-ai-proposal" data-id="'+esc(x.id)+'">제외</button></div></div>').join('')||'<p class="gfq-muted">검토 대기 중인 AI 분석 결과가 없습니다.</p>');
   }
   // v0.3.13: deterministic safety net for missed payments. Every story sentence that states a won amount
   // together with a payment cue is checked against candidates, quest rewards and the ledger.
@@ -1444,8 +1480,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const input=(records||gfqStoryRecords(w)).map(x=>'['+x.source+']\n'+x.text).join('\n\n');
     return [
       '한국어 RPG 세계의 사건과 금전 출납부를 분석합니다. 입력에 없는 사실과 금액은 절대 추정하지 않습니다. 줄거리 출처에 \'게임 기록: 클리어\'가 있으면 그 챕터의 임무가 게임에서 마무리됐다는 참고 정보입니다.',
-      '반환 JSON: {"timeline":{"currentDate":"분석 대상 마지막 장면 시점의 세계관 날짜 YYYY-MM-DD, 원문에 날짜가 적혀 있을 때만","dateEvidence":"그 날짜가 적힌 원문 인용","daysPassed":"[세계관 날짜] 이후 마지막 장면까지 지난 날 수(원문에 다음 날·이틀 뒤처럼 적힌 경우만) 또는 null","daysEvidence":"날이 바뀐 원문 인용"},"events":[{"category":"quest|asset|item|credential|contract|benefit","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","linkTo":"이전 맥락 목록의 ID(t1, i2 등) 또는 빈 문자열","benefitUses":"혜택일 때 사용 가능 횟수(명시 없으면 1) 또는 null","benefitPermanent":false,"benefitConsumed":false,"purchasedItems":[{"name":"구매한 물품","qty":1,"received":true}],"soldItems":[{"name":"판매한 물품","qty":1}],"timing":"지급·수령·완료 시점을 나타내는 원문 표현 그대로(예: 내일 이 시간, 임무 완료 시, 금일 오후 6시) 또는 빈 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
-      '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다.',
+      '반환 JSON: {"timeline":{"currentDate":"분석 대상 마지막 장면 시점의 세계관 날짜 YYYY-MM-DD, 원문에 날짜가 적혀 있을 때만","dateEvidence":"그 날짜가 적힌 원문 인용","daysPassed":"[세계관 날짜] 이후 마지막 장면까지 지난 날 수(원문에 다음 날·이틀 뒤처럼 적힌 경우만) 또는 null","daysEvidence":"날이 바뀐 원문 인용"},"events":[{"category":"quest|asset|item|credential|contract|benefit","name":"한국어 제목","status":"completed|active|confirmed|uncertain","financialStatus":"received|paid|pending|receivable|waived|ownership|conditional|not_applicable|uncertain","evidence":"원문에서 그대로 복사한 짧은 연속 문자열","source":"챕터/장면","amount":숫자 또는 null,"unit":"원|%|개 등","transactionId":"동일 계약 또는 정산 사건을 나타내는 간결한 문자열","linkTo":"이전 맥락 목록의 ID(t1, i2 등) 또는 빈 문자열","benefitUses":"혜택일 때 사용 가능 횟수(명시 없으면 1) 또는 null","benefitPermanent":false,"benefitConsumed":false,"purchasedItems":[{"name":"구매한 물품","qty":1,"received":true}],"soldItems":[{"name":"판매한 물품","qty":1}],"timing":"지급·수령·완료 시점을 나타내는 원문 표현 그대로(예: 내일 이 시간, 임무 완료 시, 금일 오후 6시) 또는 빈 문자열","owner":"player|npc|organization|unknown","eventKind":"task|payment|expense|discount|property|item_transfer|credential|contract","questTitle":"퀘스트형 간결한 제목","questObjective":"목표와 완료 조건을 자연스러운 문장으로 요약","questRewards":[{"name":"보상 명칭","kind":"money|item|credential|reputation|benefit|other","certainty":"received|confirmed|pending|suggested|uncertain","amount":null,"unit":"","evidence":"원문 인용 또는 빈 문자열"}]}]}',
+      '반드시 화폐 단위가 있는 모든 입금/이체/정산/수당/보수/급여/보상/지급 완료 서술을 빠짐없이 검사합니다. 완료된 입금은 financialStatus=received, 돈을 지출했으면 paid, 약속한 미래 지급이면 pending, 받을 권리가 확정됐으나 미입금이면 receivable, 면제는 waived, 지분은 ownership으로 분류합니다. 철수·실패처럼 어떤 조건이 생길 때만 보장되는 최소 금액(예: 중도 철수 시 기본급 50% 보장)은 conditional로 분류하며, 다른 보수에 더해지는 돈이 아닙니다.',
       '거래의 지급 의사나 보장만으로 실제 입금(received)으로 처리하지 않습니다. 금액을 확정했지만 입금 문장이 없으면 received를 쓰지 않습니다. 총액과 그 구성 수당은 같은 transactionId를 사용하고 각각 중복 수입으로 합산하지 않습니다.',
       'name은 반드시 한국어로 씁니다. 수당·보수·기본급·정산금처럼 돈으로 받는 것은 혜택(benefit)이 아니라 category=asset입니다.',
       '총액이 명시된 지급은 총액 1건만 출력하고, 기본 수당·위험 수당 같은 구성 내역은 따로 출력하지 않고 name에 괄호로 적습니다. 총액이 없으면 각 금액을 출력합니다. amount에는 원문에 적힌 숫자만 씁니다.',
@@ -1617,6 +1653,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }
   function gfqRewardFromProposal(p){
     const amount=typeof p.amount==='number'?p.amount:null,base={name:String(p.name||'').slice(0,100),amount,unit:String(p.unit||''),evidence:String(p.evidence||'').slice(0,500),chainKey:p.chainKey||p.id};
+    if(['asset','contract'].includes(p.category)&&gfqIsCond(p))return {...base,kind:'money',certainty:'conditional'};
     if(gfqMoney(p)){
       if(p.financialStatus==='paid')return null;
       if(p.financialStatus==='waived')return {...base,kind:'benefit',certainty:'confirmed'};
@@ -1647,7 +1684,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     ].join('\n\n');
   }
   function gfqApplyConsolidation(pool,groups,candMap,questMap,rewardMap=new Map()){
-    const byId=new Map(pool.filter(p=>p.category==='quest').map(p=>[p.id,p])),all=new Map(pool.map(p=>[p.id,p])),rewardUsed=new Set();let rewardLinks=0;
+    const byId=new Map(pool.filter(p=>p.category==='quest').map(p=>[p.id,p])),all=new Map(pool.map(p=>[p.id,p])),rewardUsed=new Set(),rewardTo=new Map();let rewardLinks=0;
     const clean=(v,n)=>String(v||'').replace(/\s+/g,' ').trim().slice(0,n);
     const used=new Set(),firstOf=new Map();let mergedGroups=0,updates=0;
     for(const g of (Array.isArray(groups)?groups:[]).slice(0,80)){
@@ -1656,7 +1693,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       if(!members.length)continue;
       const existing=questMap.get(String(g.existingQuestId||''))||'';
       // Each reward candidate belongs to at most one mission.
-      const linkedRewards=[...new Set((Array.isArray(g.rewardIds)?g.rewardIds:[]).map(v=>rewardMap.get(String(v))))].filter(id=>id&&all.has(id)&&!rewardUsed.has(id)).map(id=>{rewardUsed.add(id);return gfqRewardFromProposal(all.get(id));}).filter(Boolean);
+      const linkIds=[];
+      const linkedRewards=[...new Set((Array.isArray(g.rewardIds)?g.rewardIds:[]).map(v=>rewardMap.get(String(v))))].filter(id=>id&&all.has(id)&&!rewardUsed.has(id)).map(id=>{rewardUsed.add(id);linkIds.push(id);return gfqRewardFromProposal(all.get(id));}).filter(Boolean);
       // v0.3.11: assessed reputation (1-5 with a reason) is a proposal of this extension's own rule.
       const repN=Number(g.reputation?.amount),repReason=clean(g.reputation?.reason,120);
       if(Number.isFinite(repN)&&repN>=1)linkedRewards.push({name:'명성 상승',kind:'reputation',certainty:'suggested',amount:Math.max(1,Math.min(5,Math.round(repN))),unit:'점',assessed:true,evidence:'확장 명성 규칙 제안'+(repReason?': '+repReason:'')});
@@ -1664,6 +1702,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       const ms=members.map(id=>byId.get(id));members.forEach(id=>used.add(id));
       const base=ms.find(p=>Array.isArray(p.questRewards)&&p.questRewards.length)||ms[0];
       const title=clean(g.title,90)||base.questTitle||base.name;
+      for(const id of linkIds)rewardTo.set(id,title);
       const steps=(Array.isArray(g.steps)?g.steps:[]).slice(0,8).map(v=>typeof v==='string'?{text:v,done:false}:{text:v?.text,done:v?.done===true,by:candMap.get(String(v?.doneBy||''))}).map(v=>({text:clean(v.text,80),done:v.done,evidence:v.done&&v.by&&members.includes(v.by)?String(byId.get(v.by)?.evidence||''):''})).filter(v=>v.text);
       const anyDone=ms.some(p=>p.status==='completed'),allDone=ms.every(p=>p.status==='completed');
       const rewards=[...linkedRewards],seen=new Set(linkedRewards.map(r=>r.name+'|'+(r.amount??'')));
@@ -1682,7 +1721,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       if(ms.length>1)mergedGroups++;if(existing)updates++;
     }
     const list=[];
-    for(const p of pool){if(!used.has(p.id)){list.push(p);continue;}const m=firstOf.get(p.id);if(m)list.push(m);}
+    // v0.7.2: a conditional guarantee linked to a mission lives only on that mission; other linked rewards say where they belong.
+    for(const p of pool){
+      if(rewardTo.has(p.id)&&['asset','contract'].includes(p.category)&&gfqIsCond(p))continue;
+      if(!used.has(p.id)){list.push(rewardTo.has(p.id)?{...p,linkedQuest:rewardTo.get(p.id)}:p);continue;}
+      const m=firstOf.get(p.id);if(m)list.push(m);}
     return {list,mergedGroups,updates,absorbed:used.size,rewardLinks};
   }
   async function gfqConsolidateQuests(w,pool,host,connectionId,runId,signal){
@@ -1874,6 +1917,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     if(!toastBox){toastBox=document.createElement('div');toastBox.id=ID+'-toasts';toastBox.setAttribute('popover','manual');document.body.append(toastBox);}
     if(!questBox){questBox=document.createElement('div');questBox.id=ID+'-qtoasts';questBox.className='gfq-center';questBox.setAttribute('popover','manual');document.body.append(questBox);}
     const box=center?questBox:toastBox;
+    for(const b of [toastBox,questBox])b.dataset.theme=gfqTheme(current());
     try{if(box.showPopover&&!box.matches(':popover-open'))box.showPopover();}catch{}
     return box;
   }
@@ -2279,6 +2323,10 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     }catch(e){alert('JSON을 가져오지 못했습니다: '+String(e.message||e));}
   }
   const GFQ_MONEY_STATES=['pending','receivable','received','paid','waived','ownership'];
+  // v0.7.2: a guarantee that only pays if something happens (e.g. '중도 철수 시 기본급 50% 보장') is a floor, not extra money.
+  // It is never added to a total, never recorded as a payment and never counted as money owed.
+  const GFQ_CONDITIONAL=/(중도\s*(?:철수|포기|중단|하차|이탈)|철수\s*(?:시|할\s*경우|하더라도|하게\s*되면|하면)|실패\s*(?:시|하더라도|할\s*경우|하면|하게\s*되면)|미완료\s*시|(?:최소|최저)\s*(?:보장|지급))/u;
+  const gfqIsCond=x=>!!x&&(x.financialStatus==='conditional'||x.certainty==='conditional'||x.conditional===true||GFQ_CONDITIONAL.test(String(x.name||'')));
   const gfqMoney=x=>(['asset','contract'].includes(x.category)&&GFQ_MONEY_STATES.includes(x.financialStatus));
   function gfqLedgerRecord(w,x,bulk=false){
     w.gfLedger||=[];
@@ -2395,6 +2443,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
     const sum={received:0,paid:0,receivable:0,pending:0,unknown:0,other:0};
     for(const t of (w.gfLedger||[])){
       if(t.unit!=='원'){sum.other++;continue;}
+      if(['pending','receivable'].includes(t.state)&&gfqIsCond(t)){sum.other++;continue;} // v0.7.2: a conditional floor is not money owed
       if(typeof t.amount!=='number'){if(['received','paid','receivable','pending'].includes(t.state))sum.unknown++;continue;}
       if(t.state in sum)sum[t.state]+=t.amount;
     }
@@ -2404,7 +2453,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function gfqRelinkQuestRewards(w){
     const ledger=w.gfLedger||[];let linked=0;
     for(const q of (w.quests||[]))for(const r of (Array.isArray(q.rewardDetails)?q.rewardDetails:[])){
-      if(r.kind!=='money'||(r.txId&&ledger.some(t=>t.id===r.txId)))continue;
+      if(r.kind!=='money'||gfqIsCond(r)||(r.txId&&ledger.some(t=>t.id===r.txId)))continue;
       const chained=r.chainKey&&ledger.find(t=>t.id===r.chainKey||(Array.isArray(t.chainKeys)&&t.chainKeys.includes(r.chainKey)));
       if(chained){r.txId=chained.id;linked++;continue;}
       if(typeof r.amount!=='number')continue;
@@ -2430,6 +2479,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   }
   function gfqRewardToLedger(w,q,index){
     const r=q.rewardDetails?.[index];
+    if(gfqIsCond(r))return null;
     if(!r||r.kind!=='money'||typeof r.amount!=='number'||r.txId)return null;
     const state=r.certainty==='received'?'received':r.certainty==='confirmed'?'receivable':'pending';
     const tx=gfqLedgerRecord(w,{id:r.chainKey||uid(),name:r.name,financialStatus:state,amount:r.amount,unit:String(r.unit||''),evidence:r.evidence||(Array.isArray(q.sourceEvidence)?q.sourceEvidence[0]:q.sourceEvidence)||q.detail||'',source:q.source||'퀘스트 보상',origin:'quest-reward'},true);
@@ -2791,6 +2841,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   function approveAiProposal(id,bulk=false){
     const w=current(),x=w?.aiProposals?.find(v=>v.id===id);if(!x)return false;
     const ctx=gfqRuleCtx(w);
+    if(['asset','contract'].includes(x.category)&&gfqIsCond(x)&&x.financialStatus!=='conditional')x.financialStatus='conditional';
     if(!gfqEventEligible(x,ctx))return bulk?false:alert('이 사건은 주인공 자산·의뢰와 무관해 반영할 수 없습니다.');
     if(['asset','contract'].includes(x.category)&&x.financialStatus==='received'&&!/(입금(?:됐|되었|받았|완료| 확인)|계좌.{0,24}(입금|들어왔)|송금(?:받|완료)|잔액.{0,20}(증가|늘어)|실제.{0,12}(수령|지급받)|(?:판매 ?대금|대금|현금|값).{0,16}(?:받았|건네받|수령했))/u.test(String(x.evidence||''))){if(!bulk)alert('정산 완료만으로 실제 입금은 확정할 수 없습니다. 기존 후보를 삭제하고 재분석하거나 수동 확인해 주세요.');return false;}
     if(!x.updateOf&&(w.quests||[]).some(q=>x.category==='quest'&&gfqDuplicate({category:'quest',name:q.title,evidence:q.detail||''},x,ctx)))return bulk?false:alert('이미 등록된 유사 퀘스트입니다.');
@@ -2825,6 +2876,8 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       record(w,'계약 확인: '+x.name+' · '+x.evidence);
     }else if(x.category==='item'){
       if(!gfqApplyItem(w,x)){if(!bulk)alert('아이템은 획득 확정 및 개수 확인 시, 또는 수령 예정 물품으로만 반영할 수 있습니다.');return false;}
+    }else if(['asset','contract'].includes(x.category)&&x.financialStatus==='conditional'){
+      record(w,'조건부 보장 확인(총액에 더하지 않음): '+x.name+(typeof x.amount==='number'?' '+gfqAmount(x.amount,x.unit):'')+' · '+x.evidence);
     }else if(x.category==='asset'&&!gfqMoney(x)){
       record(w,'자산 검토: '+x.name+' · '+x.evidence);
     }
@@ -2877,6 +2930,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   const gfqThing=(name,kind,cls='')=>'<svg class="gfq-ico '+cls+'" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+GFQ_ICONS[gfqIconKey(name,kind)]+'</svg>';
   function gfqRewardState(w,r){
     const labels={received:'수령 확인',confirmed:'확정',pending:'지급 예정',suggested:'제안',uncertain:'미확인'};
+    if(r.kind==='money'&&gfqIsCond(r))return {text:'조건부 보장 · 총액 아님',tone:'soft'};
     const tx=r.txId&&(w.gfLedger||[]).find(t=>t.id===r.txId);
     const item=r.kind==='item'&&r.chainKey&&w.items.find(i=>i.chainKey===r.chainKey||i.id===r.chainKey);
     const voucher=r.kind==='benefit'&&r.chainKey&&w.items.find(i=>i.kind==='voucher'&&i.chainKey===r.chainKey);
@@ -2905,11 +2959,11 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '<div class="gfq-obj"><span class="gfq-obj-mark" aria-hidden="true"></span><span class="gfq-obj-t">목표 진행</span><span class="gfq-num">'+esc(sel.progress)+' / '+esc(sel.target)+'</span></div>';
     const rewards=(sel.rewardDetails||[]).map((r,i)=>({r,i}));
     const big=rewards.filter(x=>['money','reputation'].includes(x.r.kind)),tiles=rewards.filter(x=>!['money','reputation'].includes(x.r.kind));
-    const amount=r=>r.amount!==null&&r.amount!==undefined&&r.amount!==''?(r.kind==='reputation'?'+':'')+Number(r.amount).toLocaleString('ko-KR')+(r.kind==='money'?'':String(r.unit||'')):'금액 미정';
-    const toLedger=({r,i})=>r.kind==='money'&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?'<button class="gfq-link" data-action="reward-to-ledger" data-id="'+esc(sel.id)+'" data-idx="'+i+'">거래 내역에 기록</button>':'';
+    const amount=r=>r.amount!==null&&r.amount!==undefined&&r.amount!==''?(r.kind==='reputation'?'+':gfqIsCond(r)?'최소 ':'')+Number(r.amount).toLocaleString('ko-KR')+(r.kind==='money'?'':String(r.unit||'')):'금액 미정';
+    const toLedger=({r,i})=>r.kind==='money'&&!gfqIsCond(r)&&typeof r.amount==='number'&&!(r.txId&&(w.gfLedger||[]).some(t=>t.id===r.txId))?'<button class="gfq-link" data-action="reward-to-ledger" data-id="'+esc(sel.id)+'" data-idx="'+i+'">거래 내역에 기록</button>':'';
     const rw=(sel.rewardDetails||[]).length?
       '<div class="gfq-rw">'+(tiles.length?'<div class="gfq-rw-tiles">'+tiles.map(({r})=>{const st=gfqRewardState(w,r);return '<div class="gfq-rw-tile t-'+st.tone+'" title="'+esc(r.name)+'">'+gfqThing(r.name,r.kind)+'<span class="gfq-rw-name">'+esc(r.name)+'</span><span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span></div>';}).join('')+'</div>':'')+
-        (big.length?'<div class="gfq-rw-rows">'+big.map(x=>{const st=gfqRewardState(w,x.r);return '<div class="gfq-rw-row"><span class="gfq-rw-ic">'+gfqThing(x.r.name,x.r.kind)+'</span><span class="gfq-rw-rname">'+esc(x.r.name)+'<span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span>'+toLedger(x)+'</span><b class="gfq-num">'+esc(amount(x.r))+(x.r.kind==='money'?'<small>'+esc(x.r.unit||'원')+'</small>':'')+'</b></div>';}).join('')+'</div>':'')+'</div>':
+        (big.length?'<div class="gfq-rw-rows">'+big.map(x=>{const st=gfqRewardState(w,x.r);return '<div class="gfq-rw-row'+(gfqIsCond(x.r)?' cond':'')+'" '+(gfqIsCond(x.r)?'title="철수·실패 같은 조건이 생길 때만 받는 최소 금액입니다. 다른 보수에 더해지지 않습니다."':'')+'><span class="gfq-rw-ic">'+gfqThing(x.r.name,x.r.kind)+'</span><span class="gfq-rw-rname">'+esc(x.r.name)+'<span class="gfq-chip t-'+st.tone+'">'+esc(st.text)+'</span>'+toLedger(x)+'</span><b class="gfq-num">'+esc(amount(x.r))+(x.r.kind==='money'?'<small>'+esc(x.r.unit||'원')+'</small>':'')+'</b></div>';}).join('')+'</div>':'')+'</div>':
       '<p class="gfq-sub">기록된 보상이 없습니다. '+esc(sel.reward||'')+'</p>';
     const why=(sel.rewardDetails||[]).find(r=>r.kind==='reputation'&&r.assessed&&r.evidence);
     const detail='<article class="gfq-qdetail"><div class="gfq-qhead"><div class="gfq-qcrest" aria-hidden="true"><span>'+esc(String(sel.type||'의뢰').slice(0,2))+'</span></div><div class="gfq-qhead-t"><h3>'+esc(sel.title)+'</h3>'+
@@ -2928,16 +2982,30 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
       '<div class="gfq-drop-menu" role="menu">'+keys.map(k=>'<button role="menuitemradio" aria-checked="'+(k===data.world)+'" data-action="pick-world" data-id="'+esc(k)+'"><span>'+esc(name(k))+'</span>'+(data.worlds[k]?.gfRunId?'<small>게임 월드 연결됨</small>':'<small>직접 만든 월드</small>')+'</button>').join('')+
       '<button class="gfq-drop-new" data-action="new-world">＋ 새 월드 만들기</button></div></details>';
   }
+  // v0.7.2: looks per world. Only colours, fonts and paper texture change; the layout stays the same.
+  const GFQ_THEMES=[
+    ['modern','현대','사건 파일 · 남색과 회색 종이',['#d7d4cd','#3b3f7a','#f0c02f']],
+    ['east','동양','한지 · 먹 · 주홍 낙관',['#e6dfcf','#2a2622','#b8352a']],
+    ['fantasy','판타지','양피지 · 진홍 · 금박',['#e3d3ae','#6a1e2b','#c9a227']],
+    ['sf','SF','관제 화면 · 청록 · 각진 카드',['#e1e6ea','#0f6a80','#16c6db']],
+    ['school','학원·일상','줄 노트 · 파랑 · 분홍',['#ecedf3','#3d63b0','#ff8fab']]
+  ];
+  const gfqTheme=w=>GFQ_THEMES.some(t=>t[0]===w?.gfTheme)?w.gfTheme:'modern';
+  function gfqThemeHtml(w){
+    const cur=gfqTheme(w);
+    return '<div class="gfq-card"><b>화면 테마</b><p class="gfq-muted">이 월드의 장르에 맞는 모양을 고를 수 있습니다. 월드마다 따로 저장되며, 알림 팝업에도 같은 색이 쓰입니다.</p><div class="gfq-themes">'+
+      GFQ_THEMES.map(([k,n,d,c])=>'<button class="gfq-theme" data-action="pick-theme" data-id="'+k+'" aria-pressed="'+(k===cur)+'"><span class="gfq-theme-sw" aria-hidden="true">'+c.map(x=>'<i style="background:'+x+'"></i>').join('')+'</span><b>'+n+'</b><small>'+d+'</small></button>').join('')+'</div></div>';
+  }
   function render(){if(!panel)return;let w=current();if(currentTab==='assets'||currentTab==='items')currentTab='profile';const tabs=[['quests','퀘스트'],['profile','프로필'],['cast','인물'],['places','장소'],['calendar','일정'],['history','기록'],['settings','설정']];if(!tabs.some(t=>t[0]===currentTab))currentTab='quests';const label=tabs.find(t=>t[0]===currentTab)[1];const today=w?gfqCurrentDate(w):null;const empty='<div class="gfq-empty"><strong>월드를 먼저 골라 주세요</strong><span class="gfq-sub">게임에서 월드를 열면 자동으로 연결됩니다.</span></div>';
     const keep=panel.dataset.tab===currentTab?panel.querySelector('.gfq-main')?.scrollTop||0:0;
-    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.1</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
+    panel.innerHTML=gfqNoMatch(`<div class="gfq-frame"><aside class="gfq-side"><div class="gfq-brand"><span class="gfq-brand-mark" aria-hidden="true"></span><h2>퀘스트</h2><small>Gacha Forge</small></div><nav class="gfq-tabs">${tabs.map(([key,l])=>`<button class="${currentTab===key?'primary':''}" data-tab="${key}" ${currentTab===key?'aria-current="page"':''}><span class="gfq-tab-ic">${gfqIcon(key)}</span><span class="gfq-tab-l">${l}</span></button>`).join('')}</nav><div class="gfq-side-foot">${today?`<span>세계관 날짜</span><b class="gfq-num">${esc(today.date.replace(/-/g,'.'))}</b><span>${esc(gfqWeekday(today.date))}요일</span>`:'<span>세계관 날짜</span><b>미확인</b>'}<small>이 브라우저에만 저장 · v0.7.2</small></div></aside><main class="gfq-main"><header class="gfq-top"><h2>${label}</h2><div class="gfq-worldbar">${worldSelect()}</div>${btn('✕','close','class="gfq-close" aria-label="닫기"')}</header><div id="gfq-content">${w?content(w):currentTab==='history'?`${btn('월드 연결 다시 시도','resync-world','class="primary"')}<p class="gfq-muted">현재 월드가 연결되지 않았습니다. 버튼을 눌러 연결 상태를 확인해 주세요.</p>${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}`:empty}</div></main></div>`);panel.dataset.tab=currentTab;panel.dataset.theme=gfqTheme(w);for(const b of [toastBox,questBox])if(b)b.dataset.theme=gfqTheme(w);if(keep){const m=panel.querySelector('.gfq-main');if(m)m.scrollTop=keep;}}
   function content(w){switch(currentTab){case 'quests':return gfqQuestsHtml(w);
   case 'profile':return gfqProfileHtml(w);
   case 'places':return gfqPlacesHtml(w);
   case 'cast':return gfqCastHtml(w);
   case 'calendar':return gfqCalendarHtml(w);
-  case 'history':return `${gfqChapterCards(w)}${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}${candidateHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
-  case 'settings':return `${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
+  case 'history':return `${gfqChapterCards(w)}${btn('월드 표시 이름 수정','rename-display')} ${btn('월드 연결 다시 시도','resync-world','class="primary"')} ${w.gfRunId?btn('기존 스토리 목록 조회','scan-chapters','class="primary"')+'<p class="gfq-muted">연결된 게임 월드 ID: '+esc(w.gfRunId)+'</p>':'<p class="gfq-muted">아직 게임 월드와 연결되지 않았습니다.</p>'}${lastSyncError?'<div class="gfq-card">연결 진단: '+esc(lastSyncError)+'</div>':''}${chapterIndexHTML(w)}${aiReviewHtml(w)}<h3>변경 기록</h3>${w.history.slice(0,100).map(h=>`<div class="gfq-card"><span class="gfq-muted">${esc(h.at)}</span><div>${esc(h.text)}</div></div>`).join('')||'<div class="gfq-empty"><div class="gfq-empty-symbol">≡</div><strong>아직 기록이 없습니다</strong><span class="gfq-muted">항목을 수정하면 변경 이력이 남습니다.</span></div>'}`;
+  case 'settings':return `${gfqThemeHtml(w)}${aiSettingsHTML()}${gfqWorldRulesHtml(w)}${gfqInjectHtml(w)}<p>현재 월드: <b>${esc(w.gfDisplayName||data.world)}</b></p>${btn('주입문 확인·복사','context-preview','class="primary"')}${btn('백업 내보내기','export')}${btn('백업 가져오기','import')}${btn('월드 삭제','delete-world','class="gfq-danger"')}<p class="gfq-muted">데이터는 현재 브라우저의 로컬 저장소에 보관됩니다. 기기 간 자동 동기화는 지원하지 않으므로 백업 내보내기를 이용해 주세요.</p>`;}}
   const ask=(message,def='')=>prompt(message,def);
   const update=fn=>{const w=current();if(!w)return;fn(w);save();render();};
   const record=(w,text)=>{w.history.unshift({at:now(),text});w.history=w.history.slice(0,500);};
@@ -2948,6 +3016,7 @@ position:fixed;inset:0;margin:auto;transform:none;width:min(1180px,calc(100vw - 
   document.addEventListener('click',e=>{const el=e.target.closest?.('#'+ID+'-panel [data-action],#'+ID+'-panel [data-tab]');if(!el)return;if(el.dataset.tab){currentTab=el.dataset.tab;render();return;}const act=el.dataset.action,id=el.dataset.id,w=current();
   if(act==='quest-filter'){questFilter=id;selectedQuest='';return render();}
   if(act==='select-quest'){selectedQuest=id;return render();}
+  if(act==='pick-theme'){return update(w=>{w.gfTheme=id;record(w,'화면 테마: '+(GFQ_THEMES.find(t=>t[0]===id)?.[1]||id));});}
   if(act==='pick-world'){data.world=id;save();return render();}
   if(act==='cash-base'){const cur=w.gfCashBase?.amount;const v=ask('이야기를 시작할 때 주인공이 가진 돈(원)을 숫자로 입력해 주세요. 거래 내역의 입금 확인과 지출을 더하고 빼서 현재 소지금을 계산합니다.',cur!=null?String(cur):'');if(v===null)return;const n=Number(String(v).replace(/[,\s원]/g,''));if(!Number.isFinite(n)||n<0)return alert('0 이상의 숫자로 입력해 주세요.');return update(w=>{w.gfCashBase={amount:Math.round(n),at:now()};record(w,'시작 소지금 설정: '+gfqAmount(Math.round(n),'원'));});}
   if(act==='place-page'){placePage=id;selectedPlace='';return render();}

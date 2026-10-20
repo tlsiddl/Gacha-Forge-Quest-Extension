@@ -59,5 +59,9 @@ const toasts=()=>[...doc.querySelectorAll('#gfq-01-toasts .gfq-toast,#gfq-01-qto
   assert.ok(toasts().some(t=>t.startsWith('업적 달성')&&t.includes('발걸음')),'achievement toast: '+toasts().join('|'));
   // Chapter cards: chapter 3 shows its places and people.
   click('[data-tab="history"]');const card=panel.querySelector('.gfq-chcard');assert.ok(card.textContent.includes('제1공방')&&card.textContent.includes('한도윤'),'chapter card');
+  // Themes are per world and also colour the popups.
+  click('[data-tab="settings"]');click('[data-action="pick-theme"][data-id="east"]');
+  assert.strictEqual(W().gfTheme,'east');assert.strictEqual(panel.dataset.theme,'east');assert.strictEqual(doc.getElementById('gfq-01-toasts').dataset.theme||'east','east');
+  assert.ok(!panel.innerHTML.includes('스토리 분석 후보'),'keyword candidates removed');
   console.log('UI v0.7 OK');process.exit(0);
 })().catch(e=>{console.error(e);process.exit(1);});

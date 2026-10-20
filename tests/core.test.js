@@ -2,7 +2,7 @@ const fs=require('fs'),assert=require('assert');
 const src=fs.readFileSync(process.argv[2]||require("path").join(__dirname,"..","extension.js"),'utf8');
 const grab=name=>{const i=src.indexOf('  function '+name+'(');if(i<0)throw Error('missing '+name);let d=0,j=src.indexOf('{',i);for(;j<src.length;j++){if(src[j]==='{')d++;else if(src[j]==='}'){d--;if(!d)break;}}return src.slice(i,j+1);};
 const grabConst=c=>{const i=src.indexOf('  const '+c+'=');if(i<0)throw Error('missing const '+c);const j=src.indexOf('=',i)+1;if(src[j]==='{'){let d=0,k=j;for(;k<src.length;k++){if(src[k]==='{')d++;else if(src[k]==='}'){d--;if(!d)break;}}return src.slice(i,k+1)+';\n';}return src.slice(i,src.indexOf('\n',i)+1);};
-const consts=['GFQ_INJECT_SECTIONS','gfqWeekday','GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
+const consts=['GFQ_CONDITIONAL','gfqIsCond','GFQ_INJECT_SECTIONS','gfqWeekday','GFQ_DAY_WORDS','gfqChapterOfSource','GFQ_REVIEW_NOTES','GFQ_PAY_CUE','GFQ_CASH_WORDS','GFQ_DISCOUNT_WORDS','GFQ_SKIP','GFQ_TIMING','GFQ_LEGACY_PACK','GFQ_GENERIC','gfqEsc','GFQ_LABELS','gfqLabel','gfqAmount','gfqTimingText','GFQ_MONEY_STATES','gfqMoney','GFQ_RANK','gfqChainOf','GFQ_LINK_REASON'].map(grabConst).join('');
 const names=['gfqCleanLore','gfqMergeLore','gfqInjectText','gfqQuestRewardItems','gfqInjectLines','gfqInjectFit','gfqInjectSections','gfqCash','gfqVNDate','gfqDayDiff','gfqDateHeading','gfqDateMap','gfqDateAt','gfqHeadingDates','gfqStampDates','gfqYmd','gfqDatesIn','gfqAddDays','gfqTimelineFrom','gfqCurrentDate','gfqResolveTiming','gfqSumTotals','gfqAutoGate','gfqEventsFor','gfqVNState','gfqEvidenceList','gfqLineHits','gfqSceneHits','gfqAutoBatches','gfqAutoEligible','gfqMissingMoney','gfqAmountsIn','gfqDedupeRewards','gfqRewardText','gfqScreenEvent','gfqLocateEvidence','gfqBuildProposal','gfqEventEligible','gfqNormMap','gfqApplySale','gfqChapterHashes','gfqParseChapterRange','gfqApplyBenefit','gfqApplyPurchase','gfqLedgerSummary','gfqRewardFromProposal','gfqClearedHint','gfqChapterBatches','gfqContextItems','gfqResolveLink','gfqApplyLink','gfqMarkComponents','gfqLedgerRecord','gfqRelinkQuestRewards','gfqApplyItem','gfqConsolidationInput','gfqApplyConsolidation','gfqQuestPresentation','gfqStepLine','gfqUpdateQuest','gfqAwardQuestReputation','gfqRuleCtx','gfqTiming','gfqSafeProposal','gfqStoryRecords','gfqParseEvents','gfqDuplicate','gfqCollectEvents','gfqKnownKeys','gfqIntegrateQuests','gfqQuestGroup','gfqAnalysisSummary'];
 const code="let n=0;const uid=()=>'id'+(n++);const record=(w,text)=>{(w.history||=[]).unshift({text});};const now=()=>'T';const prompt=()=>{throw Error(\"prompt called\")};const alert=()=>{};"+consts+names.map(grab).join('\n')+'\nreturn {'+names.join(',')+'};';
 const F=new Function(code)();
@@ -546,5 +546,19 @@ t('보상 물품: 퀘스트 보상은 수령 예정으로 등록되고, 이름�
 t('배경 관리자 호환: 패널 글자의 챕터는 보이는 모양은 같지만 검색에 걸리지 않음',()=>{
   const gfqNoMatch=new Function(grabConst('gfqNoMatch')+';return gfqNoMatch;')();const h=gfqNoMatch('<small>챕터 4 · 3챕터</small>'),re=/(?:\d+\s*챕터|챕터\s*\d+)/;
   assert.ok(!re.test(h));assert.strictEqual(h.replace(/⁠/g,''),'<small>챕터 4 · 3챕터</small>');
+});
+t('조건부 보장: 중도 철수 시 보장은 총액에 더하지 않는 조건부로 분류, 퀘스트에 연결되면 따로 남지 않음',()=>{
+  const cond={id:'m1',category:'asset',name:'중도 철수 시 기본급 50% 및 실비 보험 보장',financialStatus:'pending',status:'confirmed',amount:600000,unit:'원',evidence:'이 경우에도 기본급의 50퍼센트인 60만 원과 실비 보험이 보장됩니다',source:'챕터 1'};
+  assert.strictEqual(F.gfqSafeProposal(cond).financialStatus,'conditional');
+  assert.strictEqual(F.gfqRewardFromProposal(cond).certainty,'conditional');
+  const pay={...cond,id:'m2',name:'성수동 D급 게이트 용역 보수',amount:1500000,evidence:'기본급 120만 원 + 위험 수당 30만 원'};
+  assert.strictEqual(F.gfqSafeProposal(pay).financialStatus,'pending','normal pay untouched');
+  const q={id:'q1',category:'quest',name:'성수동 D급 게이트 긴급 정화',questTitle:'성수동 D급 게이트 긴급 정화',status:'active',evidence:'e',source:'챕터 1',questRewards:[]};
+  const out=F.gfqApplyConsolidation([q,cond,pay],[{memberIds:['c1'],rewardIds:['r1','r2'],title:'성수동 D급 게이트 긴급 정화',steps:[]}],new Map([['c1','q1']]),new Map(),new Map([['r1','m1'],['r2','m2']]));
+  assert.ok(!out.list.some(p=>p.id==='m1'),'conditional guarantee lives only on the quest');
+  assert.strictEqual(out.list.find(p=>p.id==='m2').linkedQuest,'성수동 D급 게이트 긴급 정화');
+  const quest=out.list.find(p=>p.category==='quest');assert.ok(quest.questRewards.some(r=>r.certainty==='conditional'&&r.amount===600000));
+  const w={gfLedger:[{id:'a',name:'중도 철수 시 기본급 50% 보장',amount:600000,unit:'원',state:'pending'},{id:'b',name:'보수',amount:1500000,unit:'원',state:'pending'}]};
+  assert.strictEqual(F.gfqLedgerSummary(w).pending,1500000,'floor not counted as money owed');
 });
 console.log('\n'+pass+'개 통과');
